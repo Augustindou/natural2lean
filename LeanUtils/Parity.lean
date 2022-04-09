@@ -1,5 +1,4 @@
-/- Parity : functions and theorems related to evenness and oddness of Naturals & Integers
--/
+/- Parity : functions and theorems related to evenness and oddness of Naturals & Integers -/
 
 namespace Nat
   def even (a : Nat) : Prop := ∃ (n : Nat), a = 2 * n
