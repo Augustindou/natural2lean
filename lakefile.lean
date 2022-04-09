@@ -3,7 +3,7 @@ open Lake DSL
 
 package LeanUtils {
   dependencies := #[{
-    name := `mathlib
+    name := "mathlib",
     src := Source.git "https://github.com/leanprover-community/mathlib4.git" "master"
   }]
 }
