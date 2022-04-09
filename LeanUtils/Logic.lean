@@ -1,0 +1,1 @@
+axiom contrapositive {A B : Prop} : A → B ↔ ¬B → ¬A
