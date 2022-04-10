@@ -5,6 +5,7 @@ import Mathlib.Init.Data.Nat.Basic
 namespace Nat
   def divisible (b a : Nat) : Prop := a % b = 0
 
+  -- TODO : more general version working for any number
   theorem mod_3_poss (a : Nat) : a % 3 = 0 ∨ a % 3 = 1 ∨ a % 3 = 2 :=
     -- copied from Mathlib.Init.Data.Nat.Lemmas (and modified from mod_two_eq_zero_or_one)
     match a % 3, @Nat.mod_lt a 3 (by simp) with
