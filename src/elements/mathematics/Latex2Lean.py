@@ -1,23 +1,28 @@
+from dataclasses import dataclass
 import re
 
-# TODO : add support for \cdot, \mod, ...
-# TODO : add other latex functions
-
+# TODO : dataclass ?
 class LatexFunction:
-    def __init__(self, pattern:str, string:str, n_args:int, intermediate:list[str]) -> None:
+    def __init__(self, pattern:str, n_args:int, separators:list[str]) -> None:
         self.pattern = pattern
-        self.string = string
         self.n_args = n_args
-        self.intermediate = intermediate
+        self.separators = separators
 
-LATEX_SYMBOLS_COUNTERPARTS = {
+LATEX_SYMBOLS = {
     # operations
-    r"\\mod": r"%",
-    r"\\cdot": r"*",
+    r"\mod": r"%",
+    r"\cdot": r"*",
+
+    # parenthesis
+    r"\bigg": r"",
+    r"\left": r"",
+    r"\right": r"",
 }
+# watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)
 LATEX_FUNCTIONS = [
-    LatexFunction(r"\\frac", r"\frac", 2, ["(", ") / (", ")"]),
-    LatexFunction(r"\\sqrt", r"\sqrt", 1, ["sqrt(", ")"]),
+    LatexFunction(r"\\frac", 2, ["(", ") / (", ")"]),
+    LatexFunction(r"\\sqrt", 1, ["sqrt(", ")"]),
+    LatexFunction(r"\^", 1, ["^(", ")"]),
 ]
 START_OF_FUNCTION = "{"
 END_OF_FUNCTION = "}"
@@ -27,9 +32,14 @@ class Latex2Lean:
     def __init__(self, string:str) -> None:
         self.latex_string = string
         self.result_string = ""
-        self.recursive_match(0)
+        self.symbol_replacement()
+        self.function_replacement(0)
+        
+    def symbol_replacement(self):
+        for k, v in LATEX_SYMBOLS.items():
+            self.latex_string = self.latex_string.replace(k, v)
     
-    def recursive_match(self, position: int) -> int:
+    def function_replacement(self, position: int) -> int:
         next_function_start, next_function_end, next_function = self.get_next_function(position)
         next_start_start, next_start_end = self.get_next_start(position)
         next_end_start, next_end_end = self.get_next_end(position)
@@ -67,10 +77,10 @@ class Latex2Lean:
                                     f"\n        at \"{self.latex_string[next_function_start:]}\"")
 
                 # add intermediate elements (between args of function)
-                self.result_string += next_function.intermediate[i]
+                self.result_string += next_function.separators[i]
                 
                 # add ith argument
-                position = self.recursive_match(next_start_end)
+                position = self.function_replacement(next_start_end)
                 
                 # if some argument is missing END_OF_FUNCTION
                 if position == -1:
@@ -79,12 +89,12 @@ class Latex2Lean:
                                     f"\n        at \"{self.latex_string[next_function_start:]}\"")
             
             # add last element of function
-            self.result_string += next_function.intermediate[i+1]
+            self.result_string += next_function.separators[i+1]
             
-            position = self.recursive_match(next_end_end)
+            position = self.function_replacement(next_end_end)
             return position
         
-        raise Exception(f"Should not happen - Latex2Lean.recursive_match")
+        raise Exception(f"Should not happen - Latex2Lean.function_replacement")
 
     def get_next_function(self, position: int) -> tuple[int, int, LatexFunction]:    
         starts = []
@@ -133,9 +143,9 @@ class Latex2Lean:
         return next_start_start, next_start_end
     
         
-examples = [r"\sqrt{2} + 3", r"\frac{\sqrt{2} + 3}{\sqrt{2}}", r"\frac{1}{2}", r"\sqrt{2}", ]
+examples = [r"\sqrt{2}^{1+2}", r"\frac{\sqrt{2} + 3}{\sqrt{2}}", r"\frac{1}{2}", r"\sqrt{2}", ]
 for ex in examples:
     print(f"{ex} : {Latex2Lean(ex).result_string}")
 
-# TODO fractions, exponents with multiple things
+
 # TODO what about 3x => 3 * x, but x1 = x1 => begins by a letter
