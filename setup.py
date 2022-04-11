@@ -23,4 +23,11 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.6",
+    # install_requires=[
+    #     ],
+    extras_require = {
+        "dev": [
+            "pytest>=3.6",
+        ]
+    }
 )

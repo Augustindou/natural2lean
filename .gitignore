@@ -1,13 +1,13 @@
 # temporary files
-*/build
+*build
 
 # dependencies
-*/lean_packages
+*lean_packages
 
 # local files
 *.DS_Store
 *__pycache__
 
 # python package
-/dist
-*/natural2lean.egg-info
+*dist
+*.egg-info
