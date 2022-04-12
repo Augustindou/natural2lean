@@ -12,13 +12,13 @@ class Matching:
 
     @classmethod
     def match(cls, string: str) -> Matching:
-        """Matches the string in argument to return the object 
+        """Matches the string in argument to return the object (calls the constructor with the first group found)
 
         Args:
-            string (str): _description_
+            string (str): string to match.
 
         Returns:
-            Matching: _description_
+            Matching: an object of the right type, containing the matched string and its possible contents. Returns None if no match.
         """
         m = re.fullmatch(cls.__pattern, string)
         if m == None:
@@ -26,4 +26,9 @@ class Matching:
         return cls.__init__(m.group(1))
     
     def translate(self) -> str:
+        """Translates the instance and its contents into the lean4 equivalent.
+
+        Returns:
+            str: the lean4 equivalent of the instance.
+        """
         raise NotImplementedError
