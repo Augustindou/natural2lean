@@ -21,11 +21,11 @@ class TestLatex2LeanMath(unittest.TestCase):
         tests = {
             r"\frac{a}{b}": r"((a) / (b))",
             r"\frac{a}{b + c}": r"((a) / (b + c))",
-            r"\sqrt{a}": r"sqrt(a)",
-            r"\sqrt{a + b}": r"sqrt(a + b)",
+            r"\sqrt{a}": r"((a)^(1 / 2))",
+            r"\sqrt{a + b}": r"((a + b)^(1 / 2))",
             r"e^{a}": r"e ^ (a)",
             r"e^{3+2}": r"e ^ (3 + 2)",
-            r"\frac{\sqrt{a}}{b+2}^{c+1}": r"((sqrt(a)) / (b + 2)) ^ (c + 1)",
+            r"\frac{\sqrt{a}}{b+2}^{c+1}": r"((((a)^(1/2))) / (b + 2)) ^ (c + 1)",
         }
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()

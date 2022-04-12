@@ -1,11 +1,11 @@
+from dataclasses import dataclass
 import re
 
-# TODO : dataclass ?
+@dataclass
 class LatexFunction:
-    def __init__(self, pattern: str, n_args: int, separators: list[str]) -> None:
-        self.pattern = pattern
-        self.n_args = n_args
-        self.separators = separators
+    pattern: str
+    n_args: int
+    separators: list[str]
 
 
 START_OF_FUNCTION = "{"
@@ -22,7 +22,7 @@ LATEX_SYMBOLS = {
 LATEX_FUNCTIONS = [
     # watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)
     LatexFunction(r"\\frac *{", 2, ["((", ") / (", "))"]),
-    LatexFunction(r"\\sqrt *{", 1, ["sqrt(", ")"]),
+    LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1 / 2))"]),
     LatexFunction(r"\^ *{", 1, ["^(", ")"]),
 ]
 IMPLICIT_OPERATIONS = {
