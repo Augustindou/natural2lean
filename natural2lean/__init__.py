@@ -1,1 +1,1 @@
-from . import math_mode, elements
+from . import math_mode, structure
