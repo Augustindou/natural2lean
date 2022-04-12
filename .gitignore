@@ -8,6 +8,7 @@
 *.DS_Store
 *__pycache__
 
-# python package
+# python
 *dist
 *.egg-info
+*.venv

@@ -1,0 +1,59 @@
+import unittest  
+from natural2lean.math_mode import Latex2LeanMath
+
+class TestLatex2LeanMath(unittest.TestCase):
+    def test_symbol_replacement(self):
+        tests = {
+            r"a \mod b": r"a % b",
+            r"a \mod 3 + 2": r"a % 3 + 2",
+            r"a \cdot b": r"a * b",
+            r"a \cdot b + c": r"a * b + c",
+            r"\bigg(a + b\bigg)": r"(a + b)",
+            r"\left(a + b\right)": r"(a + b)",
+            r"\left(a + b\right) \cdot \bigg(c \mod 3\bigg)": r"(a + b) * (c % 3)",
+        }
+        
+        for input, expected in tests.items():
+            result = Latex2LeanMath(input).result()
+            self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
+    
+    def test_function_replacement(self): 
+        tests = {
+            r"\frac{a}{b}": r"((a) / (b))",
+            r"\frac{a}{b + c}": r"((a) / (b + c))",
+            r"\sqrt{a}": r"sqrt(a)",
+            r"\sqrt{a + b}": r"sqrt(a + b)",
+            r"e^{a}": r"e ^ (a)",
+            r"e^{3+2}": r"e ^ (3 + 2)",
+            r"\frac{\sqrt{a}}{b+2}^{c+1}": r"((sqrt(a)) / (b + 2)) ^ (c + 1)",
+        }
+        for input, expected in tests.items():
+            result = Latex2LeanMath(input).result()
+            self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
+    
+    def test_implicit_operations(self):
+        tests = {
+            r"2a": r"2 * a",
+            r"2(x + y)": r"2 * (x + y)",
+            r"(x + y)2": r"(x + y) * 2",
+            r"2x2": r"2 * x2",
+            r"(x + y)(z + w)": r"(x + y) * (z + w)",
+            r"(x + y)2(z + w)": r"(x + y) * 2 * (z + w)",
+            r"2(x + y)2(z + w)": r"2 * (x + y) * 2 * (z + w)",
+            # case for 2 a b -> 2 * a * b not considered since LaTeX would interpret this the same as 2ab
+            r"2 a b": r"2 * a b",
+        }
+        for input, expected in tests.items():
+            result = Latex2LeanMath(input).result()
+            self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
+    
+    def test_general(self):  
+        tests = {
+            r"2\frac{a}{b}": r"2 * ((a) / (b))",
+        }
+        for input, expected in tests.items():
+            result = Latex2LeanMath(input).result()
+            self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
+  
+if __name__ == '__main__':  
+    unittest.main()  

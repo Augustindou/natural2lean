@@ -35,6 +35,8 @@ IMPLICIT_OPERATIONS = {
     r"(?:^|\W)\d+ *(\w)": "*",
     # (x + y)(z + w) -> (x + y) * (z + w)
     r"\) *(\()": "*",
+    # 2 \sqrt(a) -> 2 * sqrt(a)
+    r"\w *(\\)": "*",
 }
 
 
@@ -43,8 +45,8 @@ class Latex2LeanMath:
         self.latex_string = string
         self.result_string = ""
         self.symbol_replacement()
-        self.function_replacement()
         self.implicit_operations()
+        self.function_replacement()
 
     def symbol_replacement(self):
         for k, v in LATEX_SYMBOLS.items():
@@ -127,7 +129,7 @@ class Latex2LeanMath:
 
             # match all patterns
             for pattern, operation in IMPLICIT_OPERATIONS.items():
-                match_pattern = re.search(pattern, self.result_string)
+                match_pattern = re.search(pattern, self.latex_string)
                 
                 # if no match
                 if match_pattern == None:
@@ -139,7 +141,7 @@ class Latex2LeanMath:
                 right_term = match_pattern.groups()[-1]
                 position = end - len(right_term)
                 
-                self.result_string = self.result_string[:position] + operation + self.result_string[position:]
+                self.latex_string = self.latex_string[:position] + operation + self.latex_string[position:]
 
     def get_next_function(self, position: int) -> tuple[int, int, LatexFunction]:
         starts = []
@@ -189,3 +191,6 @@ class Latex2LeanMath:
 
     def result(self) -> str:
         return self.result_string
+
+if __name__ == "__main__":
+    print(Latex2LeanMath(r"\sqrt{a}").result())

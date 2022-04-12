@@ -1,5 +1,5 @@
 from __future__ import annotations
-from elements.matching_interface import MatchingBaseClass
+from natural2lean.elements.matching_interface import MatchingBaseClass
 import re
 
 

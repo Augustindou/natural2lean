@@ -20,9 +20,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
-    python_requires=">=3.6",
+    package_dir={"": "."},
+    packages=["natural2lean"],
+    python_requires=">=3.9",
     # install_requires=[
     #     ],
     extras_require = {
