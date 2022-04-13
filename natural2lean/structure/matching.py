@@ -4,7 +4,7 @@ import re
 
 class Matching:
 
-    __pattern: str = None
+    pattern: str = None
 
     def __init__(self, string: str) -> None:
         """Initialises the instance.
@@ -25,7 +25,7 @@ class Matching:
         Returns:
             Matching: an object of the right type, containing the matched string and its possible contents. Returns None if no match.
         """
-        m = re.fullmatch(cls.__pattern, string)
+        m = re.fullmatch(cls.pattern, string)
         if m == None:
             return None
         return cls.__init__(m.group(1))

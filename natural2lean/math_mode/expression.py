@@ -2,7 +2,7 @@ from ..structure import Matching
 
 
 class Expression(Matching):
-    __pattern = (
+    pattern = (
         # opening group
         r"("
         # <anything> <letter/number> <operator> <letter/number> <anything> : a * b, 4 + a, ...

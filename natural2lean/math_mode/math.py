@@ -6,9 +6,9 @@ import re
 
 class Math(Matching):
     """Math block
-    @attribute __pattern: str, matches strings of the form ' $ [...] $ ' and ' $$ [...] $$ '"""
+    @attribute pattern: str, matches strings of the form ' $ [...] $ ' and ' $$ [...] $$ '"""
 
-    __pattern: str = r" *\${1,2} *(.+?) *\${1,2} *"
+    pattern: str = r" *\${1,2} *(.+?) *\${1,2} *"
 
     def __init__(self, string: str) -> None:
         super().__init__(Latex2LeanMath(string).result())
