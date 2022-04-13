@@ -38,7 +38,7 @@ class Matching:
 
     def set_contents(self):
         """Extract the contents of a concept. The `set_contents` method should only be called from the constructor and should have access to `self.string`."""
-        raise NotImplementedError
+        pass
 
     def translate(self) -> str:
         """Translates the instance and its contents into the lean4 equivalent.

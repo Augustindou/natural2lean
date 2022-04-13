@@ -29,9 +29,5 @@ class Expression(Matching):
         r")"
     )
 
-    def set_contents(self):
-        # This class has no contents
-        return None
-
     def translate(self) -> str:
         return self.string

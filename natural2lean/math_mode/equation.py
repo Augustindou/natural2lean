@@ -13,13 +13,13 @@ class Equation(Matching):
         - a + b < a + b + 1
         - (2 + 3) * 4 > 3
         - a < b ≤ c = d
-        - a > b < c ≥ d (this one will be matched but will probably not work in lean4)
+        - a > b < c ≥ d (this one will be matched but will not work in lean4)
         - ...
 
     Some more information :
         - The string passed as argument to the constructor must be interpretable by lean4. If it is formatted for LaTex, it has to be processed by `Latex2LeanMath`. See `natural2lean.math_mode.translate_math` for more information.
     """
-    pattern = (
+    pattern: str = (
         # opening group
         r"(" 
         # first term (? allows to match in a non-greedy way)
