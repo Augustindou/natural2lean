@@ -13,17 +13,16 @@ class Math(Matching):
     def __init__(self, string: str) -> None:
         super().__init__(Latex2LeanMath(string).result())
 
-    def __get_contents(self) -> None:
+    def set_contents(self) -> None:
         self.contents = []
         # check whether equation
         # check whether expression
-        # check whether identifier
+        # check whether identifiers
+        # identifier in set ?
         raise NotImplementedError
 
     def translate(self) -> str:
         raise NotImplementedError
-
-        # TODO : further recursive matching
 
 
 # TODO : x = ab => x = a * b or x = ab (as a single identifier) => dependent on the presence or not of identifiers a and b or ab before

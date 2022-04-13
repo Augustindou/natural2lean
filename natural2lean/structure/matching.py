@@ -3,7 +3,13 @@ import re
 
 
 class Matching:
+    """Matching class.  
+    This is the base class for all the classes that are used in the matching process. 
 
+    Some information :
+        - The `pattern` allows the classmethod `match` to extract information. The `match` method will call the constructor with the first regex group in the `pattern`. 
+        - The `translate` method returns the `lean4` equivalent of the expression.
+    """
     pattern: str = None
 
     def __init__(self, string: str) -> None:
@@ -13,7 +19,7 @@ class Matching:
             string (str): content that was matched.
         """
         self.string = string
-        self.__get_contents()
+        self.set_contents()
 
     @classmethod
     def match(cls, string: str) -> Matching:
@@ -30,9 +36,8 @@ class Matching:
             return None
         return cls.__init__(m.group(1))
 
-    def __get_contents(self) -> None:
-        """Matches recursively to extract the contents and adds it to self.contents. The __get_contents method is only called from the constructor and should have access to self.string."""
-        self.contents = []
+    def set_contents(self):
+        """Extract the contents of a concept. The `set_contents` method should only be called from the constructor and should have access to `self.string`."""
         raise NotImplementedError
 
     def translate(self) -> str:

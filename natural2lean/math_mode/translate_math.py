@@ -3,6 +3,23 @@ import re
 
 # TODO : how to handle x_{1 2} and x_{1, 2} ? (not useful for proof of concept)
 
+"""Translate Math
+This whole file is dedicated to the translation of math from latex to lean. The translation can be done by calling `Latex2LeanMath(latex_string).result()`. It can be extended to handle other operations, in different ways.
+
+- `LATEX_SYMBOLS` : dict[str, str]
+    - keys : latex symbols
+    - values : equivalent lean symbols
+    - The keys will simply be replaced by the values (using `str.replace(k, v)`).
+- `IMPLICIT_OPERATIONS` : dict[str, str]
+    - keys : regex containing at least one group
+    - values : implicit operation to insert
+    - The implicit operation will be inserted before the last group in the regex.
+- `LATEX_FUNCTIONS` : list[LatexFunction]. each LatexFunction contains:
+    - `pattern` : str, regex pattern to match the start of the LaTeX function.
+    - `n_args` : int, the number of arguments of the LaTeX function.
+    - `separators` : list[str], the separators before, between and after the arguments of the LaTeX function.
+"""
+
 @dataclass
 class LatexFunction:
     pattern: str
@@ -36,7 +53,6 @@ LATEX_FUNCTIONS = [
     LatexFunction(r"_ *{", 1, ["_", ""]),
 ]
 IMPLICIT_OPERATIONS = {
-    # the operation will be inserted before the last group in the regex
     # 2(x + y) -> 2 * (x + y)
     r"\w *(\()": "*",
     # (x + y)2 -> (x + y) * 2
@@ -45,15 +61,16 @@ IMPLICIT_OPERATIONS = {
     r"(?:^|\W)\d+ *( *[a-zA-Z]\w* *)": "*",
     # (x + y)(z + w) -> (x + y) * (z + w)
     r"\) *(\()": "*",
-    # todo correct comment
-    # 2 \sqrt(a) -> 2 * sqrt(a) 
+    # 2 \sqrt(a) -> 2 ((a) ^ (1 / 2))
     r"\w *(\\)": "*",
 }
 
 
 class Latex2LeanMath:
-    def __init__(self, string: str) -> None:
-        self.latex_string = string
+    """Translation from LaTeX math (`a\\frac{a + 1}{b^2}`) to lean4 math (`a * ((a+1) / (b^2))`) can be done by calling `str(Latex2LeanMath(latex_string))`
+    """
+    def __init__(self, latex_string: str) -> None:
+        self.latex_string = latex_string
         self.result_string = ""
         self.symbol_replacement()
         self.implicit_operations()
@@ -205,6 +222,9 @@ class Latex2LeanMath:
         return next_start_start, next_start_end
 
     def result(self) -> str:
+        return self.result_string
+    
+    def __str__(self) -> str:
         return self.result_string
 
 

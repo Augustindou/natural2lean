@@ -15,7 +15,7 @@ class MultipleIdentifiers(Matching):
         r" *)"
     )
     
-    # TODO : match recursively (__get_contents should match MultipleIdentifiers, then Identifier and then flatten the list)
+    # TODO : match recursively (set_contents should match MultipleIdentifiers, then Identifier and then flatten the list)
     # MultipleIdentifiers should return identifier, identifier, identifier, ... 
-    # with return identifier, next_identifiers.__get_contents and then flatten the list ?
+    # with return identifier, next_identifiers.set_contents and then flatten the list ?
     # TODO : case with a, b \in (...)
