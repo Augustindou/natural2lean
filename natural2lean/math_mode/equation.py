@@ -2,6 +2,11 @@ from ..structure import Matching
 
 
 class Equation(Matching):
-    """A:MathExpression = B:MathExpression = ..."""
+    __pattern = r"((?:.*\w+(?:\)| )*[=≤≥<>](?:\(| )*\w+.*))" # TODO
 
-    # TODO : generalize for equality and inequalities
+    def __get_contents(self) -> None:
+        self.contents = []
+        raise NotImplementedError
+
+    def translate(self) -> str:
+        raise NotImplementedError

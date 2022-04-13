@@ -1,5 +1,6 @@
-import unittest  
+import unittest
 from natural2lean.math_mode import Latex2LeanMath
+
 
 class TestLatex2LeanMath(unittest.TestCase):
     def test_symbol_replacement(self):
@@ -12,12 +13,12 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"\left(a + b\right)": r"(a + b)",
             r"\left(a + b\right) \cdot \bigg(c \mod 3\bigg)": r"(a + b) * (c % 3)",
         }
-        
+
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
-    
-    def test_function_replacement(self): 
+
+    def test_function_replacement(self):
         tests = {
             r"\frac{a}{b}": r"((a) / (b))",
             r"\frac{a}{b + c}": r"((a) / (b + c))",
@@ -31,7 +32,7 @@ class TestLatex2LeanMath(unittest.TestCase):
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
-    
+
     def test_implicit_operations(self):
         tests = {
             r"2a": r"2 * a",
@@ -47,14 +48,15 @@ class TestLatex2LeanMath(unittest.TestCase):
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
-    
-    def test_general(self):  
+
+    def test_general(self):
         tests = {
             r"2\frac{a}{b}": r"2 * ((a) / (b))",
         }
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
-  
-if __name__ == '__main__':  
-    unittest.main()  
+
+
+if __name__ == "__main__":
+    unittest.main()

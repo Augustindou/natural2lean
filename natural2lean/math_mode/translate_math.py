@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import re
 
+
 @dataclass
 class LatexFunction:
     pattern: str
@@ -18,6 +19,13 @@ LATEX_SYMBOLS = {
     r"\bigg": r"",
     r"\left": r"",
     r"\right": r"",
+    # equalities / inequalities
+    r"\eq": r"=",
+    r"\neq": r"≠",
+    r"\leq": r"≤",
+    r"\geq": r"≥",
+    r"\lt": r"<",
+    r"\gt": r">",
 }
 LATEX_FUNCTIONS = [
     # watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)
@@ -115,7 +123,7 @@ class Latex2LeanMath:
 
             # add last element of function
             self.result_string += next_function.separators[i + 1]
-            
+
             position = self.function_replacement(position)
             return position
 
@@ -123,25 +131,29 @@ class Latex2LeanMath:
 
     def implicit_operations(self):
         still_matching = len(IMPLICIT_OPERATIONS)
-        
+
         while still_matching > 0:
             still_matching = len(IMPLICIT_OPERATIONS)
 
             # match all patterns
             for pattern, operation in IMPLICIT_OPERATIONS.items():
                 match_pattern = re.search(pattern, self.latex_string)
-                
+
                 # if no match
                 if match_pattern == None:
                     still_matching -= 1
                     continue
-                
+
                 # get the position for the added '*'
                 end = match_pattern.end()
                 right_term = match_pattern.groups()[-1]
                 position = end - len(right_term)
-                
-                self.latex_string = self.latex_string[:position] + operation + self.latex_string[position:]
+
+                self.latex_string = (
+                    self.latex_string[:position]
+                    + operation
+                    + self.latex_string[position:]
+                )
 
     def get_next_function(self, position: int) -> tuple[int, int, LatexFunction]:
         starts = []
@@ -191,6 +203,7 @@ class Latex2LeanMath:
 
     def result(self) -> str:
         return self.result_string
+
 
 if __name__ == "__main__":
     print(Latex2LeanMath(r"\sqrt{\frac{a}{b+1}}").result())

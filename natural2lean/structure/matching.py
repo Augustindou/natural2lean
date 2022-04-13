@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 
+
 class Matching:
 
     __pattern: str = None
@@ -12,8 +13,7 @@ class Matching:
             string (str): content that was matched.
         """
         self.string = string
-        self.contents = []
-        raise NotImplementedError
+        self.__get_contents()
 
     @classmethod
     def match(cls, string: str) -> Matching:
@@ -29,10 +29,10 @@ class Matching:
         if m == None:
             return None
         return cls.__init__(m.group(1))
-    
-    def get_contents(self) -> None:
-        """Matches recursively to extract the contents.
-        """
+
+    def __get_contents(self) -> None:
+        """Matches recursively to extract the contents and adds it to self.contents. The __get_contents method is only called from the constructor and should have access to self.string."""
+        self.contents = []
         raise NotImplementedError
 
     def translate(self) -> str:

@@ -25,9 +25,9 @@ setuptools.setup(
     python_requires=">=3.9",
     # install_requires=[
     #     ],
-    extras_require = {
+    extras_require={
         "dev": [
             "pytest>=3.6",
         ]
-    }
+    },
 )
