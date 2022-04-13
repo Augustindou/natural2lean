@@ -28,6 +28,8 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"e^{3+2}": r"e ^ (3 + 2)",
             r"\frac{\sqrt{a}}{b+2}^{c+1}": r"((((a)^(1/2))) / (b + 2)) ^ (c + 1)",
             r"\sqrt{\frac{a}{b}}": r"((((a) / (b)))^(1 / 2))",
+            r"x_1": r"x_1",
+            r"x_{12}": r"x_12",
         }
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
@@ -42,6 +44,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"(x + y)(z + w)": r"(x + y) * (z + w)",
             r"(x + y)2(z + w)": r"(x + y) * 2 * (z + w)",
             r"2(x + y)2(z + w)": r"2 * (x + y) * 2 * (z + w)",
+            r"12": r"12",
             # case for 2 a b -> 2 * a * b not considered since LaTeX would interpret this the same as 2ab
             r"2 a b": r"2 * a b",
         }

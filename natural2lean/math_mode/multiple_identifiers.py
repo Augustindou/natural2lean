@@ -4,18 +4,17 @@ from ..structure import Matching
 class MultipleIdentifiers(Matching):
     pattern = (
         # opening group
-        r"( *" 
+        r"( *"
         # first term (an identifier begins with a letter and can contain any number of letters, digits or underscores)
         r"([a-zA-Z]\w*)"
         # comma to separate
-        r"( *, *)"
+        r" *(,) *"
         # second term (can contain multiple identifiers)
-        r"([a-zA-Z]\w*(?:, *[a-zA-Z]\w*)*)"
+        r"([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*)"
         # closing group
-        r" *)" 
+        r" *)"
     )
     
-    pass
     # TODO : match recursively (__get_contents should match MultipleIdentifiers, then Identifier and then flatten the list)
     # MultipleIdentifiers should return identifier, identifier, identifier, ... 
     # with return identifier, next_identifiers.__get_contents and then flatten the list ?

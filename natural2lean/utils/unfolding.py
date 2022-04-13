@@ -37,3 +37,7 @@ def unfold(pattern: str, string: str) -> tuple[list[str], list[str]]:
         separators += new_separators
         
         return elements, separators
+    
+if __name__ == "__main__":
+    pattern = r"( *([a-zA-Z]\w*) *(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)"
+    print(unfold(pattern, "x_1 , x_2 , x_3"))

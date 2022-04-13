@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import re
 
+# TODO : how to handle x_{1 2} and x_{1, 2} ? (not useful for proof of concept)
 
 @dataclass
 class LatexFunction:
@@ -32,6 +33,7 @@ LATEX_FUNCTIONS = [
     LatexFunction(r"\\frac *{", 2, ["((", ") / (", "))"]),
     LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1 / 2))"]),
     LatexFunction(r"\^ *{", 1, ["^(", ")"]),
+    LatexFunction(r"_ *{", 1, ["_", ""]),
 ]
 IMPLICIT_OPERATIONS = {
     # the operation will be inserted before the last group in the regex
@@ -40,10 +42,11 @@ IMPLICIT_OPERATIONS = {
     # (x + y)2 -> (x + y) * 2
     r"\) *(\w)": "*",
     # 2x2 -> 2 * x2
-    r"(?:^|\W)\d+ *(\w)": "*",
+    r"(?:^|\W)\d+ *( *[a-zA-Z]\w* *)": "*",
     # (x + y)(z + w) -> (x + y) * (z + w)
     r"\) *(\()": "*",
-    # 2 \sqrt(a) -> 2 * sqrt(a)
+    # todo correct comment
+    # 2 \sqrt(a) -> 2 * sqrt(a) 
     r"\w *(\\)": "*",
 }
 
@@ -206,4 +209,4 @@ class Latex2LeanMath:
 
 
 if __name__ == "__main__":
-    print(Latex2LeanMath(r"\sqrt{\frac{a}{b+1}}").result())
+    print(Latex2LeanMath(r"x_{12}").result())

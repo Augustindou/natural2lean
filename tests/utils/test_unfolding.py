@@ -26,6 +26,7 @@ class TestUnfolding(unittest.TestCase):
             "a, b": (["a", "b"], [","]),
             "a, b, c": (["a", "b", "c"], [",", ","]),
             "hello, world": (["hello", "world"], [","]),
+            "x_1 , x_2 , x_3": (["x_1", "x_2", "x_3"], [",", ","]),
         }
         
         for input, (expected_elements, expected_separators) in tests.items():
