@@ -22,8 +22,15 @@ def unfold(pattern: str, string: str) -> tuple[list[str], list[str]]:
     
     # adding the first element
     elements.append(match.group(2).strip())
+    
+    # case for no second part (only 1 element)
+    if match.group(3) == None:
+        return elements, separators
+    
+    # adding the separator
     separators.append(match.group(3).strip())
     
+    # matching the second part
     if re.fullmatch(pattern, match.group(4)) == None:
         # no more unfolding
         elements.append(match.group(4).strip())
