@@ -115,8 +115,8 @@ class Latex2LeanMath:
 
             # add last element of function
             self.result_string += next_function.separators[i + 1]
-
-            position = self.function_replacement(next_end_end)
+            
+            position = self.function_replacement(position)
             return position
 
         raise Exception(f"Should not happen - Latex2LeanMath.function_replacement")
@@ -193,4 +193,4 @@ class Latex2LeanMath:
         return self.result_string
 
 if __name__ == "__main__":
-    print(Latex2LeanMath(r"\sqrt{a}").result())
+    print(Latex2LeanMath(r"\sqrt{\frac{a}{b+1}}").result())

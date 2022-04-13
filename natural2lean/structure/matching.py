@@ -6,6 +6,11 @@ class Matching:
     __pattern: str = None
 
     def __init__(self, string: str) -> None:
+        """Initialises the instance.
+
+        Args:
+            string (str): content that was matched.
+        """
         self.string = string
         self.contents = []
         raise NotImplementedError
@@ -25,6 +30,11 @@ class Matching:
             return None
         return cls.__init__(m.group(1))
     
+    def get_contents(self) -> None:
+        """Matches recursively to extract the contents.
+        """
+        raise NotImplementedError
+
     def translate(self) -> str:
         """Translates the instance and its contents into the lean4 equivalent.
 

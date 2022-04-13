@@ -26,6 +26,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"e^{a}": r"e ^ (a)",
             r"e^{3+2}": r"e ^ (3 + 2)",
             r"\frac{\sqrt{a}}{b+2}^{c+1}": r"((((a)^(1/2))) / (b + 2)) ^ (c + 1)",
+            r"\sqrt{\frac{a}{b}}": r"((((a) / (b)))^(1 / 2))",
         }
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()

@@ -1,4 +1,4 @@
-from natural2lean.structure import Matching
+from ..structure import Matching
 
 
 class Expression(Matching):

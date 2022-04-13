@@ -1,6 +1,6 @@
 from __future__ import annotations
-from natural2lean.structure import Matching
-from natural2lean.math_mode import Latex2LeanMath
+from ..structure import Matching
+from .translate_math import Latex2LeanMath
 import re
 
 
