@@ -1,8 +1,8 @@
 import unittest
-from natural2lean.utils import Latex2LeanMath
+from natural2lean.utils import translate_latex_math
 
 
-class TestLatex2LeanMath(unittest.TestCase):
+class TestTranslateLatexMath(unittest.TestCase):
     def test_symbol_replacement(self):
         tests = {
             r"a \mod b": r"a % b",
@@ -18,7 +18,7 @@ class TestLatex2LeanMath(unittest.TestCase):
         }
 
         for input, expected in tests.items():
-            result = str(Latex2LeanMath(input))
+            result = translate_latex_math(input)
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_function_replacement(self):
@@ -35,7 +35,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"x_{12}": r"x_12",
         }
         for input, expected in tests.items():
-            result = str(Latex2LeanMath(input))
+            result = translate_latex_math(input)
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_implicit_operations(self):
@@ -52,7 +52,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"2 a b": r"2 * a b",
         }
         for input, expected in tests.items():
-            result = str(Latex2LeanMath(input))
+            result = translate_latex_math(input)
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_general(self):
@@ -61,7 +61,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"a, b \in \{1, 2, 3\}": r"a, b ∈ __SET__[1, 2, 3]",
         }
         for input, expected in tests.items():
-            result = str(Latex2LeanMath(input))
+            result = translate_latex_math(input)
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
 

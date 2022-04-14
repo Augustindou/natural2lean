@@ -4,7 +4,7 @@ import re
 # TODO : how to handle x_{1 2} and x_{1, 2} ? (not useful for proof of concept)
 
 """Translate Math
-This whole file is dedicated to the translation of math from latex to lean. The translation can be done by calling `Latex2LeanMath(latex_string).result()`. It can be extended to handle other operations, in different ways.
+This whole file is dedicated to the translation of math from latex to lean. The translation can be done by calling `translate_latex_math(latex_string)`. It can be extended to handle other operations, in different ways.
 
 - `LATEX_SYMBOLS` : dict[str, str]
     - keys : latex symbols
@@ -79,7 +79,7 @@ IMPLICIT_OPERATIONS = {
 
 
 class Latex2LeanMath:
-    """Translation from LaTeX math (`a\\frac{a + 1}{b^2}`) to lean4 math (`a * ((a+1) / (b^2))`) can be done by calling `str(Latex2LeanMath(latex_string))`"""
+    """Translation from LaTeX math (`a\\frac{a + 1}{b^2}`) to lean4 math (`a * ((a+1) / (b^2))`) can be done by calling `str(Latex2LeanMath(latex_string))` or simply `translate_latex_math(latex_string)`"""
 
     def __init__(self, latex_string: str) -> None:
         self.latex_string = latex_string
@@ -235,3 +235,7 @@ class Latex2LeanMath:
 
     def __str__(self) -> str:
         return self.result_string
+
+
+def translate_latex_math(latex_string: str) -> str:
+    return str(Latex2LeanMath(latex_string))

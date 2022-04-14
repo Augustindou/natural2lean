@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..structure.matching import Matching
-from ..utils.translate_math import Latex2LeanMath
+from ..utils.translate_math import translate_latex_math
 from .equation import Equation
 from .expression import Expression
 from .multiple_identifiers import MultipleIdentifiers
@@ -28,7 +28,7 @@ class Math(Matching):
     pattern: str = r"\s*\${1,2}\s*(.+?)\s*\${1,2}\s*"
 
     def __init__(self, string: str) -> None:
-        super().__init__(str(Latex2LeanMath(string)))
+        super().__init__(translate_latex_math(string))
 
     def set_contents(
         self,
