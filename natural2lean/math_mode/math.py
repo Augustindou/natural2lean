@@ -9,6 +9,7 @@ import re
 
 # TODO : either ' $ [...] $ ' or ' $$ [...] $$ ', but not ' $ [...] $$ '
 
+
 class Math(Matching):
     """Math class.
     A Math block is anything that's in math mode in LaTeX. `natural2lean.structure.matching` contains useful information to understand the interactions between classes.
@@ -29,26 +30,22 @@ class Math(Matching):
     def __init__(self, string: str) -> None:
         super().__init__(Latex2LeanMath(string).result())
 
-    def set_contents(self) -> None:
-        # match for equation
-        equation = Equation.match(self.string)
-        if equation != None:
-            self.content = equation
-            return
-        
-        # match for expression
-        expression = Expression.match(self.string)
-        if expression != None:
-            self.content = expression
-            return
-        
-        # match for identifiers
-        identifiers = MultipleIdentifiers.match(self.string)
-        if identifiers != None:
-            self.content = identifiers
-            return
-        
-        raise ValueError(f"No match found for {self.string}")
+    def set_contents(
+        self,
+        possible_subtypes: tuple[Matching] = (
+            Equation,
+            Expression,
+            MultipleIdentifiers,
+        ),
+    ) -> None:
+        for poss in possible_subtypes:
+            content = poss.match(self.string)
+            if content != None:
+                self.content = content
+
+        raise ValueError(
+            f"No match found for {self.string}, tested {', '.join([poss.__name__ for poss in possible_subtypes])}"
+        )
 
     def translate(self) -> str:
         raise NotImplementedError

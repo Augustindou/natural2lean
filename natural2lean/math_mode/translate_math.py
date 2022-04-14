@@ -20,6 +20,7 @@ This whole file is dedicated to the translation of math from latex to lean. The 
     - `separators` : list[str], the separators before, between and after the arguments of the LaTeX function.
 """
 
+
 @dataclass
 class LatexFunction:
     pattern: str
@@ -44,6 +45,13 @@ LATEX_SYMBOLS = {
     r"\geq": r"≥",
     r"\lt": r"<",
     r"\gt": r">",
+    # for sets
+    r"\in": r"∈",
+    r"\mathbb{N}": r"ℕ",
+    r"\mathbb{Z}": r"ℤ",
+    r"\mathbb{Q}": r"ℚ",
+    r"\mathbb{R}": r"ℝ",
+    r"\mathbb{C}": r"ℂ",
 }
 LATEX_FUNCTIONS = [
     # watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)
@@ -51,6 +59,7 @@ LATEX_FUNCTIONS = [
     LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1 / 2))"]),
     LatexFunction(r"\^ *{", 1, ["^(", ")"]),
     LatexFunction(r"_ *{", 1, ["_", ""]),
+    LatexFunction(r"∈ *{", 1, ["∈ __SET__[", "]"]),
 ]
 IMPLICIT_OPERATIONS = {
     # 2(x + y) -> 2 * (x + y)
@@ -61,20 +70,18 @@ IMPLICIT_OPERATIONS = {
     r"(?:^|\W)\d+ *( *[a-zA-Z]\w* *)": "*",
     # (x + y)(z + w) -> (x + y) * (z + w)
     r"\) *(\()": "*",
-    # 2 \sqrt(a) -> 2 ((a) ^ (1 / 2))
-    r"\w *(\\)": "*",
 }
 
 
 class Latex2LeanMath:
-    """Translation from LaTeX math (`a\\frac{a + 1}{b^2}`) to lean4 math (`a * ((a+1) / (b^2))`) can be done by calling `str(Latex2LeanMath(latex_string))`
-    """
+    """Translation from LaTeX math (`a\\frac{a + 1}{b^2}`) to lean4 math (`a * ((a+1) / (b^2))`) can be done by calling `str(Latex2LeanMath(latex_string))`"""
+
     def __init__(self, latex_string: str) -> None:
         self.latex_string = latex_string
         self.result_string = ""
         self.symbol_replacement()
-        self.implicit_operations()
         self.function_replacement()
+        self.implicit_operations()
 
     def symbol_replacement(self):
         for k, v in LATEX_SYMBOLS.items():
@@ -87,7 +94,7 @@ class Latex2LeanMath:
         next_start_start, next_start_end = self.get_next_start(position)
         next_end_start, next_end_end = self.get_next_end(position)
 
-        # no function
+        # no function or arg
         if (
             next_function == None
             and next_start_start == None
@@ -157,7 +164,7 @@ class Latex2LeanMath:
 
             # match all patterns
             for pattern, operation in IMPLICIT_OPERATIONS.items():
-                match_pattern = re.search(pattern, self.latex_string)
+                match_pattern = re.search(pattern, self.result_string)
 
                 # if no match
                 if match_pattern == None:
@@ -169,10 +176,10 @@ class Latex2LeanMath:
                 right_term = match_pattern.groups()[-1]
                 position = end - len(right_term)
 
-                self.latex_string = (
-                    self.latex_string[:position]
+                self.result_string = (
+                    self.result_string[:position]
                     + operation
-                    + self.latex_string[position:]
+                    + self.result_string[position:]
                 )
 
     def get_next_function(self, position: int) -> tuple[int, int, LatexFunction]:
@@ -223,10 +230,6 @@ class Latex2LeanMath:
 
     def result(self) -> str:
         return self.result_string
-    
+
     def __str__(self) -> str:
         return self.result_string
-
-
-if __name__ == "__main__":
-    print(Latex2LeanMath(r"x_{12}").result())

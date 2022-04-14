@@ -12,6 +12,9 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"\bigg(a + b\bigg)": r"(a + b)",
             r"\left(a + b\right)": r"(a + b)",
             r"\left(a + b\right) \cdot \bigg(c \mod 3\bigg)": r"(a + b) * (c % 3)",
+            r"a \in \mathbb{N}": r"a ∈ ℕ",
+            r"a \in \mathbb{Z}": r"a ∈ ℤ",
+            r"a \in \mathbb{R}": r"a ∈ ℝ",
         }
 
         for input, expected in tests.items():
@@ -55,6 +58,7 @@ class TestLatex2LeanMath(unittest.TestCase):
     def test_general(self):
         tests = {
             r"2\frac{a}{b}": r"2 * ((a) / (b))",
+            r"a, b \in {1, 2, 3}": r"a, b ∈ __SET__[1, 2, 3]",
         }
         for input, expected in tests.items():
             result = Latex2LeanMath(input).result()
