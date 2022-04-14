@@ -5,8 +5,9 @@ from ..utils import unfold
 
 # TODO : make variations to only allow increasing / decreasing (in)equalities
 
+
 class Equation(Matching):
-    """Equation class. 
+    """Equation class.
     An equation is a sequence of Expressions (`self.expressions`) separated by comparison operators (`self.operators`). `natural2lean.structure.matching` contains useful information to understand the interactions between classes.
 
     Some examples of Equations (that will be matched) are :
@@ -19,9 +20,10 @@ class Equation(Matching):
     Some more information :
         - The string passed as argument to the constructor must be interpretable by lean4. If it is formatted for LaTex, it has to be processed by `Latex2LeanMath`. See `natural2lean.math_mode.translate_math` for more information.
     """
+
     pattern: str = (
         # opening group
-        r"(" 
+        r"("
         # first term (? allows to match in a non-greedy way)
         r"(.*?)"
         # operators
@@ -34,7 +36,7 @@ class Equation(Matching):
 
     def set_contents(self) -> None:
         elements, separators = unfold(self.pattern, self.string)
-        
+
         self.expressions: list[Expression] = [Expression(e) for e in elements]
         self.operators: list[str] = separators
 

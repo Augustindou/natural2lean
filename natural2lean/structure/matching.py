@@ -3,13 +3,14 @@ import re
 
 
 class Matching:
-    """Matching class.  
-    This is the base class for all the classes that are used in the matching process. 
+    """Matching class.
+    This is the base class for all the classes that are used in the matching process.
 
     Some information :
-        - The `pattern` allows the classmethod `match` to extract information. The `match` method will call the constructor with the first regex group in the `pattern`. 
+        - The `pattern` allows the classmethod `match` to extract information. The `match` method will call the constructor with the first regex group in the `pattern`.
         - The `translate` method returns the `lean4` equivalent of the expression.
     """
+
     pattern: str = None
 
     def __init__(self, string: str) -> None:

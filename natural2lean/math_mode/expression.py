@@ -2,6 +2,7 @@ from ..structure import Matching
 
 # TODO : make the difference between ab and a * b based on the presence or not of identifiers a and b or ab before
 
+
 class Expression(Matching):
     """Expression class.
     An expression is a sequence of Identifiers or numeric values separated by arithmetic operators. `natural2lean.structure.matching` contains useful information to understand the interactions between classes.
@@ -18,6 +19,7 @@ class Expression(Matching):
         - The string passed as argument to the constructor must be interpretable by `lean4`. If it is formatted for LaTex, it has to be processed by `Latex2LeanMath`. See `natural2lean.math_mode.translate_math` for more information.
         - Expressions can also be initialised directly, passing the string of its contents to the constructor (as it is done in `natural2lean.math_mode.equation`).
     """
+
     pattern = (
         # opening group
         r"("
