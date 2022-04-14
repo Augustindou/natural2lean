@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .identifier import Identifier
 from ..utils.unfolding import unfold
 from ..structure import Matching
@@ -38,6 +39,12 @@ class MultipleIdentifiers(Matching):
         elements, separators = unfold(self.pattern, self.string)
 
         self.identifiers: list[Identifier] = [Identifier(e) for e in elements]
+     
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self.identifiers == other.identifiers
+        return False
+
 
 
 class IdentifiersInSet(MultipleIdentifiers):
@@ -46,8 +53,8 @@ class IdentifiersInSet(MultipleIdentifiers):
 
     Some examples of what IdentifiersInSet will match are :
         - a \\in {a, b}
-        - a, b \\in \mathbb{N}
-        - a, b, c, d \\in \mathbb{Z}
+        - a, b \\in \\mathbb{N}
+        - a, b, c, d \\in \\mathbb{Z}
         - ...
 
     Some more information :
@@ -75,3 +82,8 @@ class IdentifiersInSet(MultipleIdentifiers):
         
         # unfold the elements
         self.identifiers = MultipleIdentifiers(match.group(2)).identifiers
+    
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self.identifiers == other.identifiers and self.relation_to_set == other.relation_to_set and self.set == other.set
+        return False

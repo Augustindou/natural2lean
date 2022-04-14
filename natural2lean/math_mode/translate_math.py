@@ -228,8 +228,5 @@ class Latex2LeanMath:
 
         return next_start_start, next_start_end
 
-    def result(self) -> str:
-        return self.result_string
-
     def __str__(self) -> str:
         return self.result_string

@@ -33,3 +33,9 @@ class Expression(Matching):
 
     def translate(self) -> str:
         return self.string
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            # not considering differences between (x + y) and (x+y)
+            return self.string.replace(" ", "") == other.string.replace(" ", "")
+        return False

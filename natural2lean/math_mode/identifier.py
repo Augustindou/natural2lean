@@ -6,3 +6,7 @@ class Identifier(Matching):
 
     pattern: str = r" *([a-zA-Z]\w*) *"
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self.string == other.string
+        return False

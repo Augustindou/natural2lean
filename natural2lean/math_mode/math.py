@@ -28,7 +28,7 @@ class Math(Matching):
     pattern: str = r" *\${1,2} *(.+?) *\${1,2} *"
 
     def __init__(self, string: str) -> None:
-        super().__init__(Latex2LeanMath(string).result())
+        super().__init__(str(Latex2LeanMath(string)))
 
     def set_contents(
         self,
@@ -49,6 +49,11 @@ class Math(Matching):
 
     def translate(self) -> str:
         raise NotImplementedError
+    
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self.content == other.content
+        return False
 
 
 # TODO : x = ab => x = a * b or x = ab (as a single identifier) => dependent on the presence or not of identifiers a and b or ab before

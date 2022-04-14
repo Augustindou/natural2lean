@@ -59,3 +59,8 @@ class Equation(Matching):
         
         # indent complete block
         return indent(calc_block, indentation)
+    
+    def __eq__(self, other) -> bool:
+        if isinstance(other, self.__class__):
+            return self.expressions == other.expressions and self.operators == other.operators
+        return False

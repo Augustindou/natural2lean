@@ -18,7 +18,7 @@ class TestLatex2LeanMath(unittest.TestCase):
         }
 
         for input, expected in tests.items():
-            result = Latex2LeanMath(input).result()
+            result = str(Latex2LeanMath(input))
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_function_replacement(self):
@@ -35,7 +35,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"x_{12}": r"x_12",
         }
         for input, expected in tests.items():
-            result = Latex2LeanMath(input).result()
+            result = str(Latex2LeanMath(input))
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_implicit_operations(self):
@@ -52,7 +52,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"2 a b": r"2 * a b",
         }
         for input, expected in tests.items():
-            result = Latex2LeanMath(input).result()
+            result = str(Latex2LeanMath(input))
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
     def test_general(self):
@@ -61,7 +61,7 @@ class TestLatex2LeanMath(unittest.TestCase):
             r"a, b \in {1, 2, 3}": r"a, b ∈ __SET__[1, 2, 3]",
         }
         for input, expected in tests.items():
-            result = Latex2LeanMath(input).result()
+            result = str(Latex2LeanMath(input))
             self.assertEqual(result.replace(" ", ""), expected.replace(" ", ""))
 
 
