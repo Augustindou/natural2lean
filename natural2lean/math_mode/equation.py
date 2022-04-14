@@ -20,7 +20,7 @@ class Equation(Matching):
         - ...
 
     Some more information :
-        - The string passed as argument to the constructor must be interpretable by lean4. If it is formatted for LaTex, it has to be processed by `Latex2LeanMath`. See `natural2lean.math_mode.translate_math` for more information.
+        - The string passed as argument to the constructor must be interpretable by lean4. If it is formatted for LaTex, it has to be processed by `Latex2LeanMath`. See `natural2lean.utils.translate_math` for more information.
     """
 
     pattern: str = (

@@ -1,5 +1,5 @@
 import unittest
-from natural2lean.math_mode import Latex2LeanMath
+from natural2lean.utils import Latex2LeanMath
 
 
 class TestLatex2LeanMath(unittest.TestCase):

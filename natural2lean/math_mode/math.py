@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from ..structure.matching import Matching
-from .translate_math import Latex2LeanMath
+from ..utils.translate_math import Latex2LeanMath
 from .equation import Equation
 from .expression import Expression
 from .multiple_identifiers import MultipleIdentifiers
