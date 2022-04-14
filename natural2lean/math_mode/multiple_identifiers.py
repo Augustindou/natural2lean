@@ -1,6 +1,7 @@
 from .identifier import Identifier
 from ..utils.unfolding import unfold
 from ..structure import Matching
+import re
 
 
 class MultipleIdentifiers(Matching):
@@ -39,7 +40,7 @@ class MultipleIdentifiers(Matching):
         self.identifiers: list[Identifier] = [Identifier(e) for e in elements]
 
 
-class IdentifiersInSet(Matching):
+class IdentifiersInSet(MultipleIdentifiers):
     """IdentifiersInSet class.
     Variation of the MultipleIdentifiers, allows to match identifiers as part of a set. Identifiers will be available in `self.identifiers`.
 
@@ -55,9 +56,9 @@ class IdentifiersInSet(Matching):
 
     pattern: str = (
         # same as MultipleIdentifiers
-        r"( *([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)"
+        r"( *(([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *))"
         # match keyword for inclusion (can be adapted / extended for other notations)
-        r"(\\in)"
+        r"(∈)"
         # the set
         r"(.*)"
         # closing group
@@ -65,11 +66,11 @@ class IdentifiersInSet(Matching):
     )
 
     def set_contents(self) -> None:
-        elements, separators = unfold(self.pattern, self.string)
-
-        self.identifiers: list[Identifier] = [Identifier(e) for e in elements]
-
-    # TODO : match recursively (set_contents should match MultipleIdentifiers, then Identifier and then flatten the list)
-    # MultipleIdentifiers should return identifier, identifier, identifier, ...
-    # with return identifier, next_identifiers.set_contents and then flatten the list ?
-    # TODO : case with a, b \in (...)
+        match = re.fullmatch(self.pattern, self.string)
+        
+        # related to set
+        self.relation_to_set = match.group(6).strip()
+        self.set = match.group(7).strip() # TODO : Set class
+        
+        # unfold the elements
+        self.identifiers = MultipleIdentifiers(match.group(2)).identifiers
