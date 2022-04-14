@@ -39,12 +39,11 @@ class MultipleIdentifiers(Matching):
         elements, separators = unfold(self.pattern, self.string)
 
         self.identifiers: list[Identifier] = [Identifier(e) for e in elements]
-     
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return self.identifiers == other.identifiers
         return False
-
 
 
 class IdentifiersInSet(MultipleIdentifiers):
@@ -74,16 +73,20 @@ class IdentifiersInSet(MultipleIdentifiers):
 
     def set_contents(self) -> None:
         match = re.fullmatch(self.pattern, self.string)
-        
+
         # set
         self.relation_to_set = match.group(6).strip()
         # TODO : Set class
-        self.set = match.group(7).strip() 
-        
+        self.set = match.group(7).strip()
+
         # unfold the elements
         self.identifiers = MultipleIdentifiers(match.group(2)).identifiers
-    
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
-            return self.identifiers == other.identifiers and self.relation_to_set == other.relation_to_set and self.set == other.set
+            return (
+                self.identifiers == other.identifiers
+                and self.relation_to_set == other.relation_to_set
+                and self.set == other.set
+            )
         return False

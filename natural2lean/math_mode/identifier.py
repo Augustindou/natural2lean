@@ -8,5 +8,5 @@ class Identifier(Matching):
 
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
-            return self.string == other.string
+            return self.string.strip() == other.string.strip()
         return False

@@ -21,6 +21,7 @@ class Matching:
         """
         self.string = string
         self.set_contents()
+        self.detect_errors()
 
     @classmethod
     def match(cls, string: str) -> Matching:
@@ -35,10 +36,14 @@ class Matching:
         m = re.fullmatch(cls.pattern, string)
         if m == None:
             return None
-        return cls.__init__(m.group(1))
+        return cls(m.group(1))
 
     def set_contents(self):
         """Extract the contents of a concept. The `set_contents` method should only be called from the constructor and should have access to `self.string`."""
+        pass
+
+    def detect_errors(self):
+        """Detects errors in the instance. The `detect_errors` method should only be called after `set_contents`."""
         pass
 
     def translate(self) -> str:

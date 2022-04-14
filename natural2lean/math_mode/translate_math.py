@@ -56,7 +56,7 @@ LATEX_SYMBOLS = {
 LATEX_FUNCTIONS = [
     # watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)
     LatexFunction(r"\\frac *{", 2, ["((", ") / (", "))"]),
-    LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1 / 2))"]),
+    LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1/2))"]),
     LatexFunction(r"\^ *{", 1, ["^(", ")"]),
     LatexFunction(r"_ *{", 1, ["_", ""]),
     LatexFunction(r"∈ *{", 1, ["∈ __SET__[", "]"]),

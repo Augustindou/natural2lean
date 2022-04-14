@@ -41,9 +41,34 @@ class Equation(Matching):
         self.expressions: list[Expression] = [Expression(e) for e in elements]
         self.operators: list[str] = separators
 
+    def detect_errors(self):
+        # check for more than one inequality
+        if re.fullmatch(r".*≠.*≠.*", self.string):
+            raise ValueError(
+                f"Only one inequality sign is allowed to conclude anything about the left- and rightmost terms, but found at least 2 in {self.string}"
+            )
+
+        # check for increasing and decreasing inequalities
+        if re.fullmatch(r".*[<≤].*[≥>].*", self.string) or re.fullmatch(
+            r".*[≥>].*[<≤].*", self.string
+        ):
+            raise ValueError(
+                f"An equation is allowed to increase (</≤/=) or decrease (>/≥/=) to conclude anything about the left- and rightmost terms, but found at least 1 relation operator in each direction in {self.string}"
+            )
+
+        # check for [<>≤≥] and ≠
+        if re.fullmatch(r".*[<>≤≥].*[≠].*", self.string) or re.fullmatch(
+            r".*[≠].*[<>≤≥].*", self.string
+        ):
+            raise ValueError(
+                f"An equation is allowed to be increasing, decreasing or have an inequality sign to conclude anything about the left- and rightmost terms, but found a mix in {self.string}"
+            )
+
+        super().detect_errors()
+
     def translate(self, indentation) -> str:
         # keyword for the beginning
-        tactic = f"calc\n" 
+        tactic = f"calc\n"
         # block
         block = f""
         # 1st line
@@ -53,14 +78,17 @@ class Equation(Matching):
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
             block += f"_ {operator} {expression.translate()}\n"
-        
+
         # format complete (standalone) block
         calc_block = tactic + indent(block)
-        
+
         # indent complete block
         return indent(calc_block, indentation)
-    
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
-            return self.expressions == other.expressions and self.operators == other.operators
+            return (
+                self.expressions == other.expressions
+                and self.operators == other.operators
+            )
         return False

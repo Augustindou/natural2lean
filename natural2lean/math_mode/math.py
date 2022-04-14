@@ -42,6 +42,7 @@ class Math(Matching):
             content = poss.match(self.string)
             if content != None:
                 self.content = content
+                return
 
         raise ValueError(
             f"No match found for {self.string}, tested {', '.join([poss.__name__ for poss in possible_subtypes])}"
@@ -49,7 +50,7 @@ class Math(Matching):
 
     def translate(self) -> str:
         raise NotImplementedError
-    
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return self.content == other.content
