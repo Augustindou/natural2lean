@@ -1,9 +1,10 @@
 import re
+
 from .expression import Expression
 from ..structure import Matching
-from ..utils import unfold
+from ..utils import unfold, indent
 
-# TODO : make variations to only allow increasing / decreasing (in)equalities
+# TODO : make variations to only allow increasing / decreasing (in)equalities ? (not useful for proof of concept)
 
 
 class Equation(Matching):
@@ -24,7 +25,7 @@ class Equation(Matching):
     pattern: str = (
         # opening group
         r"("
-        # first term (? allows to match in a non-greedy way)
+        # first term (? allows to match in a non-greedy way, hence only matching the 1st term)
         r"(.*?)"
         # operators
         r"([=≤≥<>])"
@@ -40,5 +41,21 @@ class Equation(Matching):
         self.expressions: list[Expression] = [Expression(e) for e in elements]
         self.operators: list[str] = separators
 
-    def translate(self) -> str:
-        raise NotImplementedError
+    def translate(self, indentation) -> str:
+        # keyword for the beginning
+        tactic = f"calc\n" 
+        # block
+        block = f""
+        # 1st line
+        block += f"{self.expressions[0].translate()} "
+        block += f"{self.operators[0]} "
+        block += f"{self.expressions[1].translate()}\n"
+        # next lines
+        for expression, operator in zip(self.expressions[2:], self.operators[1:]):
+            block += f"_ {operator} {expression.translate()}\n"
+        
+        # format complete (standalone) block
+        calc_block = tactic + indent(block)
+        
+        # indent complete block
+        return indent(calc_block, indentation)

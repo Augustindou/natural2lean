@@ -21,7 +21,7 @@ theorem square_mod_3 (q : Nat) : (¬divisible 3 q) → (q^2 % 3 = 1) := by
       have ⟨k, hk⟩ := q_rewrite
       have q_square : q^2 = 3 * (3 * k^2 + 2 * k) + 1  := by 
         calc
-          q^2 = (3 * k + 1)^2 := by rw [hk]
+          q^2 = (3 * k + 1)^2 := by try rw [hk]; try ring
           _ = 9 * k^2 + 6 * k + 1 := by ring
           _ = 3 * (3 * k^2 + 2 * k) + 1 := by ring
       exact mod_rewrite.mpr ⟨3 * k^2 + 2 * k, by assumption⟩

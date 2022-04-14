@@ -6,4 +6,3 @@ class Identifier(Matching):
 
     pattern: str = r" *([a-zA-Z]\w*) *"
 
-    # TODO : case with a \in (...)

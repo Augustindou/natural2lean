@@ -7,7 +7,7 @@ from .expression import Expression
 from .multiple_identifiers import MultipleIdentifiers
 import re
 
-# TODO : either ' $ [...] $ ' or ' $$ [...] $$ ', but not ' $ [...] $$ '
+# TODO : either ' $ [...] $ ' or ' $$ [...] $$ ', but not ' $ [...] $$ ' (not useful for proof of concept)
 
 
 class Math(Matching):
@@ -32,7 +32,7 @@ class Math(Matching):
 
     def set_contents(
         self,
-        possible_subtypes: tuple[Matching] = (
+        possible_subtypes: tuple[type] = (
             Equation,
             Expression,
             MultipleIdentifiers,

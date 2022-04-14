@@ -68,9 +68,10 @@ class IdentifiersInSet(MultipleIdentifiers):
     def set_contents(self) -> None:
         match = re.fullmatch(self.pattern, self.string)
         
-        # related to set
+        # set
         self.relation_to_set = match.group(6).strip()
-        self.set = match.group(7).strip() # TODO : Set class
+        # TODO : Set class
+        self.set = match.group(7).strip() 
         
         # unfold the elements
         self.identifiers = MultipleIdentifiers(match.group(2)).identifiers
