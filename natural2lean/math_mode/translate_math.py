@@ -52,6 +52,11 @@ LATEX_SYMBOLS = {
     r"\mathbb{Q}": r"ℚ",
     r"\mathbb{R}": r"ℝ",
     r"\mathbb{C}": r"ℂ",
+    # to allow for sets such as a, b \in \{a, b\}
+    r"\{": r"{",
+    r"\}": r"}",
+    # remove new lines
+    "\n": "",
 }
 LATEX_FUNCTIONS = [
     # watch out for special regex characters (^, $, ., ?, *, +, |, (, ), [, ], {, }, \)

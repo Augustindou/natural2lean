@@ -25,7 +25,7 @@ class Math(Matching):
         - TODO
     """
 
-    pattern: str = r" *\${1,2} *(.+?) *\${1,2} *"
+    pattern: str = r"\s*\${1,2}\s*(.+?)\s*\${1,2}\s*"
 
     def __init__(self, string: str) -> None:
         super().__init__(str(Latex2LeanMath(string)))

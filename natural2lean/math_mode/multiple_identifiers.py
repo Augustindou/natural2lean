@@ -51,7 +51,7 @@ class IdentifiersInSet(MultipleIdentifiers):
     Variation of the MultipleIdentifiers, allows to match identifiers as part of a set. Identifiers will be available in `self.identifiers`.
 
     Some examples of what IdentifiersInSet will match are :
-        - a \\in {a, b}
+        - a \\in \\{a, b\\}
         - a, b \\in \\mathbb{N}
         - a, b, c, d \\in \\mathbb{Z}
         - ...

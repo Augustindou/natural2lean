@@ -66,7 +66,7 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self, indentation) -> str:
+    def translate(self, indentation, proof: None) -> str:
         # keyword for the beginning
         tactic = f"calc\n"
         # block
@@ -74,10 +74,14 @@ class Equation(Matching):
         # 1st line
         block += f"{self.expressions[0].translate()} "
         block += f"{self.operators[0]} "
-        block += f"{self.expressions[1].translate()}\n"
+        block += f"{self.expressions[1].translate()}"
+        # proof of 1st line
+        block += f" := by"
+        block += f"try rw [{proof}];" if proof else ""
+        block += f"try ring\n"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
-            block += f"_ {operator} {expression.translate()}\n"
+            block += f"_ {operator} {expression.translate()} := by ring\n"
 
         # format complete (standalone) block
         calc_block = tactic + indent(block)

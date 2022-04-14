@@ -58,7 +58,7 @@ class TestLatex2LeanMath(unittest.TestCase):
     def test_general(self):
         tests = {
             r"2\frac{a}{b}": r"2 * ((a) / (b))",
-            r"a, b \in {1, 2, 3}": r"a, b ∈ __SET__[1, 2, 3]",
+            r"a, b \in \{1, 2, 3\}": r"a, b ∈ __SET__[1, 2, 3]",
         }
         for input, expected in tests.items():
             result = str(Latex2LeanMath(input))
