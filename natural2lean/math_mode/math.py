@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..structure import Matching
+from ..structure.matching import Matching
 from .translate_math import Latex2LeanMath
 from .equation import Equation
 from .expression import Expression

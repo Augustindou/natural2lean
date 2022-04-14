@@ -1,7 +1,7 @@
 from __future__ import annotations
-from .identifier import Identifier
 from ..utils.unfolding import unfold
-from ..structure import Matching
+from ..structure.matching import Matching
+from .identifier import Identifier
 import re
 
 

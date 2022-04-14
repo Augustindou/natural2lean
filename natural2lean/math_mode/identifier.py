@@ -1,4 +1,4 @@
-from ..structure import Matching
+from ..structure.matching import Matching
 
 
 class Identifier(Matching):

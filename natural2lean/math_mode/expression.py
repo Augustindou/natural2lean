@@ -1,4 +1,4 @@
-from ..structure import Matching
+from ..structure.matching import Matching
 
 # TODO : make the difference between ab and a * b based on the presence or not of identifiers a and b or ab before
 

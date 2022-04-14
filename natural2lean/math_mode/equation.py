@@ -1,8 +1,9 @@
 import re
 
 from .expression import Expression
-from ..structure import Matching
-from ..utils import unfold, indent
+from ..structure.matching import Matching
+from ..utils.unfolding import unfold
+from ..utils.indentation import indent
 
 # TODO : make variations to only allow increasing / decreasing (in)equalities ? (not useful for proof of concept)
 
