@@ -6,6 +6,7 @@ from .matching import Matching
 # TODO : Modify Theorem to match with 'lemma' or 'theorem' keywords (or others ?).
 # TODO : Modify Theorem to possibly match just a proposition, not necessarily an implication.
 
+
 class Theorem(Matching):
     """Theorem class.
     Theorem matches needs the "theorem" keyword, followed by a name, followed by the content of the theorem (an implication).
@@ -20,6 +21,7 @@ class Theorem(Matching):
     Some more information :
         - TODO
     """
+
     # ([Tt]heorem\s*(.*):\s*((?:.|\s)*?))\n\s*?\n\s*
     pattern: str = (
         # opening group
