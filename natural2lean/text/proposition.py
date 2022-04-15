@@ -1,13 +1,13 @@
-from ..structure.matching import Matching
+from ..structure.matching import Unmatchable
 
 
-class Proposition(Matching):
-    # TODO !
-    pass
+class Proposition(Unmatchable):
+    """Proposition class.
 
-    # TODO : Modify classmethod match() to accept
-        # $ a, b, c $ are integers
-        # but not
-        # $ a,
-        # to allow us to use the comma to separate multiple propostions 
-    # TODO : better to do that in an utils file ? (similar to unfolding.py)
+    Some more information :
+        - TODO
+    """
+
+    def set_contents(self):
+        # TODO
+        pass

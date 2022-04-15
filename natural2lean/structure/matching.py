@@ -53,3 +53,16 @@ class Matching:
             str: the lean4 equivalent of the instance.
         """
         raise NotImplementedError
+
+
+class Unmatchable(Matching):
+    """Unmatchable class.
+    Class that overrides the `match` classmethod to raise an exception if `.match` is called.
+    """
+
+    @classmethod
+    def match(cls, string: str):
+        """Raises an exception, should not be called in classes inheriting from `Unmatchable`."""
+        raise Exception(
+            f"{cls.__name__}.match(string) should not be called, use {cls.__name__}(string) to create a new instance. {cls.__name__} inherits this behavior from Unmatchable."
+        )
