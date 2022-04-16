@@ -5,18 +5,18 @@ from natural2lean.math_mode import Math, Expression, Identifier
 class TestMath(unittest.TestCase):
     def test_simple_matched(self):
         # identifiers
-        self.assertEqual(Math.match("$x$"), Math("x"))
-        self.assertEqual(Math.match("$x,y $"), Math("x, y"))
+        self.assertEqual(Math.match("$x$"), Math("$$x$$"))
+        self.assertEqual(Math.match("$x,y $"), Math("$x, y$"))
         # expressions
-        self.assertEqual(Math.match("$a+b$"), Math("a+b"))
-        self.assertEqual(Math.match("$\\frac{1}{2}$"), Math("((1)/(2))"))
+        self.assertEqual(Math.match("$a+b$"), Math("$a+b$"))
+        self.assertEqual(Math.match("$\\frac{1}{2}$"), Math("$((1)/(2))$"))
         self.assertEqual(
-            Math.match("$\\frac{1}{2}+\\sqrt{1}$"), Math("((1)/(2))+((1)^(1/2))")
+            Math.match("$\\frac{1}{2}+\\sqrt{1}$"), Math("$((1)/(2))+((1)^(1/2))$")
         )
         # equations
-        self.assertEqual(Math.match("$a = b$"), Math("a = b"))
-        self.assertEqual(Math.match("$a+b ≤ c+1$"), Math("a+b ≤ c+1"))
-        self.assertEqual(Math.match("$a = b > c ≥ d$"), Math("a = b > c ≥ d"))
+        self.assertEqual(Math.match("$a = b$"), Math("$$a = b$$"))
+        self.assertEqual(Math.match("$a+b ≤ c+1$"), Math("$$a+b ≤ c+1$$"))
+        self.assertEqual(Math.match("$a = b > c ≥ d$"), Math("$a = b > c ≥ d$"))
 
     def test_contents(self):
         # identifiers

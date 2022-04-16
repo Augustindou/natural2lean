@@ -46,18 +46,20 @@ class MultipleIdentifiers(Matching):
         return False
 
 
+# TODO : case for $ a \in \{1, 2, 3\} $
+
 class IdentifiersInSet(MultipleIdentifiers):
     """IdentifiersInSet class.
     Variation of the MultipleIdentifiers, allows to match identifiers as part of a set. Identifiers will be available in `self.identifiers`.
 
     Some examples of what IdentifiersInSet will match are :
-        - a \\in \\{a, b\\}
-        - a, b \\in \\mathbb{N}
-        - a, b, c, d \\in \\mathbb{Z}
+        - a ∈ __SET__[1, 2, 3]
+        - a, b ∈ ℕ
+        - a, b, c, d ∈ ℤ
         - ...
 
     Some more information :
-        - TODO
+        - The intermediate representation (a, b ∈ ℕ) can be obtained by applying `natural2lean.utils.translate_math.translate_latex_math()` to the latex string (a, b \in \mathbb{N}).
     """
 
     pattern: str = (
@@ -76,7 +78,7 @@ class IdentifiersInSet(MultipleIdentifiers):
 
         # set
         self.relation_to_set = match.group(6).strip()
-        # TODO : Set class
+        # TODO : Set class ?
         self.set = match.group(7).strip()
 
         # unfold the elements

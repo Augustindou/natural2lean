@@ -4,7 +4,7 @@ from ..structure.matching import Matching
 from ..utils.translate_math import translate_latex_math
 from .equation import Equation
 from .expression import Expression
-from .multiple_identifiers import MultipleIdentifiers
+from .multiple_identifiers import MultipleIdentifiers, IdentifiersInSet
 import re
 
 # TODO : either ' $ [...] $ ' or ' $$ [...] $$ ', but not ' $ [...] $$ ' (not useful for proof of concept)
@@ -25,31 +25,43 @@ class Math(Matching):
         - TODO
     """
 
-    pattern: str = r"\s*\${1,2}\s*(.+?)\s*\${1,2}\s*"
+    pattern: str = r"\s*(\${1,2}\s*(.+?)\s*\${1,2})\s*"
 
-    def __init__(self, string: str) -> None:
-        super().__init__(translate_latex_math(string))
-
-    def set_contents(
-        self,
-        possible_subtypes: tuple[type] = (
+    def set_contents(self) -> None:
+        possible_subtypes: tuple[type[Matching]] = [
             Equation,
             Expression,
             MultipleIdentifiers,
-        ),
-    ) -> None:
+            IdentifiersInSet,
+        ]
+        # rematch
+        match = re.fullmatch(self.pattern, self.string)
+        if match == None:
+            raise ValueError(f"'{self.string}' is not a valid math block.")
+
+        # translate to math understandable by lean
+        self.lean_string = translate_latex_math(match.group(2))
+
+        # subtypes
         for poss in possible_subtypes:
-            content = poss.match(self.string)
+            content = poss.match(self.lean_string)
             if content != None:
-                self.content = content
+                self.content: Matching = content
                 return
 
         raise ValueError(
-            f"No match found for {self.string}, tested {', '.join([poss.__name__ for poss in possible_subtypes])}"
+            f"No match found for {self.lean_string}, tested {', '.join([poss.__name__ for poss in possible_subtypes])}"
         )
 
+    def detect_errors(self):
+        # different number of $ on each side
+        if self.string.count("$") % 2 == 1:
+            raise ValueError(
+                f"Number of dollar signs on left and right side should be equal, but found different in {self.string}."
+            )
+
     def translate(self) -> str:
-        raise NotImplementedError
+        return self.content.translate()
 
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):

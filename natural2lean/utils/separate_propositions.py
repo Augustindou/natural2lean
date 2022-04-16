@@ -10,7 +10,18 @@ VALIDITY_CHECKS = [
     lambda s: s.count("$$") % 2 == 0,
     # no single identifier (avoid separating $a$ and $b$ are integers)
     lambda s: re.fullmatch(Identifier.pattern, s.strip("$ ")) == None,
+    # TODO : $a$, $b$ and $c$ are integers
 ]
+REPLACEMENTS = {
+    r"\$ *and *\$": ", ",
+    r"\$ *, *\$": ", ",
+}
+SETS = {
+    "natural": r"\mathbb{N}",
+}
+FUNCTIONS = {
+    "even": "even",
+}
 
 
 def separate_propositions(string: str):
@@ -33,6 +44,30 @@ def separate_propositions(string: str):
             yield string[last_stop:start]
             last_stop = stop
 
+
+def split_proposition(string: str):
+    """Splits a proposition ($a$ and $b$ are even natural numbers) into multiple propositions ($a \\in \\mathbb{N}$, $b \\in \\mathbb{N}$).
+
+    Args:
+        string (str): input proposition
+    """
+    # get set(s?) associated to the proposition
+    # get the functions associated to the proposition
+    # find a way to return the functions (and the sets) associated to the proposition
+    #           L=> Have a class "math concept" returning the good representation when calling .translate() ?
+
+def apply_replacements(string: str):
+    """Groups identifiers ($a$ and $b$) into a single math mode ($a, b$).
+    
+    Args:
+        string (str): the input string
+    """
+    for pattern, replacement in REPLACEMENTS.items():
+        while (match := re.search(pattern, string)) != None:
+            string = string[:match.start()] + replacement + string[match.end():]
+
+    
+    
 
 def is_valid(string: str):
     """Checks if the string is valid (according to VALIDITY_CHECKS).

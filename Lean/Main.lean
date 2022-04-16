@@ -1,4 +1,4 @@
 import LeanUtils
 
-def main : IO Unit :=
-  IO.println s!"Hello, {hello}!"
+theorem tests (a b : Nat) (c : Nat) : a + b = c :=
+  sorry

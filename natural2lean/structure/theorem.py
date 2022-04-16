@@ -53,3 +53,5 @@ class Theorem(Matching):
 
         # content
         self.statement = Implication.match(match.group(3))
+        if self.statement is None:
+            raise ValueError(f"Could not match an Implication in {match.group(3)}.")

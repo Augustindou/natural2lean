@@ -67,7 +67,8 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self, indentation, proof: None) -> str:
+    def translate(self, indentation, proof=None) -> str:
+        # TODO : proof ?
         # keyword for the beginning
         tactic = f"calc\n"
         # block
