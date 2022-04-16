@@ -1,6 +1,6 @@
 import re
 
-from natural2lean.text.multiple_propositions import MultiplePropostions
+from natural2lean.text.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching
 
 
@@ -29,9 +29,9 @@ class Implication(Matching):
             )
 
         # hypotheses
-        self.hypotheses = MultiplePropostions(match.group(2).strip(" ,.;"))
+        self.hypotheses = MultiplePropositions(match.group(2).strip(" ,.;"))
         # theses (can be multiple)
-        self.theses = MultiplePropostions(match.group(3).strip(" ,.;"))
+        self.theses = MultiplePropositions(match.group(3).strip(" ,.;"))
 
 
 # if $m \in \mathbb{N}$ is even, then $m^2$ is even.
