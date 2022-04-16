@@ -1,8 +1,10 @@
 import re
+from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
 
 
-SEPARATORS = [",", "and"]
+# ---------------------- PARAMETERS ----------------------
+
 VALIDITY_CHECKS = [
     # even number of $ signs (avoid splitting inside a math mode)
     lambda s: s.count("$") % 2 == 0,
@@ -10,8 +12,10 @@ VALIDITY_CHECKS = [
     lambda s: s.count("$$") % 2 == 0,
     # no single identifier (avoid separating $a$ and $b$ are integers)
     lambda s: re.fullmatch(Identifier.pattern, s.strip("$ ")) == None,
-    # TODO : $a$, $b$ and $c$ are integers
+    # no multiple identifiers
+    lambda s: MultipleIdentifiers.match(apply_replacements(s).strip("$ ")) == None,
 ]
+SEPARATORS = [",", "and"]
 REPLACEMENTS = {
     r"\$ *and *\$": ", ",
     r"\$ *, *\$": ", ",
@@ -22,6 +26,8 @@ SETS = {
 FUNCTIONS = {
     "even": "even",
 }
+
+# ----------------- SEPARATE PROPOSITIONS -----------------
 
 
 def separate_propositions(string: str):
@@ -51,23 +57,27 @@ def split_proposition(string: str):
     Args:
         string (str): input proposition
     """
+    string = apply_replacements(string)
+
     # get set(s?) associated to the proposition
     # get the functions associated to the proposition
     # find a way to return the functions (and the sets) associated to the proposition
     #           L=> Have a class "math concept" returning the good representation when calling .translate() ?
 
-def apply_replacements(string: str):
+
+def apply_replacements(string: str) -> str:
     """Groups identifiers ($a$ and $b$) into a single math mode ($a, b$).
-    
+
     Args:
         string (str): the input string
     """
     for pattern, replacement in REPLACEMENTS.items():
         while (match := re.search(pattern, string)) != None:
-            string = string[:match.start()] + replacement + string[match.end():]
+            string = string[: match.start()] + replacement + string[match.end() :]
 
-    
-    
+
+# ----------------------- VALIDITY -----------------------
+
 
 def is_valid(string: str):
     """Checks if the string is valid (according to VALIDITY_CHECKS).

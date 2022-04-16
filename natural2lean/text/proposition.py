@@ -11,7 +11,7 @@ class Proposition(Matching):
         # TODO
         # identifier_definitions
         # propositions
-        
+
         # only IdentifierInSet (math_mode) ($ a \in \mathbb{N} $)
         # multiple identifiers ($ a, b $)
         # identifier in set ($a$ is a natural)
