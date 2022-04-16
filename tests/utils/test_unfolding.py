@@ -1,6 +1,7 @@
 import unittest
-from natural2lean.utils import unfold
-from natural2lean.math_mode import Equation, MultipleIdentifiers
+from natural2lean.utils.unfolding import unfold
+from natural2lean.math_mode.equation import Equation
+from natural2lean.math_mode.multiple_identifiers import MultipleIdentifiers
 
 
 class TestUnfolding(unittest.TestCase):

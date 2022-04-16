@@ -1,5 +1,7 @@
 import unittest
-from natural2lean.math_mode import Math, Expression, Identifier
+from natural2lean.math_mode.math import Math
+from natural2lean.math_mode.expression import Expression
+from natural2lean.math_mode.identifier import Identifier
 
 
 class TestMath(unittest.TestCase):

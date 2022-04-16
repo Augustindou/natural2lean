@@ -1,5 +1,5 @@
 import unittest
-from natural2lean.utils import translate_latex_math
+from natural2lean.utils.translate_math import translate_latex_math
 
 
 class TestTranslateLatexMath(unittest.TestCase):

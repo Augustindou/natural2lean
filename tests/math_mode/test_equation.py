@@ -1,5 +1,6 @@
 import unittest
-from natural2lean.math_mode import Equation, Expression
+from natural2lean.math_mode.equation import Equation
+from natural2lean.math_mode.expression import Expression
 
 
 class TestEquation(unittest.TestCase):

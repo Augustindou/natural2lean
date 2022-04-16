@@ -1,5 +1,6 @@
 import unittest
-from natural2lean.math_mode import Identifier, MultipleIdentifiers
+from natural2lean.math_mode.identifier import Identifier
+from natural2lean.math_mode.multiple_identifiers import MultipleIdentifiers
 
 
 class TestIdentifiers(unittest.TestCase):

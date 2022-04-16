@@ -1,6 +1,6 @@
 import re
 
-from natural2lean.text.multiple_propositions import MultiplePropositions
+from .multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching
 
 
