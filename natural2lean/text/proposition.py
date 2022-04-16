@@ -16,3 +16,7 @@ class Proposition(Matching):
         # multiple identifiers ($ a, b $)
         # identifier in set ($a$ is a natural)
         pass
+
+    # TODO : translate to lean
+
+    # TODO : is_identifier_definition

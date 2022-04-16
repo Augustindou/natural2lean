@@ -91,6 +91,24 @@ class Equation(Matching):
         # indent complete block
         return indent(calc_block, indentation)
 
+    def get_strongest_operator(self) -> str:
+        if "≠" in self.operators:
+            return "≠"
+
+        if ">" in self.operators:
+            return ">"
+
+        if "<" in self.operators:
+            return "<"
+
+        if "≤" in self.operators:
+            return "≤"
+
+        if "≥" in self.operators:
+            return "≥"
+
+        return "="
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return (

@@ -1,4 +1,7 @@
 import re
+from typing import Iterable
+
+from ..math_mode.math import Math
 from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
 
@@ -22,6 +25,7 @@ REPLACEMENTS = {
 }
 SETS = {
     "natural": r"\mathbb{N}",
+    "integer": r"\mathbb{Z}",
 }
 FUNCTIONS = {
     "even": "even",
@@ -30,7 +34,7 @@ FUNCTIONS = {
 # ----------------- SEPARATE PROPOSITIONS -----------------
 
 
-def separate_propositions(string: str):
+def separate_propositions(string: str) -> Iterable[str]:
     """Separates multiple propositions (PropA, PropB and PropC).
 
     Args:
@@ -47,11 +51,12 @@ def separate_propositions(string: str):
     last_stop = 0
     for start, stop in separator_spans:
         if is_valid(string[last_stop:start]):
-            yield string[last_stop:start]
+            for proposition in split_proposition(string[last_stop:start]):
+                yield proposition
             last_stop = stop
 
 
-def split_proposition(string: str):
+def split_proposition(string: str) -> Iterable[str]:
     """Splits a proposition ($a$ and $b$ are even natural numbers) into multiple propositions ($a \\in \\mathbb{N}$, $b \\in \\mathbb{N}$).
 
     Args:
@@ -59,10 +64,37 @@ def split_proposition(string: str):
     """
     string = apply_replacements(string)
 
-    # get set(s?) associated to the proposition
-    # get the functions associated to the proposition
-    # find a way to return the functions (and the sets) associated to the proposition
-    #           L=> Have a class "math concept" returning the good representation when calling .translate() ?
+    # match math mode
+    math_match = re.search(Math.pattern, string)
+    if math_match == None:
+        raise Exception("No math content in the proposition")
+    math: Math = Math.match(math_match.group(0))
+
+    # set
+    if math.is_multiple_identifiers():
+        identifiers_set = get_set(string)
+        if identifiers_set != None:
+            yield f"$ {math.latex_string} \\in {identifiers_set} $"
+
+    # functions on identifiers
+    if math.is_multiple_identifiers() or math.is_identifiers_in_set():
+        function = get_function(string)
+        if function != None:
+            for identifier in math.content.identifiers:
+                yield f"{function} $ {identifier.string} $"
+
+    # functions on math expressions
+    if math.is_expression():
+        function = get_function(string)
+        if function != None:
+            yield f"{function} $ {math.latex_string} $"
+
+    # equation (should not have a function associated to it)
+    if math.is_equation():
+        yield f"$ {math.latex_string} $"
+
+
+# -------------------- SMALL FUNCTIONS --------------------
 
 
 def apply_replacements(string: str) -> str:
@@ -76,9 +108,6 @@ def apply_replacements(string: str) -> str:
             string = string[: match.start()] + replacement + string[match.end() :]
 
 
-# ----------------------- VALIDITY -----------------------
-
-
 def is_valid(string: str):
     """Checks if the string is valid (according to VALIDITY_CHECKS).
 
@@ -89,3 +118,36 @@ def is_valid(string: str):
         if not validity_check(string):
             return False
     return True
+
+
+# ------------------ EXTRACT INFORMATION ------------------
+
+
+def get_set(string: str):
+    """Extracts the set associated to the proposition.
+
+    Args:
+        string (str): the input string
+    """
+    matched_set = None
+    for word, set_definition in SETS.items():
+        if word in string:
+            if matched_set != None:
+                raise Exception("Multiple sets in the same proposition")
+            matched_set = set_definition
+    return matched_set
+
+
+def get_function(string: str):
+    """Extracts the function associated to the proposition.
+
+    Args:
+        string (str): the input string
+    """
+    matched_function = None
+    for word, function_definition in FUNCTIONS.items():
+        if word in string:
+            if matched_function != None:
+                raise Exception("Multiple functions in the same proposition")
+            matched_function = function_definition
+    return matched_function

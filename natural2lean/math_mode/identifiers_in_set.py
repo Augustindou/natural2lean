@@ -49,8 +49,10 @@ class IdentifiersInSet(Matching):
                 and self.set == other.set
             )
         return False
-    
+
     def translate(self) -> str:
-        lean_identifiers = " ".join(identifier.translate() for identifier in self.identifiers)
+        lean_identifiers = " ".join(
+            identifier.translate() for identifier in self.identifiers
+        )
         lean_set = self.set.translate()
         return f"({lean_identifiers} : {lean_set})"
