@@ -5,8 +5,6 @@ from ..structure.matching import Matching
 from ..utils.unfolding import unfold
 from ..utils.indentation import indent
 
-# TODO : make variations to only allow increasing / decreasing (in)equalities ? (not useful for proof of concept)
-
 
 class Equation(Matching):
     """Equation class.

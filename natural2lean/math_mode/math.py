@@ -8,8 +8,6 @@ from .multiple_identifiers import MultipleIdentifiers
 from .identifiers_in_set import IdentifiersInSet
 import re
 
-# TODO : either ' $ [...] $ ' or ' $$ [...] $$ ', but not ' $ [...] $$ ' (not useful for proof of concept)
-
 
 class Math(Matching):
     """Math class.
