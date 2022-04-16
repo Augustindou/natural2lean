@@ -5,6 +5,7 @@ from ..math_mode.math import Math
 from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
 
+# TODO : Extend to support multiple argument functions
 
 # ---------------------- PARAMETERS ----------------------
 

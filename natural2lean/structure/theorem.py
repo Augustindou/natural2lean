@@ -52,9 +52,22 @@ class Theorem(Matching):
             self.lean_name = "_" + self.lean_name
 
         # content
-        self.statement = Implication.match(match.group(3))
+        self.statement: Implication = Implication.match(match.group(3))
         if self.statement is None:
             raise ValueError(f"Could not match an Implication in {match.group(3)}.")
 
-    # TODO : translate to lean
-    #       Use is_identifier_definition to put the identifiers before the ':' ?
+    def detect_errors(self):
+        if self.statement.theses.contains_identifier():
+            raise ValueError(f"The thesis of the theorem {self.latex_name} contains an identifier. Complete statement : {self.string}")
+        return super().detect_errors()
+
+    def translate(self) -> str:
+        hypotheses = self.statement.hypotheses
+        theses = self.statement.theses
+        # translate identifiers
+        lean_identifiers = hypotheses.translate_identifiers()
+        # translate other hypotheses
+        lean_hypotheses = hypotheses.translate_non_identifiers(separator=" → ")
+        # translate theses
+        lean_theses = theses.translate()
+        return f"theorem {self.lean_name} {lean_identifiers} : {lean_hypotheses} → {lean_theses} := by\n"

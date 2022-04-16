@@ -22,3 +22,27 @@ class MultiplePropositions(Unmatchable):
         self.propositions = [
             Proposition(prop) for prop in separate_propositions(self.string)
         ]
+
+    def translate(self, separator: str = " ∧ ") -> str:
+        return separator.join([prop.translate() for prop in self.propositions])
+
+    def translate_identifiers(self, separator: str = " ") -> str:
+        return separator.join(
+            [
+                prop.translate()
+                for prop in self.propositions
+                if prop.is_identifier_definition()
+            ]
+        )
+
+    def translate_non_identifiers(self, separator: str = " ∧ ") -> str:
+        return separator.join(
+            [
+                prop.translate()
+                for prop in self.propositions
+                if not prop.is_identifier_definition()
+            ]
+        )
+
+    def contains_identifier(self) -> bool:
+        return any(prop.is_identifier_definition() for prop in self.propositions)
