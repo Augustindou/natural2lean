@@ -10,3 +10,6 @@ class Identifier(Matching):
         if isinstance(other, self.__class__):
             return self.string.strip() == other.string.strip()
         return False
+
+    def translate(self) -> str:
+        return self.string.strip()

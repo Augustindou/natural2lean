@@ -32,7 +32,6 @@ class Implication(Matching):
         self.hypotheses = MultiplePropositions(match.group(2).strip(" ,.;"))
         # theses (can be multiple)
         self.theses = MultiplePropositions(match.group(3).strip(" ,.;"))
-        
+
     def translate(self) -> str:
         return f"{self.hypotheses.translate()} → {self.theses.translate()}"
-

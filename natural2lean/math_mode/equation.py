@@ -65,7 +65,13 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self, indentation, proof=None) -> str:
+    def translate(self) -> str:
+        return " ∧ ".join(
+            f"{self.expressions[i].translate()} {self.operators[i]} {self.expressions[i+1].translate()}"
+            for i in range(len(self.operators))
+        )
+
+    def translate_to_calc(self, indentation, proof=None) -> str:
         # TODO : proof ?
         # keyword for the beginning
         tactic = f"calc\n"

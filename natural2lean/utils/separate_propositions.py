@@ -29,7 +29,13 @@ SETS = {
     "integer": r"\mathbb{Z}",
 }
 FUNCTIONS = {
+    # matched_function : lean_function
     "even": "even",
+    # todo : extend this to support arguments
+    "divisible by $3$": "divisible 3",
+}
+NEGATIONS = {
+    "not",
 }
 
 # ----------------- SEPARATE PROPOSITIONS -----------------
@@ -77,6 +83,10 @@ def split_proposition(string: str) -> Iterable[str]:
         if identifiers_set != None:
             yield f"$ {math.latex_string} \\in {identifiers_set} $"
 
+    # multiple identifiers in set directly in the proposition
+    if math.is_identifiers_in_set():
+        yield f"$ {math.latex_string} $"
+
     # functions on identifiers
     if math.is_multiple_identifiers() or math.is_identifiers_in_set():
         function = get_function(string)
@@ -107,6 +117,7 @@ def apply_replacements(string: str) -> str:
     for pattern, replacement in REPLACEMENTS.items():
         while (match := re.search(pattern, string)) != None:
             string = string[: match.start()] + replacement + string[match.end() :]
+    return string
 
 
 def is_valid(string: str):
@@ -121,6 +132,23 @@ def is_valid(string: str):
     return True
 
 
+def is_negated(string: str, word: str) -> bool:
+    """Checks if the word is negated.
+
+    Args:
+        string (str): the input string
+        word (str): the word to check
+    """
+    string = string.lower()
+    word = word.lower()
+    idx = string.find(word)
+    if idx == -1:
+        return False
+    if string[:idx].split()[-1] in NEGATIONS:
+        return True
+    return False
+
+
 # ------------------ EXTRACT INFORMATION ------------------
 
 
@@ -130,6 +158,7 @@ def get_set(string: str):
     Args:
         string (str): the input string
     """
+    string = string.lower()
     matched_set = None
     for word, set_definition in SETS.items():
         if word in string:
@@ -146,9 +175,13 @@ def get_function(string: str):
         string (str): the input string
     """
     matched_function = None
-    for word, function_definition in FUNCTIONS.items():
-        if word in string:
+    for latex_function, lean_function in FUNCTIONS.items():
+        if latex_function in string:
             if matched_function != None:
-                raise Exception("Multiple functions in the same proposition")
-            matched_function = function_definition
+                raise Exception(
+                    f"Multiple functions in the same proposition : in '{string}', '{latex_function}' and '{matched_function}'were found"
+                )
+            matched_function = lean_function
+    if is_negated(string, latex_function):
+        matched_function = f"¬ {matched_function}"
     return matched_function

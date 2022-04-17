@@ -38,7 +38,7 @@ class Proposition(Unmatchable):
 
     def translate(self) -> str:
         if self.function == "IDENTIFIER_DEFINITION":
-            return f"({self.content.translate()})"
+            return f"{self.content.translate()}"
         if self.function == "EQUATION":
             return f"({self.content.translate()})"
         return f"{self.function} ({self.content.translate()})"

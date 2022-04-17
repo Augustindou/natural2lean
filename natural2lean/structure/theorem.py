@@ -22,20 +22,26 @@ class Theorem(Matching):
         - TODO
     """
 
-    # ([Tt]heorem\s*(.*):\s*((?:.|\s)*?))\n\s*?\n\s*
+    # ([Tt]heorem\s*(.*):\s*((?:.|\s)*?))\s*(?:\n\s*\n\s*(?:.|\s)*|$)
     pattern: str = (
-        # opening group
-        r"("
         # Theorem keyword
-        r"[Tt]heorem\s*"
+        r"([Tt]heorem\s*"
         # Theorem name
         r"(.*)"
-        # ':' for separation
+        # ":"
         r":\s*"
-        # theorem statement
+        # Theorem statement (lazy matching to avoid matching the proof with it)
         r"((?:.|\s)*?))"
-        # blank line between theorem and proof
-        r"\n\s*?\n\s*"
+        # avoid extra blanks
+        r"\s*"
+        # group 2 possibilities : only theorem or theorem with proof
+        r"(?:"
+        # theroem with proof : proof must be separated by a blank line
+        r"\n\s*\n\s*"
+        # proof contents
+        r"(?:.|\s)*"
+        # if only theorem : end of string
+        r"|$)"
     )
 
     def set_contents(self):
@@ -47,7 +53,7 @@ class Theorem(Matching):
 
         # name
         self.latex_name = match.group(2)
-        self.lean_name = self.latex_name.replace(" ", "_")
+        self.lean_name = self.latex_name.lower().replace(" ", "_")
         if self.lean_name[0].isdigit():
             self.lean_name = "_" + self.lean_name
 
@@ -58,7 +64,9 @@ class Theorem(Matching):
 
     def detect_errors(self):
         if self.statement.theses.contains_identifier():
-            raise ValueError(f"The thesis of the theorem {self.latex_name} contains an identifier. Complete statement : {self.string}")
+            raise ValueError(
+                f"The thesis of the theorem {self.latex_name} contains an identifier. Complete statement : {self.string}"
+            )
         return super().detect_errors()
 
     def translate(self) -> str:

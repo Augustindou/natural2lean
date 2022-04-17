@@ -20,15 +20,18 @@ class IdentifiersInSet(Matching):
         - The intermediate representation (a, b ∈ ℕ) can be obtained by applying `natural2lean.utils.translate_math.translate_latex_math()` to the latex string (a, b \in \mathbb{N}).
     """
 
+    #  *((([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)?) *(∈) *(\S+.*?)) *
     pattern: str = (
+        # open group
+        r" *("
         # same as MultipleIdentifiers
-        r"( *(([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *))"
-        # match keyword for inclusion (can be adapted / extended for other notations)
-        r"(∈)"
+        r"(([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)?) *"
+        # # match keyword for inclusion (can be adapted / extended for other notations)
+        r"(∈) *"
         # the set
-        r"(.*)"
-        # closing group
-        r" *)"
+        r"(\S+.*?)"
+        # # closing group
+        r") *"
     )
 
     def set_contents(self) -> None:
