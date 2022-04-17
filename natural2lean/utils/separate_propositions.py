@@ -99,6 +99,8 @@ def split_proposition(string: str) -> Iterable[str]:
         function = get_function(string)
         if function != None:
             yield f"{function} $ {math.latex_string} $"
+        else:
+            raise ValueError(f"Could not find the function related to the expression '{math.latex_string}' in '{string}'.")
 
     # equation (should not have a function associated to it)
     if math.is_equation():
