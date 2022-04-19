@@ -5,7 +5,7 @@ from natural2lean.structure.theorem import Theorem
 class TestTheorem(unittest.TestCase):
     def test_theorem_examples(self):
         th_latex_1 = r"Theorem Square of even number is even: if $m \in \mathbb{N}$ is even, then $m^2$ is even."
-        # TODO : If $q$ is a natural 'and' is not divisible by $3$ ? would probably not work...
+        # TODO : If $q$ is a natural 'and' is divisible by $3$ ? would not work because it would separate "q is a natural" from "is divisible by 3", so it should result in "q : Nat" and "divisible 3 3" as the math mode would match the 3 in the second proposition
         th_latex_2 = "Theorem Square mod 3: \n If $q$ is a natural not divisible by $3$, then $q^2 \\mod 3 = 1$.\n\n"
         th_latex_3 = r"Theorem square of q divisible by 3 means q is divisible by 3: If $q$ is a natural number and $q^2$ is divisible by $3$, then $q$ is also divisible by $3$."
         latex_theorems = [th_latex_1, th_latex_2, th_latex_3]
