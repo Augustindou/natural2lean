@@ -10,8 +10,7 @@ theorem square_of_q_divisible_by_3_means_q_is_divisible_by_3 (q : Nat) : divisib
     intro h₁
     have h₂ : q^2 % 3 = 1 := by
       apply square_mod_3 q h₁
-    
-    rw [h₂]
-    simp
+
+    simp [*]
 
   exact contrapositive.mpr contrap

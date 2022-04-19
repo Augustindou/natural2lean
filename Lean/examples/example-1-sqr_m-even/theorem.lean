@@ -9,7 +9,7 @@ theorem square_of_even_number_is_even (m : Nat) : (even m) → (even (m ^ 2)) :=
   have h₃ : m^2 = 2*(2*n^2) := by 
     calc
       m^2 = (2*n)^2 := by 
-        try simp [h₁, h₂]
+        try simp [*]
         try ring
       _ = 4*n^2 := by 
         ring
