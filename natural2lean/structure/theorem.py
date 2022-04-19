@@ -1,5 +1,5 @@
 import re
-from ..text.implication import Implication
+from ..propositions.implication import Implication
 from .matching import Matching
 
 

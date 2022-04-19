@@ -17,7 +17,7 @@ class IdentifiersInSet(Matching):
         - ...
 
     Some more information :
-        - The intermediate representation (a, b ∈ ℕ) can be obtained by applying `natural2lean.utils.translate_math.translate_latex_math()` to the latex string (a, b \in \mathbb{N}).
+        - The intermediate representation (a, b ∈ ℕ) can be obtained by applying `natural2lean.utils.translate_math.translate_latex_math()` to the latex string (a, b \\in \\mathbb{N}).
     """
 
     #  *((([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)?) *(∈) *(\S+.*?)) *

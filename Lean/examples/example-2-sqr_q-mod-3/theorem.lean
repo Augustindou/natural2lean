@@ -4,8 +4,8 @@ import LeanUtils.Div
 open Nat
 
 theorem square_mod_3 (q : Nat) : (¬divisible 3 q) → (q^2 % 3 = 1) := by
+  intro h₁
   repeat rw [divisible] -- not necessary here but useful for example 3
-  intro H₁
   have h_possibilities : q % 3 = 0 ∨ q % 3 = 1 ∨ q % 3 = 2 := mod_3_poss q
 
   -- divide cases into 3 goals

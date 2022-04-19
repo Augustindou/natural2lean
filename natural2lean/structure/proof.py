@@ -11,7 +11,7 @@ class Proof(Unmatchable):
     """
 
     # (?:\s*[Pp]roof\s*?[.,:;!]*)?\s*((?:.|\s)+)
-    pattern = (
+    pattern: str = (
         # proof keyword (facultative), followed by any 'logical' punctuation (.,:;!) will be avoided
         r"(?:\s*[Pp]roof\s*?[.,:;!]*\s*?)?"
         # skip blanks

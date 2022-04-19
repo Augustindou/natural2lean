@@ -31,7 +31,7 @@ class Proposition(Unmatchable):
             )
 
         # function (pattern matches directly what is returned by separate_propositions, hence it is a bit specific)
-        pattern = "(.+) \$ (.+) \$"
+        pattern = r"(.+) \$ (.+) \$"
         function_match = re.fullmatch(pattern, self.string)
         self.function = function_match.group(1)
         self.content = Math.match(f"$ {function_match.group(2)} $")

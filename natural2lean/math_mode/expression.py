@@ -20,7 +20,7 @@ class Expression(Matching):
         - Expressions can also be initialised directly, passing the string of its contents to the constructor (as it is done in `natural2lean.math_mode.equation`).
     """
 
-    pattern = (
+    pattern: str = (
         # opening group
         r"("
         # <anything> <letter/number> <operator> <letter/number> <anything> : a * b, 4 + a, ...
