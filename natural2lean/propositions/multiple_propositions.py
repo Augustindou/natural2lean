@@ -1,5 +1,5 @@
 from ..structure.matching import Unmatchable
-from ..utils.separate_propositions import separate_propositions
+from ..utils.separate_propositions import get_propositions
 from .proposition import Proposition
 
 
@@ -10,7 +10,7 @@ class MultiplePropositions(Unmatchable):
     Some examples of what MultiplePropositions will match are :
         - this is a proposition
         - hello world
-        - $a \in \mathbb{N}$ is even and $a^2$ is even
+        - $a \\in \\mathbb{N}$ is even and $a^2$ is even
 
     Some more information :
         - TODO
@@ -19,9 +19,7 @@ class MultiplePropositions(Unmatchable):
     pattern: str = None
 
     def set_contents(self):
-        self.propositions = [
-            Proposition(prop) for prop in separate_propositions(self.string)
-        ]
+        self.propositions = get_propositions(self.string)
 
     def translate(self, separator: str = " ∧ ") -> str:
         return separator.join([prop.translate() for prop in self.propositions])
@@ -34,6 +32,9 @@ class MultiplePropositions(Unmatchable):
                 if prop.is_identifier_definition()
             ]
         )
+        
+    def get_identifiers(self) -> list[Proposition]:
+        return [prop for prop in self.propositions if prop.is_identifier_definition()]
 
     def translate_non_identifiers(self, separator: str = " ∧ ") -> str:
         return separator.join(
@@ -43,6 +44,9 @@ class MultiplePropositions(Unmatchable):
                 if not prop.is_identifier_definition()
             ]
         )
+    
+    def get_non_identifiers(self) -> list[Proposition]:
+        return [prop for prop in self.propositions if not prop.is_identifier_definition()]
 
     def contains_identifier(self) -> bool:
         return any(prop.is_identifier_definition() for prop in self.propositions)

@@ -12,7 +12,7 @@ class Proof(Unmatchable):
 
     # (?:\s*[Pp]roof\s*?[.,:;!]*)?\s*((?:.|\s)+)
     pattern: str = (
-        # proof keyword (facultative), followed by any 'logical' punctuation (.,:;!) will be avoided
+        # proof keyword (facultative), followed by punctuation (.,:;!) will be avoided
         r"(?:\s*[Pp]roof\s*?[.,:;!]*\s*?)?"
         # skip blanks
         r"\s*"
@@ -21,6 +21,5 @@ class Proof(Unmatchable):
     )
 
     def set_contents(self):
-        # skip the proof keyword
-        self.string = re.fullmatch(self.pattern, self.string).group(1)
+        
         # TODO

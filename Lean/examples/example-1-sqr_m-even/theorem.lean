@@ -4,7 +4,7 @@ import LeanUtils.Parity
 open Nat
 
 theorem square_of_even_number_is_even (m : Nat) : (even m) → (even (m ^ 2)) := by
-  intro h₁
+  intros h₁
   have ⟨(n : Nat), (h₂ : m = 2 * n)⟩ := h₁
   have h₃ : m^2 = 2*(2*n^2) := by 
     calc

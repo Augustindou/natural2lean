@@ -4,6 +4,7 @@ from typing import Iterable
 from ..math_mode.math import Math
 from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
+from ..propositions.proposition import Proposition
 
 # TODO : Extend to support multiple argument functions
 
@@ -39,6 +40,15 @@ NEGATIONS = {
 }
 
 # ----------------- SEPARATE PROPOSITIONS -----------------
+
+
+def get_propositions(string: str) -> list[Proposition]:
+    """Extracts the propositions from the string.
+
+    Args:
+        string (str): the input string
+    """
+    return [Proposition(prop) for prop in separate_propositions(string)]
 
 
 def separate_propositions(string: str) -> Iterable[str]:

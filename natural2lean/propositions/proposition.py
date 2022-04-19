@@ -14,6 +14,7 @@ class Proposition(Unmatchable):
     """
 
     def set_contents(self):
+        # math match
         math_match: Math = Math.match(self.string)
         # identifier definition
         if math_match != None and math_match.is_identifiers_in_set():

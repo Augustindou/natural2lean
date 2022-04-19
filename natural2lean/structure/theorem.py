@@ -1,6 +1,7 @@
 import re
 from ..propositions.implication import Implication
 from .matching import Matching
+from ..utils.indentation import indent
 
 
 # TODO : Modify Theorem to match with 'lemma' or 'theorem' keywords (or others ?).
@@ -78,4 +79,10 @@ class Theorem(Matching):
         lean_hypotheses = hypotheses.translate_non_identifiers(separator=" → ")
         # translate theses
         lean_theses = theses.translate()
-        return f"theorem {self.lean_name} {lean_identifiers} : {lean_hypotheses} → {lean_theses} := by\n"
+        
+        # full statement
+        theorem_statement = f"theorem {self.lean_name} {lean_identifiers} : {lean_hypotheses} → {lean_theses}"
+        # introduction of hypothesis
+        hyp = " ".join([f"h{i}" for i in range(len(hypotheses.get_non_identifiers()))])
+        hyp_intro = f"intros {hyp}"
+        return f"{theorem_statement} := by\n{indent(hyp_intro)}\n"
