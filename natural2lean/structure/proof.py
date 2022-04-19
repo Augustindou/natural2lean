@@ -21,5 +21,5 @@ class Proof(Unmatchable):
     )
 
     def set_contents(self):
-        
+        pass
         # TODO

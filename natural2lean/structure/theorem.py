@@ -79,7 +79,7 @@ class Theorem(Matching):
         lean_hypotheses = hypotheses.translate_non_identifiers(separator=" → ")
         # translate theses
         lean_theses = theses.translate()
-        
+
         # full statement
         theorem_statement = f"theorem {self.lean_name} {lean_identifiers} : {lean_hypotheses} → {lean_theses}"
         # introduction of hypothesis

@@ -32,7 +32,7 @@ class MultiplePropositions(Unmatchable):
                 if prop.is_identifier_definition()
             ]
         )
-        
+
     def get_identifiers(self) -> list[Proposition]:
         return [prop for prop in self.propositions if prop.is_identifier_definition()]
 
@@ -44,9 +44,11 @@ class MultiplePropositions(Unmatchable):
                 if not prop.is_identifier_definition()
             ]
         )
-    
+
     def get_non_identifiers(self) -> list[Proposition]:
-        return [prop for prop in self.propositions if not prop.is_identifier_definition()]
+        return [
+            prop for prop in self.propositions if not prop.is_identifier_definition()
+        ]
 
     def contains_identifier(self) -> bool:
         return any(prop.is_identifier_definition() for prop in self.propositions)

@@ -71,8 +71,7 @@ class Equation(Matching):
             for i in range(len(self.operators))
         )
 
-    def translate_to_calc(self, indentation, proof=None) -> str:
-        # TODO : proof ?
+    def translate_to_calc(self, indentation: int = 0) -> str:
         # keyword for the beginning
         tactic = f"calc\n"
         # block
@@ -83,7 +82,7 @@ class Equation(Matching):
         block += f"{self.expressions[1].translate()}"
         # proof of 1st line
         block += f" := by"
-        block += f"try rw [{proof}];" if proof else ""
+        block += f"try simp [*];"  # simplify with all hypotheses
         block += f"try ring\n"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
