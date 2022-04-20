@@ -8,7 +8,7 @@ class Have(Matching):
     """
 
     pattern: str = r"((.*)\s*have\s*(.*))"
-    
+
     def set_contents(self):
         # rematch
         match = re.fullmatch(self.pattern, self.string)
@@ -21,4 +21,4 @@ class Have(Matching):
         self.right_side = match.group(3).strip(" ,.;")
         # proof
         # TODO get access to hypothesis
-        self.proof = match.group(2).strip(" ,.;") 
+        self.proof = match.group(2).strip(" ,.;")

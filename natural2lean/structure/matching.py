@@ -10,7 +10,7 @@ class Translatable:
             str: the lean4 equivalent of the instance.
         """
         raise NotImplementedError
-    
+
 
 class Matching(Translatable):
     """Matching class.

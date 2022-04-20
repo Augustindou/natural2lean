@@ -28,10 +28,11 @@ class Math(Matching):
 
     def set_contents(self) -> None:
         possible_subtypes: tuple[type[Matching]] = [
-            Equation,
-            Expression,
+            # order matters here ! Expression matches almost anything
             MultipleIdentifiers,
             IdentifiersInSet,
+            Equation,
+            Expression,
         ]
         # rematch
         match = re.fullmatch(self.pattern, self.string)

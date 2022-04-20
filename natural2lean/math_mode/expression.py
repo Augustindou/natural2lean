@@ -24,7 +24,7 @@ class Expression(Matching):
         # any letter, number, blank space or operator
         r"([+\-*/^%(). ]*(?:\w)+(?:\w|\s|[+\-*/^%(). ])*)"
     )
-    
+
     def set_contents(self):
         self.string = self.string.strip()
 

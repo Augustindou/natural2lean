@@ -34,7 +34,9 @@ class MultiplePropositions(Unmatchable):
         )
 
     def get_identifiers(self) -> list[Translatable]:
-        return [prop for prop in self.propositions if isinstance(prop, IdentifiersInSet)]
+        return [
+            prop for prop in self.propositions if isinstance(prop, IdentifiersInSet)
+        ]
 
     def translate_non_identifiers(self, separator: str = " ∧ ") -> str:
         return separator.join(

@@ -11,8 +11,8 @@ class TestTheorem(unittest.TestCase):
         latex_theorems = [th_latex_1, th_latex_2, th_latex_3]
 
         th_lean_1 = "theorem square_of_even_number_is_even (m : Nat) : even (m) → even (m^2) := by\n  intros h0\n"
-        th_lean_2 = "theorem square_mod_3 (q : Nat) : ¬ divisible 3 (q) → (q^2 % 3 = 1) := by\n  intros h0\n"
-        th_lean_3 = "theorem square_of_q_divisible_by_3_means_q_is_divisible_by_3 (q : Nat) : divisible 3 (q^2) → divisible 3 (q) := by\n  intros h0\n"
+        th_lean_2 = "theorem square_mod_3 (q : Nat) : ¬ divisible (3) (q) → q^2 % 3 = 1 := by\n  intros h0\n"
+        th_lean_3 = "theorem square_of_q_divisible_by_3_means_q_is_divisible_by_3 (q : Nat) : divisible (3) (q^2) → divisible (3) (q) := by\n  intros h0\n"
         lean_theorems = [th_lean_1, th_lean_2, th_lean_3]
 
         for latex_theorem, lean_theorem in zip(latex_theorems, lean_theorems):
