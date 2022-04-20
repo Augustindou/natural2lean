@@ -1,6 +1,6 @@
-from ..structure.matching import Unmatchable
+from natural2lean.math_mode.identifiers_in_set import IdentifiersInSet
+from ..structure.matching import Translatable, Unmatchable
 from ..utils.separate_propositions import get_propositions
-from .proposition import Proposition
 
 
 class MultiplePropositions(Unmatchable):
@@ -29,26 +29,26 @@ class MultiplePropositions(Unmatchable):
             [
                 prop.translate()
                 for prop in self.propositions
-                if prop.is_identifier_definition()
+                if isinstance(prop, IdentifiersInSet)
             ]
         )
 
-    def get_identifiers(self) -> list[Proposition]:
-        return [prop for prop in self.propositions if prop.is_identifier_definition()]
+    def get_identifiers(self) -> list[Translatable]:
+        return [prop for prop in self.propositions if isinstance(prop, IdentifiersInSet)]
 
     def translate_non_identifiers(self, separator: str = " ∧ ") -> str:
         return separator.join(
             [
                 prop.translate()
                 for prop in self.propositions
-                if not prop.is_identifier_definition()
+                if not isinstance(prop, IdentifiersInSet)
             ]
         )
 
-    def get_non_identifiers(self) -> list[Proposition]:
+    def get_non_identifiers(self) -> list[Translatable]:
         return [
-            prop for prop in self.propositions if not prop.is_identifier_definition()
+            prop for prop in self.propositions if not isinstance(prop, IdentifiersInSet)
         ]
 
     def contains_identifier(self) -> bool:
-        return any(prop.is_identifier_definition() for prop in self.propositions)
+        return any(isinstance(prop, IdentifiersInSet) for prop in self.propositions)

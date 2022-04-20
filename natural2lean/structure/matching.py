@@ -2,7 +2,17 @@ from __future__ import annotations
 import re
 
 
-class Matching:
+class Translatable:
+    def translate(self) -> str:
+        """Translates the instance and its contents into the lean4 equivalent.
+
+        Returns:
+            str: the lean4 equivalent of the instance.
+        """
+        raise NotImplementedError
+    
+
+class Matching(Translatable):
     """Matching class.
     This is the base class for all the classes that are used in the matching process.
 
@@ -45,14 +55,6 @@ class Matching:
     def detect_errors(self):
         """Detects errors in the instance. The `detect_errors` method should only be called after `set_contents`."""
         pass
-
-    def translate(self) -> str:
-        """Translates the instance and its contents into the lean4 equivalent.
-
-        Returns:
-            str: the lean4 equivalent of the instance.
-        """
-        raise NotImplementedError
 
 
 class Unmatchable(Matching):

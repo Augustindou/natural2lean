@@ -71,7 +71,7 @@ class Equation(Matching):
             for i in range(len(self.operators))
         )
 
-    def translate_to_calc(self, indentation: int = 0) -> str:
+    def translate_to_calc(self) -> str:
         # keyword for the beginning
         tactic = f"calc\n"
         # block
@@ -92,7 +92,7 @@ class Equation(Matching):
         calc_block = tactic + indent(block)
 
         # indent complete block
-        return indent(calc_block, indentation)
+        return calc_block
 
     def get_strongest_operator(self) -> str:
         if "≠" in self.operators:

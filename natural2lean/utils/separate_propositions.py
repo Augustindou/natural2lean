@@ -1,63 +1,58 @@
 import re
-from typing import Iterable
+from typing import Callable, Iterable
 
+from ..structure.matching import Translatable
 from ..math_mode.math import Math
 from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
-from ..propositions.proposition import Proposition
+from ..propositions.function import Function
 
-# TODO : Extend to support multiple argument functions
 
 # ---------------------- PARAMETERS ----------------------
 
-VALIDITY_CHECKS = [
+VALIDITY_CHECKS: list[Callable] = [
     # even number of $ signs (avoid splitting inside a math mode)
     lambda s: s.count("$") % 2 == 0,
     # even number of $$ (avoid splitting inside a math mode)
     lambda s: s.count("$$") % 2 == 0,
     # no single identifier (avoid separating $a$ and $b$ are integers)
-    lambda s: re.fullmatch(Identifier.pattern, s.strip("$ ")) == None,
+    lambda s: Identifier.match(apply_replacements(s).strip("$ ")) == None,
     # no multiple identifiers
     lambda s: MultipleIdentifiers.match(apply_replacements(s).strip("$ ")) == None,
 ]
-SEPARATORS = [",", "and"]
-REPLACEMENTS = {
+SEPARATORS: list[str] = [",", "and"]
+NEGATIONS: list[str] = ["not"]
+# keys will be replaced by values
+REPLACEMENTS: dict[str, str] = {
+    # remove all single $
+    r"\$\$": "$",
     r"\$ *and *\$": ", ",
     r"\$ *, *\$": ", ",
 }
-SETS = {
-    "natural": r"\mathbb{N}",
-    "integer": r"\mathbb{Z}",
+SETS: dict[str, str] = {
+    "natural": "\\mathbb{N}",
+    "integer": "\\mathbb{Z}",
 }
-FUNCTIONS = {
-    # matched_function : lean_function
-    "even": "even",
-    # todo : extend this to support arguments
-    "divisible by $3$": "divisible 3",
-}
-NEGATIONS = {
-    "not",
+# tuple of function name, function pattern, and callable to rearrange function arguments
+# pattern must contain one group for each argument
+FUNCTIONS: list[tuple[str, str, Callable]] = {
+    ("even", r"(\$.*?\$).*?even", lambda *args: args[0]),
+    ("divisible", r"(\$.*?\$).*?divisible\s*by.*?(\$.*?\$)", lambda *args: [args[1], args[0]]),
 }
 
 # ----------------- SEPARATE PROPOSITIONS -----------------
 
 
-def get_propositions(string: str) -> list[Proposition]:
-    """Extracts the propositions from the string.
-
-    Args:
-        string (str): the input string
-    """
-    return [Proposition(prop) for prop in separate_propositions(string)]
-
-
-def separate_propositions(string: str) -> Iterable[str]:
+def get_propositions(string: str) -> list[Translatable]:
+    return [prop for prop in separate_propositions(string)]
+    
+def separate_propositions(string: str) -> Iterable[Translatable]:
     """Separates multiple propositions (PropA, PropB and PropC).
 
     Args:
         string (str): the input string
     """
-    # to yield the last proposition too ;)
+    # also yield the last proposition ;)
     separator_spans = [(len(string), len(string))]
     # get all the spans for the separators
     for separator in SEPARATORS:
@@ -73,7 +68,7 @@ def separate_propositions(string: str) -> Iterable[str]:
             last_stop = stop
 
 
-def split_proposition(string: str) -> Iterable[str]:
+def split_proposition(string: str):
     """Splits a proposition ($a$ and $b$ are even natural numbers) into multiple propositions ($a \\in \\mathbb{N}$, $b \\in \\mathbb{N}$).
 
     Args:
@@ -91,32 +86,20 @@ def split_proposition(string: str) -> Iterable[str]:
     if math.is_multiple_identifiers():
         identifiers_set = get_set(string)
         if identifiers_set != None:
-            yield f"$ {math.latex_string} \\in {identifiers_set} $"
+            yield Math.match("$" + ", ".join(math.content.identifiers) + " \\in " + identifiers_set + "$").content
 
     # multiple identifiers in set directly in the proposition
     if math.is_identifiers_in_set():
-        yield f"$ {math.latex_string} $"
+        yield math.content
 
     # functions on identifiers
-    if math.is_multiple_identifiers() or math.is_identifiers_in_set():
-        function = get_function(string)
-        if function != None:
-            for identifier in math.content.identifiers:
-                yield f"{function} $ {identifier.string} $"
-
-    # functions on math expressions
-    if math.is_expression():
-        function = get_function(string)
-        if function != None:
-            yield f"{function} $ {math.latex_string} $"
-        else:
-            raise ValueError(
-                f"Could not find the function related to the expression '{math.latex_string}' in '{string}'."
-            )
+    if math.is_multiple_identifiers() or math.is_identifiers_in_set() or math.is_expression():
+        for function in get_functions(string):
+            yield function
 
     # equation (should not have a function associated to it)
     if math.is_equation():
-        yield f"$ {math.latex_string} $"
+        yield math.content
 
 
 # -------------------- SMALL FUNCTIONS --------------------
@@ -146,20 +129,16 @@ def is_valid(string: str):
     return True
 
 
-def is_negated(string: str, word: str) -> bool:
-    """Checks if the word is negated.
+def contains_negation(string: str) -> bool:
+    """Checks a negation is present in the string
 
     Args:
         string (str): the input string
-        word (str): the word to check
     """
     string = string.lower()
-    word = word.lower()
-    idx = string.find(word)
-    if idx == -1:
-        return False
-    if string[:idx].split()[-1] in NEGATIONS:
-        return True
+    for neg in NEGATIONS:
+        if neg in string:
+            return True
     return False
 
 
@@ -182,20 +161,29 @@ def get_set(string: str):
     return matched_set
 
 
-def get_function(string: str):
-    """Extracts the function associated to the proposition.
+def get_functions(string: str) -> Iterable[Function]:
+    """Extracts the functions associated to the proposition.
 
     Args:
         string (str): the input string
     """
-    matched_function = None
-    for latex_function, lean_function in FUNCTIONS.items():
-        if latex_function in string:
-            if matched_function != None:
-                raise Exception(
-                    f"Multiple functions in the same proposition : in '{string}', '{latex_function}' and '{matched_function}'were found"
-                )
-            matched_function = lean_function
-    if is_negated(string, latex_function):
-        matched_function = f"¬ {matched_function}"
-    return matched_function
+    for name, pattern, order_arguments in FUNCTIONS:
+        name = f"¬ {name}" if contains_negation(string) else name
+        match = re.search(pattern, string)
+        
+        # skip if no match
+        if match == None:
+            continue
+        
+        # match arguments
+        args: list[Math] = [Math.match(group) for group in match.groups()]
+        
+        # first group can be multiple identifiers
+        if args[0].is_multiple_identifiers() or args[0].is_identifiers_in_set():
+            for identifier in args[0].content.identifiers:
+                yield Function(name, order_arguments([identifier, *args[1:]]), string)
+            continue
+        
+        if args[0].is_expression():
+            yield Function(name, order_arguments(*args), string)
+            continue

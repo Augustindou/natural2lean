@@ -21,15 +21,12 @@ class Expression(Matching):
     """
 
     pattern: str = (
-        # opening group
-        r"("
-        # <anything> <letter/number> <operator> <letter/number> <anything> : a * b, 4 + a, ...
-        r"(?:.*\w+(?:\)| )*[+\-*/^%](?:\(| )*\w+.*)"
-        # OR <minus> <letter/number> <anything> : -2*a, -2, -3+a
-        r"|(?:(?:\(| )*\-\w(?:\(| )*.*)"
-        # closing group
-        r")"
+        # any letter, number, blank space or operator
+        r"([+\-*/^%(). ]*(?:\w)+(?:\w|\s|[+\-*/^%(). ])*)"
     )
+    
+    def set_contents(self):
+        self.string = self.string.strip()
 
     def translate(self) -> str:
         return self.string

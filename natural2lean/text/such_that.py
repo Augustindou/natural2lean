@@ -1,8 +1,7 @@
 import re
 from ..propositions.multiple_propositions import MultiplePropositions
-from ..propositions.proposition import Proposition
 from ..utils.separate_propositions import get_propositions
-from ..structure.matching import Matching
+from ..structure.matching import Matching, Translatable
 
 
 class SuchThat(Matching):
@@ -21,7 +20,7 @@ class SuchThat(Matching):
             )
 
         # identifier
-        propositions: list[Proposition] = [
+        propositions: list[Translatable] = [
             get_propositions(match.group(2).strip(" ,.;"))
         ]
         if len(propositions) != 1:
