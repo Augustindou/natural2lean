@@ -1,24 +1,30 @@
 import re
 from typing import Callable, Iterable
 
+
+from ..utils.translate_math import translate_latex_math
 from ..structure.matching import Translatable
 from ..math_mode.math import Math
 from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..math_mode.identifier import Identifier
+from ..math_mode.expression import Expression
 from ..propositions.function import Function
 
 
 # ---------------------- PARAMETERS ----------------------
 
+get_lean_math = lambda s: translate_latex_math(apply_replacements(s).strip("$ "))
 VALIDITY_CHECKS: list[Callable] = [
     # even number of $ signs (avoid splitting inside a math mode)
     lambda s: s.count("$") % 2 == 0,
     # even number of $$ (avoid splitting inside a math mode)
     lambda s: s.count("$$") % 2 == 0,
     # no single identifier (avoid separating $a$ and $b$ are integers)
-    lambda s: Identifier.match(apply_replacements(s).strip("$ ")) == None,
-    # no multiple identifiers
-    lambda s: MultipleIdentifiers.match(apply_replacements(s).strip("$ ")) == None,
+    lambda s: Identifier.match(get_lean_math(s)) == None,
+    # no multiple identifiers alone
+    lambda s: MultipleIdentifiers.match(get_lean_math(s)) == None,
+    # no expression alone
+    lambda s: Expression.match(get_lean_math(s)) == None,
 ]
 SEPARATORS: list[str] = [",", "and"]
 NEGATIONS: list[str] = ["not"]

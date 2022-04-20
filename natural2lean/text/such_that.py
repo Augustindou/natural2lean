@@ -1,4 +1,6 @@
 import re
+
+from ..math_mode.identifiers_in_set import IdentifiersInSet
 from ..propositions.multiple_propositions import MultiplePropositions
 from ..utils.separate_propositions import get_propositions
 from ..structure.matching import Matching, Translatable
@@ -20,9 +22,9 @@ class SuchThat(Matching):
             )
 
         # identifier
-        propositions: list[Translatable] = [
-            get_propositions(match.group(2).strip(" ,.;"))
-        ]
+        propositions: list[Translatable] = get_propositions(
+            match.group(2).strip(" ,.;")
+        )
         if len(propositions) != 1:
             raise ValueError(
                 f"Found {len(propositions)} propositions before 'such that' in {self.string}, should only be one identifier definition."
@@ -33,7 +35,7 @@ class SuchThat(Matching):
         self.hypotheses = MultiplePropositions(match.group(3).strip(" ,.;"))
 
     def detect_errors(self):
-        if not self.identifier.is_identifier_definition():
+        if not isinstance(self.identifier, IdentifiersInSet):
             raise ValueError(
                 f"The proposition before 'such that' in {self.string} is not an identifier definition."
             )

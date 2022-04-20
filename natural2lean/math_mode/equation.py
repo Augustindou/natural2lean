@@ -66,6 +66,9 @@ class Equation(Matching):
         super().detect_errors()
 
     def translate(self) -> str:
+        return f"{self.expressions[0].translate()} {self.get_strongest_operator()} {self.expressions[-1].translate()}"
+
+    def translate_to_conjunction(self) -> str:
         return " ∧ ".join(
             f"{self.expressions[i].translate()} {self.operators[i]} {self.expressions[i+1].translate()}"
             for i in range(len(self.operators))
@@ -82,8 +85,8 @@ class Equation(Matching):
         block += f"{self.expressions[1].translate()}"
         # proof of 1st line
         block += f" := by"
-        block += f"try simp [*];"  # simplify with all hypotheses
-        block += f"try ring\n"
+        block += f" try simp [*];"  # simplify with all hypotheses
+        block += f" try ring\n"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
             block += f"_ {operator} {expression.translate()} := by ring\n"
