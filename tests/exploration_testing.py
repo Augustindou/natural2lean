@@ -33,10 +33,12 @@ def main():
         print(f"Lean:\n{indent(cls.match(example).translate(), 2)}")
 
     # multiple props
-    # print(f"\n----------- {MultiplePropositions.__name__} -----------\n")
-    # print(f"LaTeX:\n{indent('$a, b$ and $c$ are integers and $\\sqrt{a} + b^2 = c^2$', 2)}")
-    # print()
-    # print(MultiplePropositions("$a, b$ and $c$ are integers and $\\sqrt{a} + b^2 = c^2$"))
+    print(f"\n----------- {MultiplePropositions.__name__} -----------\n")
+    multiple_props_tex = '$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$'
+    print(f"LaTeX:\n {indent(multiple_props_tex, 2)}")
+    print()
+    print(f"Lean:\n {indent(MultiplePropositions(multiple_props_tex).translate(), 2)}")
+    print()
 
 if __name__ == "__main__":
     main()

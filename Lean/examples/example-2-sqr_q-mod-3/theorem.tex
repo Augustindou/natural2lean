@@ -6,10 +6,10 @@ Proof:
 Considering the different possibilities of the modulo operation, we have $q \mod 3 \in \{ 0, 1, 2 \}$
 As $q$ is not divisible by $3$, we have a contradiction for $0$.
 For the second case, we have $q \mod 3 = 1$
-    $q$ can be rewritten as $q = 3k + 1$ with $k \in \mathbb{N}$
+    By definition of the modulo operation, we have $k \in \mathbb{N}$ such that $q = 3k + 1$
     By expansion, we have $q^2 = (3k+1)^2 = 9k^2+6k+1 = 3(3k^2 + 2k) + 1$
-    hence, using $3k^2 + 2k$, we have $q^2 \mod 3 = 1$
+    hence, we have $q^2 \mod 3 = 1$
 For the last case, $q \mod 3 = 2$
     Following the same expansion, we have $q^2 = (3k+2)^2 = 3(3k^2+4k+1) +1$
-    Hence, using $3k^2 + 4k + 1$, we have $q^2 \mod 3 = 1$ again
+    Hence, we have $q^2 \mod 3 = 1$ again
 QED
