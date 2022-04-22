@@ -5,6 +5,6 @@ import LeanUtils.Logic
 
 open Nat
 
-theorem square_mod_3 (q : Nat) : ¬ divisible (3) (q) → q^2 % 3 = 1 := by
-      intros h0
+-- theorem square_mod_3 (q : Nat) : ¬ divisible (3) (q) → q^2 % 3 = 1 := by
+--       intros h0
       

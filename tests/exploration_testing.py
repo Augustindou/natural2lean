@@ -24,20 +24,20 @@ def main():
     # have
     examples.append((Have, "Therefore we have $m^2 = (2n)^2 = 4n^2 = 2(2n^2)$"))
     # such that
-    examples.append((SuchThat, "we have a natural number $n$ such that $m = 2n$."))
+    examples.append((SuchThat, "a natural number $n$ such that $m = 2n$."))
     
     for cls, example in examples:
         print(f"\n----------- {cls.__name__} -----------\n")
-        print(f"LaTeX:\n{indent(example, 2)}")
+        print(f"LaTeX:\n{example}")
         print()
-        print(f"Lean:\n{indent(cls.match(example).translate(), 2)}")
+        print(f"Lean:\n{cls.match(example).translate()}")
 
     # multiple props
     print(f"\n----------- {MultiplePropositions.__name__} -----------\n")
     multiple_props_tex = '$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$'
-    print(f"LaTeX:\n {indent(multiple_props_tex, 2)}")
+    print(f"LaTeX:\n{multiple_props_tex}")
     print()
-    print(f"Lean:\n {indent(MultiplePropositions(multiple_props_tex).translate(), 2)}")
+    print(f"Lean:\n{MultiplePropositions(multiple_props_tex).translate()}")
     print()
 
 if __name__ == "__main__":

@@ -89,7 +89,7 @@ class Equation(Matching):
         block += f" try ring\n"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
-            block += f"_ {operator} {expression.translate()} := by ring\n"
+            block += f"_ {operator} {expression.translate()} := by try simp [*]; try ring\n"
 
         # format complete (standalone) block
         calc_block = tactic + indent(block)
