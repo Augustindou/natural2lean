@@ -29,7 +29,7 @@ class Have(Matching):
         # definition
         self.statement = self.get_statement()
         self.proof = self.get_proof()
-        
+
     def detect_errors(self):
         if self.proof is None:
             raise ValueError(
@@ -64,7 +64,7 @@ class Have(Matching):
         # equation
         if isinstance(self.statement, Math) and self.statement.is_equation():
             return f"by \n{indent(self.statement.content.translate_to_calc())}"
-        
+
         if "definition" in self.string.lower():
             proof = "simp at *\nassumption"
             return f"by \n{indent(proof)}"

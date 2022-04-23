@@ -65,7 +65,7 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self, hyp_name = None) -> str:
+    def translate(self, hyp_name=None) -> str:
         hyp_ident = "" if hyp_name is None else f"{hyp_name} : "
         return f"{hyp_ident}{self.expressions[0].translate()} {self.get_strongest_operator()} {self.expressions[-1].translate()}"
 
@@ -90,7 +90,9 @@ class Equation(Matching):
         block += f" try ring\n"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
-            block += f"_ {operator} {expression.translate()} := by try simp [*]; try ring\n"
+            block += (
+                f"_ {operator} {expression.translate()} := by try simp [*]; try ring\n"
+            )
 
         # format complete (standalone) block
         calc_block = tactic + indent(block)
