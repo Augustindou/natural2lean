@@ -15,7 +15,7 @@ namespace Nat
     | k+3, h => absurd h (λ h => not_lt_zero k (lt_of_succ_lt_succ (lt_of_succ_lt_succ (lt_of_succ_lt_succ h))))
 
   -- TODO : prove this... written as an axiom for now
-  axiom mod_rewrite {a b m : Nat} : (a % b = m) ↔ ∃ k, a = b * k + m
+  axiom mod_rewrite {a b m : Nat} : a % b = m ↔ ∃ k, a = b * k + m
 end Nat
 
 namespace Int

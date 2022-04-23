@@ -29,17 +29,20 @@ class SuchThat(Matching):
             raise ValueError(
                 f"Found {len(propositions)} propositions before 'such that' in {self.string}, should only be one identifier definition."
             )
-        self.identifier = propositions[0]
+        self.identifiers: IdentifiersInSet = propositions[0]
 
         # hypotheses
         self.hypotheses = MultiplePropositions(match.group(3).strip(" ,.;"))
 
     def detect_errors(self):
-        if not isinstance(self.identifier, IdentifiersInSet):
+        if not isinstance(self.identifiers, IdentifiersInSet):
             raise ValueError(
                 f"The proposition before 'such that' in {self.string} is not an identifier definition."
             )
         return super().detect_errors()
 
     def translate(self, hyp_name: str = "h") -> str:
-        return f"⟨{self.identifier.translate()}, ({hyp_name} : {self.hypotheses.translate()})⟩"
+        id_names = [i.translate() for i in self.identifiers.identifiers]
+        id_def = self.identifiers.translate()
+        hyp_def = self.hypotheses.translate()
+        return f"⟨{', '.join(id_names)}, {hyp_name}⟩ : ∃ {id_def}, {hyp_def}"

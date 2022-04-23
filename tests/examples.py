@@ -21,10 +21,11 @@ def main():
     examples.append((Implication, "If $q^2$ is divisible by $3$, then $q$ is also divisible by $3$."))
     # theorem
     examples.append((Theorem, "Theorem Square mod 3: \nIf $q$ is a natural not divisible by $3$, then $q^2 \\mod 3 = 1$."))
-    # have
-    examples.append((Have, "Therefore we have $m^2 = (2n)^2 = 4n^2 = 2(2n^2)$"))
     # such that
     examples.append((SuchThat, "a natural number $n$ such that $m = 2n$."))
+    # have
+    examples.append((Have, "Therefore we have $m^2 = (2n)^2 = 4n^2 = 2(2n^2)$"))
+    examples.append((Have, "By definition, we have a natural number $n$ such that $m = 2n$."))
     
     for cls, example in examples:
         print(f"\n----------- {cls.__name__} -----------\n")

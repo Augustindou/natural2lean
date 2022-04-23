@@ -39,14 +39,16 @@ SETS: dict[str, str] = {
     "natural": "\\mathbb{N}",
     "integer": "\\mathbb{Z}",
 }
-# tuple of function name, function pattern, and callable to rearrange function arguments
+# tuple of function name, function pattern, and callable to rearrange function arguments (keep_order and invert_order are examples, but one can also directly use a lambda function for more specific needs)
 # pattern must contain one group for each argument
+keep_order = lambda *args: args
+invert_order = lambda *args: args[::-1]
 FUNCTIONS: list[tuple[str, str, Callable]] = {
-    ("even", r"(\$.*?\$).*?even", lambda *args: [args[0]]),
+    ("even", r"(\$.*?\$).*?even", keep_order),
     (
         "divisible",
         r"(\$.*?\$).*?divisible\s*by.*?(\$.*?\$)",
-        lambda *args: [args[1], args[0]],
+        invert_order,
     ),
 }
 

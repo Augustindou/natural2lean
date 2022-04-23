@@ -61,8 +61,8 @@ class Math(Matching):
                 f"Number of dollar signs on left and right side should be equal, but found different in {self.string}."
             )
 
-    def translate(self) -> str:
-        return self.content.translate()
+    def translate(self, **kwargs) -> str:
+        return self.content.translate(**kwargs)
 
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):

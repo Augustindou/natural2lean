@@ -29,6 +29,12 @@ class Have(Matching):
         # definition
         self.statement = self.get_statement()
         self.proof = self.get_proof()
+        
+    def detect_errors(self):
+        if self.proof is None:
+            raise ValueError(
+                f"Could not find a proof for the statement in '{self.string}'."
+            )
 
     def get_statement(
         self,
@@ -58,9 +64,13 @@ class Have(Matching):
         # equation
         if isinstance(self.statement, Math) and self.statement.is_equation():
             return f"by \n{indent(self.statement.content.translate_to_calc())}"
+        
+        if "definition" in self.string.lower():
+            proof = "simp at *\nassumption"
+            return f"by \n{indent(proof)}"
 
         # TODO : other cases (by definition, ...) but retrieving proofs is necessary
 
-    def translate(self) -> str:
+    def translate(self, hyp_name: str = "h") -> str:
         # TODO : {get_hypothesis_name()}
-        return f"have {self.statement.translate()} := {self.proof}"
+        return f"have {self.statement.translate(hyp_name = hyp_name)} := {self.proof}"

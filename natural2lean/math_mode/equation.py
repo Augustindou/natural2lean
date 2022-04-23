@@ -65,8 +65,9 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self) -> str:
-        return f"{self.expressions[0].translate()} {self.get_strongest_operator()} {self.expressions[-1].translate()}"
+    def translate(self, hyp_name = None) -> str:
+        hyp_ident = "" if hyp_name is None else f"{hyp_name} : "
+        return f"{hyp_ident}{self.expressions[0].translate()} {self.get_strongest_operator()} {self.expressions[-1].translate()}"
 
     def translate_to_conjunction(self) -> str:
         return " ∧ ".join(
