@@ -1,7 +1,7 @@
 from natural2lean.math_mode.math import Math
 from natural2lean.propositions.implication import Implication
 from natural2lean.structure.matching import Matching
-from natural2lean.structure.theorem import Theorem
+from natural2lean.structure.theorem import Example, Theorem
 from natural2lean.propositions.multiple_propositions import MultiplePropositions
 from natural2lean.text.have import Have
 from natural2lean.text.such_that import SuchThat
@@ -31,6 +31,10 @@ def main():
             Theorem,
             "Theorem Square mod 3: \nIf $q$ is a natural not divisible by $3$, then $q^2 \\mod 3 = 1$.",
         )
+    )
+    # example (unnamed theorem)
+    examples.append(
+        (Example, "If $q$ is a natural not divisible by $3$, then $q^2 \\mod 3 = 1$.")
     )
     # such that
     examples.append((SuchThat, "a natural number $n$ such that $m = 2n$."))

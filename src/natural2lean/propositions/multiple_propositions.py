@@ -21,6 +21,11 @@ class MultiplePropositions(Unmatchable):
     def set_contents(self):
         self.propositions = get_propositions(self.string)
 
+    def detect_errors(self):
+        if len(self.propositions) == 0:
+            raise ValueError("No proposition found.")
+        return super().detect_errors()
+
     def translate(self, separator: str = " ∧ ") -> str:
         return separator.join([prop.translate() for prop in self.propositions])
 

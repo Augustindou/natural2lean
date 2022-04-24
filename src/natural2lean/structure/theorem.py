@@ -54,9 +54,11 @@ class Theorem(Matching):
 
         # name
         self.latex_name = match.group(2)
-        self.lean_name = self.latex_name.lower().replace(" ", "_")
-        if self.lean_name[0].isdigit():
-            self.lean_name = "_" + self.lean_name
+        # (avoid "" and None for latex_name)
+        if self.latex_name:
+            self.lean_name = self.latex_name.lower().replace(" ", "_")
+            if self.lean_name[0].isdigit():
+                self.lean_name = "_" + self.lean_name
 
         # content
         self.statement: Implication = Implication.match(match.group(3))
@@ -76,13 +78,62 @@ class Theorem(Matching):
         # translate identifiers
         lean_identifiers = hypotheses.translate_identifiers()
         # translate other hypotheses
-        lean_hypotheses = hypotheses.translate_non_identifiers(separator=" → ")
+        lean_hypotheses = " ".join(
+            [
+                f"(h{i} : {hyp.translate()})"
+                for i, hyp in enumerate(hypotheses.get_non_identifiers())
+            ]
+        )
+
         # translate theses
         lean_theses = theses.translate()
 
         # full statement
-        theorem_statement = f"theorem {self.lean_name} {lean_identifiers} : {lean_hypotheses} → {lean_theses}"
-        # introduction of hypothesis
-        hyp = " ".join([f"h{i}" for i in range(len(hypotheses.get_non_identifiers()))])
-        hyp_intro = f"intros {hyp}"
-        return f"{theorem_statement} := by\n{indent(hyp_intro)}\n"
+        theorem_statement = f"theorem {self.lean_name} {lean_identifiers} {lean_hypotheses} : {lean_theses}"
+        return f"{theorem_statement} := by\n"
+
+
+class Example(Theorem):
+    """Example class.
+    Example consists of a theorem without name. Similar to the `example :` in lean.
+    """
+
+    # (()\s*((?:.|\s)+?))\s*(?:\n\s*\n\s*(?:.|\s)*|$)
+    pattern: str = (
+        # empty group to be able to reuse set_contents
+        r"(()\s*"
+        # Example statement (lazy matching to avoid matching the proof with it)
+        r"((?:.|\s)+?))"
+        # avoid extra blanks
+        r"\s*"
+        # group 2 possibilities : only example or example with proof
+        r"(?:"
+        # example with proof : proof must be separated by a blank line
+        r"\n\s*\n\s*"
+        # proof contents
+        r"(?:.|\s)*"
+        # if only example : end of string
+        r"|$)"
+    )
+
+    def translate(self) -> str:
+        hypotheses = self.statement.hypotheses
+        theses = self.statement.theses
+        # translate identifiers
+        lean_identifiers = hypotheses.translate_identifiers()
+        # translate other hypotheses
+        lean_hypotheses = " ".join(
+            [
+                f"(h{i} : {hyp.translate()})"
+                for i, hyp in enumerate(hypotheses.get_non_identifiers())
+            ]
+        )
+
+        # translate theses
+        lean_theses = theses.translate()
+
+        # full statement
+        theorem_statement = (
+            f"example {lean_identifiers} {lean_hypotheses} : {lean_theses}"
+        )
+        return f"{theorem_statement} := by\n"
