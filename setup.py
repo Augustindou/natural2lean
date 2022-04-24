@@ -23,8 +23,9 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=["natural2lean"],
     python_requires=">=3.9",
-    # install_requires=[
-    #     ],
+    install_requires=[
+        "inquirerpy",
+    ],
     extras_require={
         "dev": [
             "pytest>=3.6",

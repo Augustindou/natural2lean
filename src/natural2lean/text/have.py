@@ -66,11 +66,10 @@ class Have(Matching):
             return f"by \n{indent(self.statement.content.translate_to_calc())}"
 
         if "definition" in self.string.lower():
-            proof = "simp at *\nassumption"
+            proof = "simp at *\nassumption\n"
             return f"by \n{indent(proof)}"
 
         # TODO : other cases (by definition, ...) but retrieving proofs is necessary
 
-    def translate(self, hyp_name: str = "h") -> str:
-        # TODO : {get_hypothesis_name()}
-        return f"have {self.statement.translate(hyp_name = hyp_name)} := {self.proof}"
+    def translate(self, hyp="h") -> str:
+        return f"have {self.statement.translate(hyp=hyp)} := {self.proof}"

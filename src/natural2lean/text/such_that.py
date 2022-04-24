@@ -41,8 +41,8 @@ class SuchThat(Matching):
             )
         return super().detect_errors()
 
-    def translate(self, hyp_name: str = "h") -> str:
+    def translate(self, hyp="h") -> str:
         id_names = [i.translate() for i in self.identifiers.identifiers]
         id_def = self.identifiers.translate()
         hyp_def = self.hypotheses.translate()
-        return f"⟨{', '.join(id_names)}, {hyp_name}⟩ : ∃ {id_def}, {hyp_def}"
+        return f"⟨{', '.join(id_names)}, {hyp}⟩ : ∃ {id_def}, {hyp_def}"

@@ -13,7 +13,7 @@ class Function(Translatable):
         self.args: list[Translatable] = args
         self.original_string: str = original_string
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         return (
             f"{self.function_name} ("
             + ") (".join([arg.translate() for arg in self.args])

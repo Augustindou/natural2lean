@@ -28,7 +28,7 @@ class Expression(Matching):
     def set_contents(self):
         self.string = self.string.strip()
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         return self.string
 
     def __eq__(self, other) -> bool:

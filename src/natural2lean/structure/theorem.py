@@ -72,7 +72,7 @@ class Theorem(Matching):
             )
         return super().detect_errors()
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         hypotheses = self.statement.hypotheses
         theses = self.statement.theses
         # translate identifiers
@@ -116,7 +116,7 @@ class Example(Theorem):
         r"|$)"
     )
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         hypotheses = self.statement.hypotheses
         theses = self.statement.theses
         # translate identifiers

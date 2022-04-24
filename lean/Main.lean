@@ -1,11 +1,12 @@
-import Mathlib.Tactic.Ring
-import LeanUtils.Parity
-import LeanUtils.Div
-import LeanUtils.Logic
-
+import LeanUtils.Tactic
 open Nat
 
--- theorem square_mod_3 (q : Nat) : ¬ divisible (3) (q) → q^2 % 3 = 1 := by
---       intros h0
-      
-example (q : Nat) (h0 : ¬ divisible (3) (q)) : q^2 % 3 = 1 := by
+example (m : Nat) (h0 : even (m)) : even (m^2) := by
+  have ⟨n, h1⟩ : ∃ (n : Nat), m = 2*n := by 
+    simp at *
+    assumption
+  have h2 : m^2 = 2*(2*n^2) := by 
+    calc
+      m^2 = (2*n)^2 := by try simp [*]; try ring
+      _ = 4*n^2 := by try simp [*]; try ring
+      _ = 2*(2*n^2) := by try simp [*]; try ring

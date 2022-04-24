@@ -45,5 +45,5 @@ class MultipleIdentifiers(Matching):
             return self.identifiers == other.identifiers
         return False
 
-    def translate(self) -> str:
-        return " ".join([i.translate() for i in self.identifiers])
+    def translate(self, hyp=None) -> str:
+        return " ".join([i.translate(hyp=hyp) for i in self.identifiers])

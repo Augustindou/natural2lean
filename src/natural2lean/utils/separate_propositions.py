@@ -92,7 +92,7 @@ def split_proposition(string: str):
     # match math mode
     math_match = re.search(Math.pattern, string)
     if math_match == None:
-        raise Exception("No math content in the proposition")
+        raise ValueError("No math content in the proposition")
     math: Math = Math.match(math_match.group(0))
 
     # set

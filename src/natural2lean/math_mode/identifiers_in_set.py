@@ -53,7 +53,7 @@ class IdentifiersInSet(Matching):
             )
         return False
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         lean_identifiers = " ".join(
             identifier.translate() for identifier in self.identifiers
         )

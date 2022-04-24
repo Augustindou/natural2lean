@@ -26,17 +26,12 @@ class MultiplePropositions(Unmatchable):
             raise ValueError("No proposition found.")
         return super().detect_errors()
 
-    def translate(self, separator: str = " ∧ ") -> str:
+    def translate(self, hyp=None, separator: str = " ∧ ") -> str:
+        hyp_ident = "" if hyp is None else f" {hyp} : "
         return separator.join([prop.translate() for prop in self.propositions])
 
     def translate_identifiers(self, separator: str = " ") -> str:
-        return separator.join(
-            [
-                prop.translate()
-                for prop in self.propositions
-                if isinstance(prop, IdentifiersInSet)
-            ]
-        )
+        return separator.join([prop.translate() for prop in self.get_identifiers()])
 
     def get_identifiers(self) -> list[Translatable]:
         return [
@@ -44,13 +39,7 @@ class MultiplePropositions(Unmatchable):
         ]
 
     def translate_non_identifiers(self, separator: str = " ∧ ") -> str:
-        return separator.join(
-            [
-                prop.translate()
-                for prop in self.propositions
-                if not isinstance(prop, IdentifiersInSet)
-            ]
-        )
+        return separator.join([prop.translate() for prop in self.get_non_identifiers()])
 
     def get_non_identifiers(self) -> list[Translatable]:
         return [

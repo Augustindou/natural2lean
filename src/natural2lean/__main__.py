@@ -1,5 +1,6 @@
 import sys
-import PyInquirer
+from InquirerPy import inquirer
+from InquirerPy.validator import PathValidator
 from natural2lean.interface.interactive import interactive_mode
 from natural2lean.interface.full_proof import translate
 import argparse
@@ -68,8 +69,11 @@ def ask_for_mode():
             "default": "interactive",
         }
     ]
-
-    mode = PyInquirer.prompt(question)["mode"]
+    mode = inquirer.select(
+        message="What mode do you want to use?",
+        choices=["interactive", "file"],
+        default="interactive",
+    ).execute()
     if mode == "file":
         input_file = ask_for_input_file()
         output_file = ask_for_output_file()
@@ -91,37 +95,37 @@ def open_file(filename: str, mode: str, default=None):
 
     try:
         return open(filename, mode)
-    except FileNotFoundError:
+    except IOError:
         if mode == "r":
             mode = "read"
         if mode == "w":
             mode = "write"
-        print(f"{RED_COLOR}\nProblem opening {filename} in {mode} mode.\n")
+        print(f"{RED_COLOR}\n    Not finding file / invalid filename.\n")
         return None
 
+
 def ask_for_input_file():
-    question = [
-        {
-            "type": "input",
-            "name": "input_file",
-            "message": "Which file do you want to parse?",
-        }
-    ]
-    input_file = open_file(PyInquirer.prompt(question)["input_file"], "r")
+    filename = inquirer.filepath(
+        message="Which file do you want to parse?",
+        validate=PathValidator(is_file=True, message=f"Invalid path / filename."),
+    ).execute()
+
+    input_file = open_file(filename, "r")
     if input_file is None:
         return ask_for_input_file()
     return input_file
-        
+
+
 def ask_for_output_file():
-    question = {
-        "type": "input",
-        "name": "output_file",
-        "message": "In which file do you want to write the output? (leave empty for stdout)",
-    }
-    output_file = open_file(
-        PyInquirer.prompt(question)["output_file"], "w+", default=sys.stdout
-    )
+    filename = inquirer.filepath(
+        message="Where do you want to save the output? (leave blank for stdout)",
+    ).execute()
+
+    output_file = open_file(filename, "w+", default=sys.stdout)
+    if output_file is None:
+        return ask_for_output_file()
     return output_file
+
 
 if __name__ == "__main__":
     main()

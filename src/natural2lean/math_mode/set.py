@@ -16,5 +16,5 @@ class Set(Unmatchable):
             raise ValueError(f"The system does not understand the set {self.string}")
         return super().detect_errors()
 
-    def translate(self) -> str:
+    def translate(self, hyp=None) -> str:
         return self.sets[self.string]
