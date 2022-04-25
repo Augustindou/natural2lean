@@ -1,5 +1,5 @@
 import unittest
-from natural2lean.structure.theorem import Theorem
+from natural2lean.text.theorem import Theorem
 
 
 class TestTheorem(unittest.TestCase):

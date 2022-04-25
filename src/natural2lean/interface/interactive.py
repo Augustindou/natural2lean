@@ -3,9 +3,8 @@ from dataclasses import dataclass
 from InquirerPy import inquirer
 
 from .lean_feedback import get_lean_feedback
-from ..math_mode.multiple_identifiers import MultipleIdentifiers
 from ..structure.matching import Translatable
-from ..structure.theorem import Example, Theorem
+from ..text.theorem import Example, Theorem
 from ..text.have import Have
 from ..utils.indentation import indent
 
@@ -17,7 +16,7 @@ LEAN_HEADER = ""
 LEAN_HEADER += "import LeanUtils.Tactic\n"
 LEAN_HEADER += "open Nat\n\n"
 
-# if any element of the key is in the goal, the value will be added to the proof
+# if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
     ("even", "divisible"): "try exact ⟨_, by assumption⟩\n",
 }

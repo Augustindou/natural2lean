@@ -1,6 +1,6 @@
 import re
 from ..propositions.implication import Implication
-from .matching import Matching
+from ..structure.matching import Matching
 from ..utils.indentation import indent
 
 

@@ -1,7 +1,7 @@
 from natural2lean.math_mode.math import Math
 from natural2lean.propositions.implication import Implication
 from natural2lean.structure.matching import Matching
-from natural2lean.structure.theorem import Example, Theorem
+from natural2lean.text.theorem import Example, Theorem
 from natural2lean.propositions.multiple_propositions import MultiplePropositions
 from natural2lean.text.have import Have
 from natural2lean.text.such_that import SuchThat
