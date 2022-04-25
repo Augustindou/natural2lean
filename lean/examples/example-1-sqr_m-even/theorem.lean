@@ -17,5 +17,5 @@ theorem square_of_even_number_is_even (m : Nat) : (even m) → (even (m ^ 2)) :=
       _ = 2*(2*n^2) := by 
         try simp [*]
         try ring
-  exact ⟨_, by assumption⟩
+  try exact ⟨_, by assumption⟩
 

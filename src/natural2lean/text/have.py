@@ -4,7 +4,8 @@ from .such_that import SuchThat
 from ..math_mode.equation import Equation
 from ..math_mode.math import Math
 from ..propositions.implication import Implication
-from ..structure.matching import Matching
+from ..propositions.multiple_propositions import MultiplePropositions
+from ..structure.matching import Matching, Unmatchable
 from ..utils.indentation import indent
 
 
@@ -30,31 +31,31 @@ class Have(Matching):
         self.statement = self.get_statement()
         self.proof = self.get_proof()
 
-    def detect_errors(self):
-        if self.proof is None:
-            raise ValueError(
-                f"Could not find a proof for the statement in '{self.string}'."
-            )
-
     def get_statement(
         self,
+    ):
         full_match_possibilities: list[Matching] = [
             Implication,
             SuchThat,
-        ],
-        partial_match_possibilities: list[Matching] = [
-            Math,
-        ],
-    ):
+        ]
+
         for possibility in full_match_possibilities:
             match = possibility.match(self.right_side)
             if match != None:
                 return match
 
-        for possibility in partial_match_possibilities:
-            match = re.search(possibility.pattern, self.right_side)
-            if match != None:
-                return possibility.match(self.right_side[match.start() : match.end()])
+        # match math mode
+        match = re.search(Math.pattern, self.right_side)
+        if match != None:
+            math_match: Math = Math.match(self.right_side[match.start() : match.end()])
+            if math_match.is_equation():
+                return math_match
+
+        # multiple propositions
+        try:
+            return MultiplePropositions(self.right_side)
+        except ValueError:
+            pass
 
         raise ValueError(
             f"Could not find a meaning for the right side of the have statement in '{self.string}'."

@@ -12,14 +12,8 @@ class Translatable:
         raise NotImplementedError
 
 
-class Matching(Translatable):
-    """Matching class.
-    This is the base class for all the classes that are used in the matching process.
-
-    Some information :
-        - The `pattern` allows the classmethod `match` to extract information. The `match` method will call the constructor with the first regex group in the `pattern`.
-        - The `translate` method returns the `lean4` equivalent of the expression.
-    """
+class Unmatchable(Translatable):
+    """Unmatchable allows to create instances using the `__init__` method. This will call `set_contents` and `detect_errors`."""
 
     pattern: str = None
 
@@ -32,6 +26,26 @@ class Matching(Translatable):
         self.string = string
         self.set_contents()
         self.detect_errors()
+
+    def set_contents(self):
+        """Extract the contents of a concept. The `set_contents` method should only be called from the constructor and should have access to `self.string`."""
+        pass
+
+    def detect_errors(self):
+        """Detects errors in the instance. The `detect_errors` method should only be called after `set_contents`."""
+        pass
+
+
+class Matching(Unmatchable):
+    """Matching class.
+    Classes inheriting from Matching can call `cls.match` to get an instance, or `None` if `re.fullmatch` fails.
+
+    Some information :
+        - The `pattern` allows the classmethod `match` to extract information. The `match` method will call the constructor with the first regex group in the `pattern`.
+        - The `translate` method returns the `lean4` equivalent of the expression.
+    """
+
+    pattern: str = None
 
     @classmethod
     def match(cls, string: str) -> Matching:
@@ -47,24 +61,3 @@ class Matching(Translatable):
         if m == None:
             return None
         return cls(m.group(1))
-
-    def set_contents(self):
-        """Extract the contents of a concept. The `set_contents` method should only be called from the constructor and should have access to `self.string`."""
-        pass
-
-    def detect_errors(self):
-        """Detects errors in the instance. The `detect_errors` method should only be called after `set_contents`."""
-        pass
-
-
-class Unmatchable(Matching):
-    """Unmatchable class.
-    Class that overrides the `match` classmethod to raise an exception if `.match` is called.
-    """
-
-    @classmethod
-    def match(cls, string: str):
-        """Raises an exception, should not be called in classes inheriting from `Unmatchable`."""
-        raise Exception(
-            f"{cls.__name__}.match(string) should not be called, use {cls.__name__}(string) to create a new instance. {cls.__name__} inherits this behavior from Unmatchable."
-        )

@@ -1,4 +1,4 @@
-from natural2lean.math_mode.identifiers_in_set import IdentifiersInSet
+from ..math_mode.identifiers_in_set import IdentifiersInSet
 from ..structure.matching import Translatable, Unmatchable
 from ..utils.separate_propositions import get_propositions
 

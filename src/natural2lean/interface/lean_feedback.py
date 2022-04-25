@@ -21,17 +21,22 @@ def get_lean_feedback(input: str) -> LeanFeedback:
     # copy to main
     with open(PATH_TO_MAIN, "w") as f:
         f.write(input)
-    
+
     # get feedback
     raw_feedback = (
-        Popen("lake build -d=lean", shell=True, stdout=PIPE, stderr=PIPE).stdout.read().decode("utf-8")
+        Popen("lake build -d=lean", shell=True, stdout=PIPE, stderr=PIPE)
+        .stdout.read()
+        .decode("utf-8")
     )
-    
+
     # get goals
     goals = re.findall(GOAL_PATTERN, raw_feedback)
-    
+
     # parse variables and hypotheses
-    statements = re.search(HYP_BLOCK_PATTERN, raw_feedback).group(1).splitlines()
+    match = re.search(HYP_BLOCK_PATTERN, raw_feedback)
+    if match is None:
+        return None
+    statements = match.group(1).splitlines()
     variables = []
     hypotheses = []
     for statement in statements:
@@ -39,5 +44,5 @@ def get_lean_feedback(input: str) -> LeanFeedback:
             variables.append(statement)
         else:
             hypotheses.append(statement)
-    
+
     return LeanFeedback(variables=variables, hypotheses=hypotheses, goals=goals)

@@ -10,3 +10,4 @@ example (m : Nat) (h0 : even (m)) : even (m^2) := by
       m^2 = (2*n)^2 := by try simp [*]; try ring
       _ = 4*n^2 := by try simp [*]; try ring
       _ = 2*(2*n^2) := by try simp [*]; try ring
+  try exact ⟨_, by assumption⟩
