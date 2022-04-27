@@ -1,6 +1,3 @@
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.RCases
-import Mathlib.Tactic.Use
 import LeanUtils.Div
 import LeanUtils.Logic
 import LeanUtils.Parity

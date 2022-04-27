@@ -1,9 +1,10 @@
+from __future__ import annotations
 from ..math_mode.identifiers_in_set import IdentifiersInSet
-from ..structure.matching import Translatable, Unmatchable
+from ..structure.matching import Matching, Translatable, Unmatchable
 from ..utils.separate_propositions import get_propositions
 
 
-class MultiplePropositions(Unmatchable):
+class MultiplePropositions(Matching):
     """MultiplePropositions class.
     MultiplePropositions matches anything. This class should only be used when it is known that the string contains one or more propositions. The different propositions will be identified in `natural2lean.utils.separate_propositions` and the result will be stored in the `propositions` attribute.
 
@@ -29,6 +30,14 @@ class MultiplePropositions(Unmatchable):
     def translate(self, hyp=None, separator: str = " ∧ ") -> str:
         hyp_ident = "" if hyp is None else f" {hyp} : "
         return separator.join([prop.translate() for prop in self.propositions])
+
+    @classmethod
+    def match(cls, string: str) -> MultiplePropositions:
+        # match method a bit different
+        propositions = get_propositions(string)
+        if propositions == []:
+            return None
+        return cls(string)
 
     def translate_identifiers(self, separator: str = " ") -> str:
         return separator.join([prop.translate() for prop in self.get_identifiers()])

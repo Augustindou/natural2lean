@@ -1,4 +1,5 @@
-import LeanUtils.Tactic
+import LeanUtils
+def main : IO Unit := IO.println s!"Hello, world!"
 open Nat
 
 example (m : Nat) (h0 : even (m)) : even (m^2) := by

@@ -2,18 +2,24 @@ from copy import deepcopy
 from dataclasses import dataclass
 from InquirerPy import inquirer
 
-from .lean_feedback import get_lean_feedback
-from ..structure.matching import Translatable
+from ..propositions.multiple_propositions import MultiplePropositions
+from .lean_feedback import get_lean_feedback, FAIL, NO_GOALS
+from ..structure.matching import Matching, Translatable
 from ..text.theorem import Example, Theorem
 from ..text.have import Have
 from ..utils.indentation import indent
 
+RED_COLOR = "\033[1;31m"
+RESET_COLOR = "\033[0m"
+color_red = lambda s: RED_COLOR + s + RESET_COLOR
 
-STATEMENT_POSSIBILITIES = [
+STATEMENT_POSSIBILITIES: list[Matching] = [
     Have,
+    MultiplePropositions,
 ]
 LEAN_HEADER = ""
-LEAN_HEADER += "import LeanUtils.Tactic\n"
+LEAN_HEADER += "import LeanUtils\n"
+LEAN_HEADER += 'def main : IO Unit := IO.println s!"Hello, world!"\n'
 LEAN_HEADER += "open Nat\n\n"
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
@@ -54,6 +60,7 @@ def interactive_mode():
 
     # lean feedback
     lean_feedback = get_lean_feedback(state.lean_text)
+
     # update goals and hypotheses
     state.goals = lean_feedback.goals
     state.variables = lean_feedback.variables
@@ -80,8 +87,13 @@ def get_proof(state: State, indentation_lvl=1) -> str:
 
     # send to lean
     lean_feedback = get_lean_feedback(state.lean_text)
-    if lean_feedback is None:
-        print("Proof is correct! Congratulations!")
+    # backtrack on fail
+    if lean_feedback is FAIL:
+        print(color_red(indent("Failed to understand statement. Backtracking...\n")))
+        return get_proof(old_state, indentation_lvl=indentation_lvl)
+    # end of proof
+    if lean_feedback is NO_GOALS:
+        print(f"Proof is correct! Congratulations! 🚀")
         return
     # update goals and hypotheses
     state.goals = lean_feedback.goals
@@ -110,7 +122,7 @@ def get_proof(state: State, indentation_lvl=1) -> str:
 def get_theorem() -> Theorem:
     match = match_theorem(
         inquirer.text(
-            message="What theorem do you want to prove?\n  ",
+            message="Enter a theorem statement.\n ",
             validate=lambda s: match_theorem(s) is not None,
             invalid_message="Invalid theorem. Try 'theorem [th_name]: if [hyp] then [ccl]' or simply 'if [hyp] then [ccl]'",
         ).execute()
@@ -137,7 +149,7 @@ def match_theorem(input: str):
 def get_statement(state) -> Translatable:
     match = match_statement(
         inquirer.text(
-            message="Input a statement\n  ",
+            message="Input a statement\n ",
             validate=lambda s: match_statement(s) is not None,
             invalid_message="Invalid statement.",
         ).execute()
@@ -159,6 +171,8 @@ def match_statement(input: str):
 
 
 # ----------------------------- STATEMENT VS GOAL -----------------------------
+
+
 def statement_is_goal(statement: Translatable, goal: str) -> bool:
     # TODO : improve the method for this
     # get first line
@@ -173,13 +187,13 @@ def statement_is_goal(statement: Translatable, goal: str) -> bool:
     return False
 
 
-def find_conclusion(state: State, indentation_lvl: int=1) -> str:
+def find_conclusion(state: State, indentation_lvl: int = 1) -> str:
     for indicators, ccl in CONCLUSIONS.items():
         ccl = indent(ccl.strip(), indentation_lvl)
         for indicator in indicators:
             if indicator in state.goals[0]:
                 # return if it worked
                 lean_fb = get_lean_feedback(state.lean_text + ccl)
-                if lean_fb is None or len(lean_fb.goals) < len(state.goals):
+                if lean_fb is NO_GOALS or len(lean_fb.goals) < len(state.goals):
                     return ccl
     return None

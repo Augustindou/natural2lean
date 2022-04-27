@@ -1,5 +1,6 @@
 import unittest
 from natural2lean.propositions.multiple_propositions import MultiplePropositions
+from natural2lean.utils.separate_propositions import get_propositions
 
 
 class TestSeparatePropostions(unittest.TestCase):
@@ -13,6 +14,9 @@ class TestSeparatePropostions(unittest.TestCase):
         for latex, lean in examples.items():
             res = MultiplePropositions(latex).translate()
             self.assertEqual(res, lean)
+
+    def test_no_match(self):
+        self.assertEqual(get_propositions("hello world"), [])
 
 
 if __name__ == "__main__":

@@ -4,8 +4,12 @@ from subprocess import PIPE, Popen
 
 GOAL_PATTERN = r"⊢ (.*)"
 HYP_BLOCK_PATTERN = r"unsolved goals\n((?:.|\s)*?)\n⊢"
+TACTIC_FAILED = r"tactic .+ failed"
 PATH_TO_MAIN = "lean/Main.lean"
 SETS = ["ℕ", "ℤ", "ℚ", "ℝ"]
+
+NO_GOALS = 0
+FAIL = -1
 
 
 @dataclass(frozen=True)
@@ -24,18 +28,26 @@ def get_lean_feedback(input: str) -> LeanFeedback:
 
     # get feedback
     raw_feedback = (
-        Popen("lake build -d=lean", shell=True, stdout=PIPE, stderr=PIPE)
+        Popen("lake build", shell=True, cwd="lean", stdout=PIPE, stderr=PIPE)
         .stdout.read()
         .decode("utf-8")
     )
 
     # get goals
     goals = re.findall(GOAL_PATTERN, raw_feedback)
+    if not goals:
+        return NO_GOALS
+
+    # match failed
+    match = re.search(TACTIC_FAILED, raw_feedback)
+    if match:
+        return FAIL
 
     # parse variables and hypotheses
     match = re.search(HYP_BLOCK_PATTERN, raw_feedback)
     if match is None:
-        return None
+        raise Exception("Could not parse lean feedback")
+
     statements = match.group(1).splitlines()
     variables = []
     hypotheses = []

@@ -1,4 +1,5 @@
 import LeanUtils.Tactic
+import Mathlib.Tactic.Ring
 
 open Nat
 
