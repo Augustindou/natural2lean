@@ -29,7 +29,7 @@ class IdentifiersInSet(Matching):
         # # match keyword for inclusion (can be adapted / extended for other notations)
         r"(∈) *"
         # the set
-        r"(\S+.*?)"
+        r"(\S+)"
         # # closing group
         r") *"
     )
@@ -53,7 +53,7 @@ class IdentifiersInSet(Matching):
             )
         return False
 
-    def translate(self, hyp=None) -> str:
+    def translate(self, **kwargs) -> str:
         if self.set.type == Set.SET:
             lean_identifiers = " ".join(
                 identifier.translate() for identifier in self.identifiers

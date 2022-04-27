@@ -33,7 +33,9 @@ class Implication(Matching):
         # theses (can be multiple)
         self.theses = MultiplePropositions(match.group(3).strip(" ,.;"))
 
-    def translate(self, hyp=None) -> str:
+    def translate(self, hyp=None, **kwargs) -> str:
+        definition = "" if hyp is None else f"{hyp} : "
+        
         return (
-            f"{self.hypotheses.translate(separator=' → ')} → {self.theses.translate()}"
+            f"{definition}{self.hypotheses.translate(separator=' → ')} → {self.theses.translate()}"
         )

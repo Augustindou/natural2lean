@@ -3,7 +3,7 @@ import re
 
 
 class Translatable:
-    def translate(self, hyp=None) -> str:
+    def translate(self, **kwargs) -> str:
         """Translates the instance and its contents into the lean4 equivalent.
 
         Returns:

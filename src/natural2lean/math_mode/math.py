@@ -1,12 +1,12 @@
 from __future__ import annotations
-
+import re
 from ..structure.matching import Matching
 from ..utils.translate_math import translate_latex_math
 from .equation import Equation
 from .expression import Expression
 from .multiple_identifiers import MultipleIdentifiers
 from .identifiers_in_set import IdentifiersInSet
-import re
+from .expression_possibilities import ExpressionPossibilities
 
 
 class Math(Matching):
@@ -31,6 +31,7 @@ class Math(Matching):
             # order matters here ! Expression matches almost anything
             MultipleIdentifiers,
             IdentifiersInSet,
+            ExpressionPossibilities,
             Equation,
             Expression,
         ]
@@ -69,6 +70,8 @@ class Math(Matching):
             return self.content == other.content
         return False
 
+    # small util functions
+    
     def is_equation(self):
         return isinstance(self.content, Equation)
 
@@ -81,5 +84,7 @@ class Math(Matching):
     def is_identifiers_in_set(self):
         return isinstance(self.content, IdentifiersInSet)
 
+    def is_expression_possibilities(self):
+        return isinstance(self.content, ExpressionPossibilities)
 
 # TODO : x = ab => x = a * b or x = ab (as a single identifier) => dependent on the presence or not of identifiers a and b or ab before

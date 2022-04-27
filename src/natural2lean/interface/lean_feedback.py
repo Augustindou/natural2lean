@@ -52,7 +52,10 @@ def get_lean_feedback(input: str) -> LeanFeedback:
     variables = []
     hypotheses = []
     for statement in statements:
-        if statement.split(" : ")[1].split()[0] in SETS:
+        # skip "case inr.inl"
+        if statement.split()[0] in ["case"]:
+            continue
+        if statement.split(":")[1].split()[0] in SETS:
             variables.append(statement)
         else:
             hypotheses.append(statement)

@@ -14,10 +14,14 @@ def main():
     examples.append((Math, "$x, y$"))
     # identifiers in set
     examples.append((Math, "$x, y \\in \\mathbb{N}$"))
+    # identifier in set ({1, 2, 3})
+    examples.append((Math, "$x \in \{1, 2, 3\}$"))
     # expression
     examples.append((Math, "$a+\\frac{b}{c+1}$"))
     # equation
     examples.append((Math, "$a \leq b \lt b+1$"))
+    # multiple propositions
+    examples.append((MultiplePropositions, "$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$"))
     # implication
     examples.append(
         (
@@ -49,15 +53,6 @@ def main():
         print(f"LaTeX:\n{example}")
         print()
         print(f"Lean:\n{cls.match(example).translate()}")
-
-    # multiple props
-    print(f"\n----------- {MultiplePropositions.__name__} -----------\n")
-    multiple_props_tex = "$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$"
-    print(f"LaTeX:\n{multiple_props_tex}")
-    print()
-    print(f"Lean:\n{MultiplePropositions(multiple_props_tex).translate()}")
-    print()
-
 
 if __name__ == "__main__":
     main()

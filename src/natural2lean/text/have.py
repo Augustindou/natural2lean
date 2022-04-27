@@ -8,13 +8,18 @@ from ..propositions.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching, Unmatchable
 from ..utils.indentation import indent
 
+# simple statements (contradiction, ...)
+SIMPLE_STATEMENTS = {
+    "contradiction": "contradiction",
+}
+
 
 class Have(Matching):
     """Have class.
     The 'have' keyword is used to identify expressions that we want to prove.
     """
 
-    pattern: str = r"((.*)\s*have\s*(.*))"
+    pattern: str = r"((.*)\s*have\s*(.*))\s*"
 
     def set_contents(self):
         # rematch
@@ -48,7 +53,7 @@ class Have(Matching):
         match = re.search(Math.pattern, self.right_side)
         if match != None:
             math_match: Math = Math.match(self.right_side[match.start() : match.end()])
-            if math_match.is_equation():
+            if math_match.is_equation() or math_match.is_identifiers_in_set() or math_match.is_expression_possibilities():
                 return math_match
 
         # multiple propositions
@@ -57,6 +62,11 @@ class Have(Matching):
         except ValueError:
             pass
 
+        # for the simple cases (we have a contradiction)
+        for statement in SIMPLE_STATEMENTS:
+            if statement in self.right_side:
+                return statement
+        
         raise ValueError(
             f"Could not find a meaning for the right side of the have statement in '{self.string}'."
         )
@@ -69,8 +79,18 @@ class Have(Matching):
         if "definition" in self.string.lower():
             proof = "simp at *\nassumption\n"
             return f"by \n{indent(proof)}"
+        
+        if "possibilities" in self.string.lower() and "modulo" in self.string.lower():
+            return f"mod_3_poss _"
 
-        # TODO : other cases (by definition, ...) but retrieving proofs is necessary
+        # if no proof is given, just use simp [*]
+        return "simp [*]"
 
-    def translate(self, hyp="h") -> str:
-        return f"have {self.statement.translate(hyp=hyp)} := {self.proof}"
+
+    def translate(self, hyp="h", **kwargs) -> str:
+        
+        # for the simple cases (we have a contradiction)
+        if isinstance(self.statement, str) and self.statement in SIMPLE_STATEMENTS:
+            return SIMPLE_STATEMENTS[self.statement]
+        
+        return f"have {self.statement.translate(hyp=hyp)} := {self.proof}\n"

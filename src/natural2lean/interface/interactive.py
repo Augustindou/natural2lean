@@ -1,11 +1,13 @@
 from copy import deepcopy
 from dataclasses import dataclass
+import re
 from InquirerPy import inquirer
 
-from ..propositions.multiple_propositions import MultiplePropositions
 from .lean_feedback import get_lean_feedback, FAIL, NO_GOALS
+from ..propositions.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching, Translatable
 from ..text.theorem import Example, Theorem
+from ..text.case import Case
 from ..text.have import Have
 from ..utils.indentation import indent
 
@@ -14,6 +16,7 @@ RESET_COLOR = "\033[0m"
 color_red = lambda s: RED_COLOR + s + RESET_COLOR
 
 STATEMENT_POSSIBILITIES: list[Matching] = [
+    Case,
     Have,
     MultiplePropositions,
 ]
@@ -24,7 +27,8 @@ LEAN_HEADER += "open Nat\n\n"
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
-    ("even", "divisible"): "try exact ⟨_, by assumption⟩\n",
+    (r"even", r"divisible"): "try exact ⟨_, by assumption⟩\n\n\n",
+    (r"%.*=") : "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩\n\n\n",
 }
 
 
@@ -83,7 +87,7 @@ def get_proof(state: State, indentation_lvl=1) -> str:
     ):
         state.lean_text += ccl
     else:
-        state.lean_text += indent(statement.translate(hyp=f"h{len(state.hypotheses)}"))
+        state.lean_text += "\n\n" + indent(statement.translate(hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses))
 
     # send to lean
     lean_feedback = get_lean_feedback(state.lean_text)
@@ -100,20 +104,7 @@ def get_proof(state: State, indentation_lvl=1) -> str:
     state.variables = lean_feedback.variables
     state.hypotheses = lean_feedback.hypotheses
 
-    # more goals
-    if len(state.goals) > len(old_state.goals):
-        # TODO split
-        pass
-
-    # equal number of goals
-    if len(state.goals) == len(old_state.goals):
-        return get_proof(state, indentation_lvl=indentation_lvl)
-
-    # less goals
-    if len(state.goals) < len(old_state.goals):
-        return state.lean_text
-
-    print(state)
+    return get_proof(state, indentation_lvl=indentation_lvl)
 
 
 # -------------------------------- GET THEOREM --------------------------------
@@ -191,7 +182,7 @@ def find_conclusion(state: State, indentation_lvl: int = 1) -> str:
     for indicators, ccl in CONCLUSIONS.items():
         ccl = indent(ccl.strip(), indentation_lvl)
         for indicator in indicators:
-            if indicator in state.goals[0]:
+            if re.search(indicator, state.goals[0]):
                 # return if it worked
                 lean_fb = get_lean_feedback(state.lean_text + ccl)
                 if lean_fb is NO_GOALS or len(lean_fb.goals) < len(state.goals):

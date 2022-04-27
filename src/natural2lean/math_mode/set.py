@@ -52,11 +52,11 @@ class Set(Unmatchable):
                 raise ValueError(f"The system does not understand the set in '{self.string}'")
         return super().detect_errors()
 
-    def translate(self, hyp=None, identifier=None) -> str:
+    def translate(self, identifier=None, **kwargs) -> str:
         if self.type == Set.SET:
             return f"{self.set}"
         
         if self.type == Set.POSSIBILITIES and identifier is not None:
             return " ∨ ".join([f"{identifier} = {expr.translate()}" for expr in self.set])
 
-        raise ValueError(f"Problem translating. \n  hyp: {hyp} \n  identifier: {identifier} \n  string: {self.string}")
+        raise ValueError(f"Problem translating.\n  identifier: {identifier} \n  string: {self.string}")

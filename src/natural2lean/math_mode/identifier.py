@@ -11,5 +11,5 @@ class Identifier(Matching):
             return self.string.strip() == other.string.strip()
         return False
 
-    def translate(self, hyp=None) -> str:
+    def translate(self, **kwargs) -> str:
         return self.string.strip()

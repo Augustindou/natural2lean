@@ -41,7 +41,7 @@ class SuchThat(Matching):
             )
         return super().detect_errors()
 
-    def translate(self, hyp="h") -> str:
+    def translate(self, hyp="h", **kwargs) -> str:
         id_names = [i.translate() for i in self.identifiers.identifiers]
         id_def = self.identifiers.translate()
         hyp_def = self.hypotheses.translate()

@@ -65,7 +65,7 @@ class Equation(Matching):
 
         super().detect_errors()
 
-    def translate(self, hyp=None) -> str:
+    def translate(self, hyp=None, **kwargs) -> str:
         hyp_ident = "" if hyp is None else f"{hyp} : "
         return f"{hyp_ident}{self.expressions[0].translate()} {self.get_strongest_operator()} {self.expressions[-1].translate()}"
 
