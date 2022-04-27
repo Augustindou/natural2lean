@@ -24,8 +24,8 @@ class IdentifiersInSet(Matching):
     pattern: str = (
         # open group
         r" *("
-        # same as MultipleIdentifiers
-        r"(([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)?) *"
+        # MultipleIdentifiers
+        r"" + MultipleIdentifiers.pattern + r""
         # # match keyword for inclusion (can be adapted / extended for other notations)
         r"(∈) *"
         # the set
@@ -54,8 +54,12 @@ class IdentifiersInSet(Matching):
         return False
 
     def translate(self, hyp=None) -> str:
-        lean_identifiers = " ".join(
-            identifier.translate() for identifier in self.identifiers
-        )
-        lean_set = self.set.translate()
-        return f"({lean_identifiers} : {lean_set})"
+        if self.set.type == Set.SET:
+            lean_identifiers = " ".join(
+                identifier.translate() for identifier in self.identifiers
+            )
+            lean_set = self.set.translate()
+            return f"({lean_identifiers} : {lean_set})"
+
+        if self.set.type == Set.POSSIBILITIES:
+            return "(" + ") ∧ (".join([self.set.translate(identifier=i) for i in self.identifiers]) + ")"

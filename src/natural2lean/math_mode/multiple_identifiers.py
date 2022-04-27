@@ -18,7 +18,7 @@ class MultipleIdentifiers(Matching):
     Some more information :
         - TODO
     """
-
+    
     #  *(([a-zA-Z]\w*) *(?:(,) *([a-zA-Z]\w*(?: *, *[a-zA-Z]\w*)*) *)?) *
     pattern: str = (
         # opening group
