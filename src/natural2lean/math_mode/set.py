@@ -22,11 +22,11 @@ class Set(Unmatchable):
         # opening 1st group
         r" *("
         # group for expression
-        r"(" + Expression.pattern + r")"
+        r"(" + Expression.pattern[1:-1] + r")"
         # separator (comma)
         r" *(?:(,) *"
         # group for following expressions
-        r"(" + Expression.pattern + r"(?: *, *" + Expression.pattern + r")*) *)*) *"
+        r"(" + Expression.pattern[1:-1] + r"(?: *, *" + Expression.pattern[1:-1] + r")*) *)*) *"
     )
 
     def set_contents(self):
