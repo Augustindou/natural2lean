@@ -93,4 +93,4 @@ class Have(Matching):
         if isinstance(self.statement, str) and self.statement in SIMPLE_STATEMENTS:
             return SIMPLE_STATEMENTS[self.statement]
         
-        return f"have {self.statement.translate(hyp=hyp)} := {self.proof}\n"
+        return f"have {self.statement.translate(hyp=hyp)} := {self.proof}"

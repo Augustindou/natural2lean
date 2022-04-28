@@ -27,8 +27,8 @@ LEAN_HEADER += "open Nat\n\n"
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
-    (r"even", r"divisible"): "try exact ⟨_, by assumption⟩\n\n\n",
-    (r"%.*=") : "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩\n\n\n",
+    (r"even", r"divisible"): "try exact ⟨_, by assumption⟩",
+    (r"%.*=") : "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩",
 }
 
 
@@ -85,9 +85,9 @@ def get_proof(state: State, indentation_lvl=1) -> str:
         statement_is_goal(statement, state.goals[0])
         and (ccl := find_conclusion(state, indentation_lvl=indentation_lvl)) is not None
     ):
-        state.lean_text += ccl
+        state.lean_text += ccl + "\n\n"
     else:
-        state.lean_text += "\n\n" + indent(statement.translate(hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses))
+        state.lean_text += indent(statement.translate(hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses)) + "\n"
 
     # send to lean
     lean_feedback = get_lean_feedback(state.lean_text)
