@@ -1,6 +1,6 @@
 import re
 
-from natural2lean.text.have import Have
+from .have import Have
 from ..structure.matching import Matching, Translatable
 
 # words that indicate that the case is not the first one
@@ -59,6 +59,6 @@ class Case(Matching):
         hyp_name = relevant_hyp.split(":")[0].strip()
         hyp_count = relevant_hyp.count("∨")
         rcases = f"rcases {hyp_name} with " + " | ".join([hyp_name] * (hyp_count+1))
-        return f"{rcases}\n{self.sub_statement.translate(hyp_list=hyp_list, **kwargs)}"
+        return f"{rcases}\n\n{self.sub_statement.translate(hyp_list=hyp_list, **kwargs)}\n"
             
             
