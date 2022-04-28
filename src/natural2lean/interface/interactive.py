@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import re
 from InquirerPy import inquirer
 
-from .lean_feedback import get_lean_feedback, FAIL, NO_GOALS
+from .lean_feedback import LeanFeedback, get_lean_feedback, FAIL, NO_GOALS, BACKTRACK
 from ..propositions.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching, Translatable
 from ..text.theorem import Example, Theorem
@@ -14,6 +14,8 @@ from ..utils.indentation import indent
 RED_COLOR = "\033[1;31m"
 RESET_COLOR = "\033[0m"
 color_red = lambda s: RED_COLOR + s + RESET_COLOR
+
+
 
 STATEMENT_POSSIBILITIES: list[Matching] = [
     Case,
@@ -89,22 +91,35 @@ def get_proof(state: State, indentation_lvl=1) -> str:
     else:
         state.lean_text += "\n\n" + indent(statement.translate(hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses))
 
+
     # send to lean
     lean_feedback = get_lean_feedback(state.lean_text)
+    
+    if lean_feedback is BACKTRACK:
+        print(indent("Backtracking...\n")))
+        return BACKTRACK
+    
+    # relation to goal
+    goal_should_change = isinstance(statement, Case)
+    goals_changed = lean_feedback.goals != old_state.goals if isinstance(lean_feedback, LeanFeedback) else False
     # backtrack on fail
-    if lean_feedback is FAIL:
+    if lean_feedback is FAIL or goals_changed and not goal_should_change:
         print(color_red(indent("Failed to understand statement. Backtracking...\n")))
-        return get_proof(old_state, indentation_lvl=indentation_lvl)
+        return BACKTRACK
     # end of proof
     if lean_feedback is NO_GOALS:
         print(f"Proof is correct! Congratulations! 🚀")
-        return
+        return NO_GOALS
     # update goals and hypotheses
     state.goals = lean_feedback.goals
     state.variables = lean_feedback.variables
     state.hypotheses = lean_feedback.hypotheses
 
-    return get_proof(state, indentation_lvl=indentation_lvl)
+    while (res := get_proof(state, indentation_lvl=indentation_lvl)) == BACKTRACK:
+        pass
+    
+    if res != NO_GOALS:
+        raise Exception("Something went wrong.")
 
 
 # -------------------------------- GET THEOREM --------------------------------

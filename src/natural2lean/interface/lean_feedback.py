@@ -4,12 +4,14 @@ from subprocess import PIPE, Popen
 
 GOAL_PATTERN = r"⊢ (.*)"
 HYP_BLOCK_PATTERN = r"unsolved goals\n((?:.|\s)*?)\n⊢"
+BACKTRACK_INDICATORS = ["BACKTRACK", "BACK"]
 TACTIC_FAILED = r"tactic .+ failed"
 PATH_TO_MAIN = "lean/Main.lean"
 SETS = ["ℕ", "ℤ", "ℚ", "ℝ"]
 
 NO_GOALS = 0
-FAIL = -1
+BACKTRACK = -1
+FAIL = -2
 
 
 @dataclass(frozen=True)
@@ -32,6 +34,9 @@ def get_lean_feedback(input: str) -> LeanFeedback:
         .stdout.read()
         .decode("utf-8")
     )
+    
+    if raw_feedback.upper() in BACKTRACK_INDICATORS:
+        return BACKTRACK
 
     # get goals
     goals = re.findall(GOAL_PATTERN, raw_feedback)
