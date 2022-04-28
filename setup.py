@@ -29,6 +29,7 @@ setuptools.setup(
     extras_require={
         "dev": [
             "pytest>=3.6",
+            "pyperclip"
         ]
     },
 )

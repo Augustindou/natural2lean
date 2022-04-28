@@ -1,6 +1,6 @@
 import re
 
-from natural2lean.text.have import Have
+from .have import Have
 from ..structure.matching import Matching, Translatable
 
 # words that indicate that the case is not the first one

@@ -60,15 +60,6 @@ def main():
 
 # if run without arguments
 def ask_for_mode():
-    question = [
-        {
-            "type": "list",
-            "name": "mode",
-            "message": "What mode do you want to use?",
-            "choices": ["interactive", "file"],
-            "default": "interactive",
-        }
-    ]
     mode = inquirer.select(
         message="What mode do you want to use?",
         choices=["interactive", "file"],
