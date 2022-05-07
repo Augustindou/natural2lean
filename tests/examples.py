@@ -21,7 +21,9 @@ def main():
     # equation
     examples.append((Math, "$a \leq b \lt b+1$"))
     # multiple propositions
-    examples.append((MultiplePropositions, "$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$"))
+    examples.append(
+        (MultiplePropositions, "$a$ is divisible by $b$ and $\\frac{a}{b} = a^2$")
+    )
     # implication
     examples.append(
         (
@@ -53,6 +55,7 @@ def main():
         print(f"LaTeX:\n{example}")
         print()
         print(f"Lean:\n{cls.match(example).translate()}")
+
 
 if __name__ == "__main__":
     main()

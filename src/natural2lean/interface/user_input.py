@@ -1,13 +1,15 @@
 from InquirerPy import inquirer
-from ..text.theorem import Example, Theorem
 from ..structure.matching import Matching
-from ..propositions.multiple_propositions import MultiplePropositions
+from ..text.theorem import Example, Theorem
 from ..text.case import Case
 from ..text.have import Have
-from .lean_feedback import BACKTRACK, FAIL, RESTART, NO_GOALS
+from ..propositions.multiple_propositions import MultiplePropositions
+from .lean_feedback import BACKTRACK, EXIT
 
-BACKTRACK_INDICATORS = ["BACK", "BACKTRACK"]
-
+KEYWORDS = {
+    BACKTRACK: ("BACKTRACK", "BACK"),
+    EXIT: ("EXIT", "QUIT", "STOP"),
+}
 
 THEOREM_POSSIBILITIES: list[Matching] = [
     Theorem,
@@ -20,27 +22,36 @@ STATEMENT_POSSIBILITIES: list[Matching] = [
     MultiplePropositions,
 ]
 
-# -------------------------------- 
-# GET USER INPUT 
 # --------------------------------
+# GET USER INPUT
+# --------------------------------
+
 
 def theorem_prompt() -> Matching:
     """Asks the user for a theorem and returns the matching object.
-    
+
     Returns:
         Matching: The matching object.
     """
-    valid_input = lambda s: match_multiple(s, THEOREM_POSSIBILITIES) is not None
-    
+    valid_input = (
+        lambda s: match_multiple(s, THEOREM_POSSIBILITIES) is not None
+        or keyword_status_code(s) is not None
+    )
+
     user_input = inquirer.text(
-        message="Enter a theorem statement.\n ",
+        message="Enter a theorem statement. You can also type 'exit' or 'backtrack'.\n ",
         validate=valid_input,
         invalid_message="Invalid theorem. Try 'theorem [th_name]: if [hyp] then [ccl]' or simply 'if [hyp] then [ccl]'",
     ).execute()
-    
+
+    print()
+
+    if (status_code := keyword_status_code(user_input)) is not None:
+        return status_code
+
     match = match_multiple(user_input, THEOREM_POSSIBILITIES)
-    
     return match
+
 
 def statement_prompt() -> Matching:
     """Asks the user for a statement and returns the matching object.
@@ -48,17 +59,22 @@ def statement_prompt() -> Matching:
     Returns:
         Matching: The matching object.
     """
-    valid_input = lambda s: match_multiple(s, STATEMENT_POSSIBILITIES) is not None or backtracking_asked(s)
-    
+    valid_input = (
+        lambda s: match_multiple(s, STATEMENT_POSSIBILITIES) is not None
+        or keyword_status_code(s) is not None
+    )
+
     user_input = inquirer.text(
-            message="Input a statement\n ",
-            validate=valid_input,
-            invalid_message="Invalid statement.",
-        ).execute()
+        message="Input a statement. You can also type 'exit' or 'backtrack'.\n ",
+        validate=valid_input,
+        invalid_message="Invalid statement.",
+    ).execute()
+
     print()
-    
-    if backtracking_asked(user_input):
-        return BACKTRACK
+
+    if (status_code := keyword_status_code(user_input)) is not None:
+        return status_code
+
     match = match_multiple(user_input, STATEMENT_POSSIBILITIES)
     return match
 
@@ -73,6 +89,9 @@ def match_multiple(input: str, possibilities: list[Matching]) -> Matching:
             return match
     return None
 
-def backtracking_asked(s: str):
-    return s.upper() in BACKTRACK_INDICATORS
-    
+
+def keyword_status_code(s: str) -> int:
+    for status_code, keywords in KEYWORDS.items():
+        if s.upper() in keywords:
+            return status_code
+    return None

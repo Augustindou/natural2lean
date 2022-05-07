@@ -65,5 +65,6 @@ def get_lean_feedback(input: str) -> LeanFeedback:
 
     return LeanFeedback(variables=variables, hypotheses=hypotheses, goals=goals)
 
+
 def backtracking_asked(s: str):
     return s.upper() in BACKTRACK_INDICATORS

@@ -25,7 +25,9 @@ class IdentifiersInSet(Matching):
         # open group
         r" *("
         # MultipleIdentifiers
-        r"" + MultipleIdentifiers.pattern + r""
+        r""
+        + MultipleIdentifiers.pattern
+        + r""
         # # match keyword for inclusion (can be adapted / extended for other notations)
         r"(∈) *"
         # the set
@@ -62,4 +64,13 @@ class IdentifiersInSet(Matching):
             return f"({lean_identifiers} : {lean_set})"
 
         if self.set.type == Set.POSSIBILITIES:
-            return "(" + ") ∧ (".join([self.set.translate(identifier=i.translate()) for i in self.identifiers]) + ")"
+            return (
+                "("
+                + ") ∧ (".join(
+                    [
+                        self.set.translate(identifier=i.translate())
+                        for i in self.identifiers
+                    ]
+                )
+                + ")"
+            )

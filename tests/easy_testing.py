@@ -21,8 +21,7 @@ EXAMPLES = {
         r"For the last case, by definition of the modulo operation, we have $k \in \mathbb{N}$ such that $q = 3k + 2$",
         r"Following the same expansion, we have $q^2 = (3k+2)^2 = 3(3k^2+4k+1) +1$",
         r"Hence, we have $q^2 \mod 3 = 1$ again",
-        
-    ]
+    ],
 }
 
 if __name__ == "__main__":
@@ -33,29 +32,28 @@ if __name__ == "__main__":
         message="Which theorem do you want to test?",
         choices=examples_titles,
     ).execute()
-    
+
     statements = EXAMPLES[choice]
 
     pyperclip.copy(statements[0])
     print(f"\n{GREEN_COLOR}copied theorem statement: \n  {statements[0]}\n")
 
     i = 1
-    
+
     while True:
         choice = inquirer.select(
             message="What do you want to copy?",
             choices=statements,
             default=statements[i],
         ).execute()
-        
+
         # copy to clipboard
         pyperclip.copy(choice)
         print(f"\n{GREEN_COLOR}copied statement: \n  {choice}\n")
-        
+
         # get next position in list
         i = statements.index(choice) + 1
-        
+
         # break when all statements are copied
         if i == len(statements):
             break
-        

@@ -71,7 +71,7 @@ class Math(Matching):
         return False
 
     # small util functions
-    
+
     def is_equation(self):
         return isinstance(self.content, Equation)
 
@@ -86,5 +86,6 @@ class Math(Matching):
 
     def is_expression_possibilities(self):
         return isinstance(self.content, ExpressionPossibilities)
+
 
 # TODO : x = ab => x = a * b or x = ab (as a single identifier) => dependent on the presence or not of identifiers a and b or ab before

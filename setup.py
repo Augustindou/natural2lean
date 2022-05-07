@@ -26,10 +26,5 @@ setuptools.setup(
     install_requires=[
         "inquirerpy",
     ],
-    extras_require={
-        "dev": [
-            "pytest>=3.6",
-            "pyperclip"
-        ]
-    },
+    extras_require={"dev": ["pytest>=3.6", "pyperclip"]},
 )

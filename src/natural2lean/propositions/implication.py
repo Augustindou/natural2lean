@@ -35,7 +35,5 @@ class Implication(Matching):
 
     def translate(self, hyp=None, **kwargs) -> str:
         definition = "" if hyp is None else f"{hyp} : "
-        
-        return (
-            f"{definition}{self.hypotheses.translate(separator=' → ')} → {self.theses.translate()}"
-        )
+
+        return f"{definition}{self.hypotheses.translate(separator=' → ')} → {self.theses.translate()}"

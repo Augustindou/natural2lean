@@ -1,7 +1,7 @@
 import sys
 from InquirerPy import inquirer
 from InquirerPy.validator import PathValidator
-from natural2lean.interface.old_interactive import interactive_mode
+from natural2lean.interface.interactive import interactive_mode
 import argparse
 
 RED_COLOR = "\033[1;31m"
@@ -116,8 +116,10 @@ def ask_for_output_file():
         return ask_for_output_file()
     return output_file
 
+
 def translate(text: str) -> str:
     return "Full text translation is not implemented yet"
+
 
 if __name__ == "__main__":
     main()

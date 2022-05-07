@@ -3,7 +3,15 @@ from dataclasses import dataclass
 import re
 from InquirerPy import inquirer
 
-from .old_lean_feedback import LeanFeedback, backtracking_asked, get_lean_feedback, NO_GOALS, RESTART, BACKTRACK, FAIL
+from .old_lean_feedback import (
+    LeanFeedback,
+    backtracking_asked,
+    get_lean_feedback,
+    NO_GOALS,
+    RESTART,
+    BACKTRACK,
+    FAIL,
+)
 from ..propositions.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching, Translatable
 from ..text.theorem import Example, Theorem
@@ -14,7 +22,6 @@ from ..utils.indentation import indent
 RED_COLOR = "\033[1;31m"
 RESET_COLOR = "\033[0m"
 color_red = lambda s: RED_COLOR + s + RESET_COLOR
-
 
 
 STATEMENT_POSSIBILITIES: list[Matching] = [
@@ -30,7 +37,7 @@ LEAN_HEADER += "open Nat\n\n"
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
     (r"even", r"divisible"): "try exact ⟨_, by assumption⟩",
-    (r"%.*=") : "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩",
+    (r"%.*="): "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩",
 }
 
 
@@ -86,23 +93,32 @@ def get_proof(state: State, indentation_lvl=1) -> str:
     if statement is BACKTRACK:
         print(indent("Backtracking...\n"))
         return BACKTRACK
-    
+
     if (
         statement_is_goal(statement, state.goals[0])
         and (ccl := find_conclusion(state, indentation_lvl=indentation_lvl)) is not None
     ):
         state.lean_text += ccl + "\n\n"
     else:
-        state.lean_text += indent(statement.translate(hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses)) + "\n"
-
+        state.lean_text += (
+            indent(
+                statement.translate(
+                    hyp=f"h{len(state.hypotheses)}", hyp_list=state.hypotheses
+                )
+            )
+            + "\n"
+        )
 
     # send to lean
     lean_feedback = get_lean_feedback(state.lean_text)
-    
-    
+
     # relation to goal
     goal_should_change = isinstance(statement, Case)
-    goals_changed = lean_feedback.goals != old_state.goals if isinstance(lean_feedback, LeanFeedback) else False
+    goals_changed = (
+        lean_feedback.goals != old_state.goals
+        if isinstance(lean_feedback, LeanFeedback)
+        else False
+    )
     # backtrack on fail
     if lean_feedback is FAIL or goals_changed and not goal_should_change:
         print(color_red(indent("Failed to understand statement. Try again !\n")))
@@ -117,7 +133,6 @@ def get_proof(state: State, indentation_lvl=1) -> str:
     state.hypotheses = lean_feedback.hypotheses
 
     return next_statement(state, old_state, indentation_lvl=indentation_lvl)
-
 
 
 # ----------------------------- STATEMENT VS GOAL -----------------------------
@@ -148,7 +163,9 @@ def find_conclusion(state: State, indentation_lvl: int = 1) -> str:
                     return ccl
     return None
 
+
 # ----------------------------- NEXT STATEMENT -----------------------------
+
 
 def next_statement(state: State, old_state: State, indentation_lvl: int = 1):
     res = get_proof(state, indentation_lvl=indentation_lvl)
@@ -163,5 +180,7 @@ def next_statement(state: State, old_state: State, indentation_lvl: int = 1):
         if res is NO_GOALS:
             print("no goals")
             return NO_GOALS
-        
-        raise ValueError(f"Result from proof is {res}, but should be BACKTRACK ({BACKTRACK}), NO_GOALS ({NO_GOALS}) or RESTART ({RESTART})")
+
+        raise ValueError(
+            f"Result from proof is {res}, but should be BACKTRACK ({BACKTRACK}), NO_GOALS ({NO_GOALS}) or RESTART ({RESTART})"
+        )

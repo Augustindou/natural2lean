@@ -7,10 +7,10 @@ from ..structure.matching import Matching
 
 class ExpressionPossibilities(Matching):
     """ExpressionPossibilities class.
-    
-        - a ∈ __SET__[1, 2, 3]
-        - a + b ∈ __SET__[1, 2, 3]
-        - ...
+
+    - a ∈ __SET__[1, 2, 3]
+    - a + b ∈ __SET__[1, 2, 3]
+    - ...
     """
 
     #   *(([+\-*/^%(). ]*(?:\w)+(?:\w|\s|[+\-*/^%(). ])*) *(∈) *(__SET__\[.*\])) *
@@ -18,7 +18,9 @@ class ExpressionPossibilities(Matching):
         # opening group
         r" *("
         # expression
-        r"" + Expression.pattern + r""
+        r""
+        + Expression.pattern
+        + r""
         # in specific set
         r"*(∈) *(__SET__\[.*\])) *"
     )
@@ -32,12 +34,11 @@ class ExpressionPossibilities(Matching):
 
         # match the expression
         self.expression = Expression(match.group(2))
-        
 
     def translate(self, hyp=None, **kwargs) -> str:
         definition = "" if hyp is None else f"{hyp} : "
-        
+
         if self.set.type == Set.POSSIBILITIES:
             return f"{definition}{self.set.translate(identifier=self.expression.translate())}"
-        
+
         raise Exception(f"Should not happen: {self.string}, {self.__class__.__name__}")
