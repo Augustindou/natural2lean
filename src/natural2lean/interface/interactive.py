@@ -5,7 +5,7 @@ from .user_input import theorem_prompt, statement_prompt
 from ..structure.matching import Translatable
 from ..utils.stack import Stack
 from ..utils.indentation import indent
-from ..utils.pretty_printing import nth, get_edits_string
+from ..utils.pretty_printing import nth, string_differences
 
 
 LEAN_HEADER = (
@@ -14,8 +14,9 @@ LEAN_HEADER = (
     "open Nat"
 )
 
-red = lambda s: "\033[31m" + s + "\033[0m"
-green = lambda s: "\033[32m" + s + "\033[0m"
+red = lambda s: "\u001b[31m" + s + "\u001b[0m"
+green = lambda s: "\u001b[32m" + s + "\u001b[0m"
+cyan = lambda s: "\u001b[36m" + s + "\u001b[0m"
 
 
 @dataclass
@@ -45,13 +46,13 @@ def interactive_mode():
     # main loop
     while True:
         current_state: State = stack.peek()
-        print(current_state)
+        print(string_differences(str(stack.peek(1)), str(current_state)))
         # get theorem if no goals
         if not current_state.goals:
             theorem = theorem_prompt()
 
             if theorem == EXIT:
-                print(red("👋 Bye !\n"))
+                print(cyan("👋 Bye !\n"))
                 return
 
             if theorem == BACKTRACK:
@@ -83,7 +84,7 @@ def interactive_mode():
             statement = statement_prompt()
 
             if statement == EXIT:
-                print(red("👋 Bye !"))
+                print(cyan("👋 Bye !\n"))
                 return
 
             if statement == BACKTRACK:
@@ -105,7 +106,7 @@ def interactive_mode():
             lean_feedback = get_lean_feedback(new_lean_text)
 
             if lean_feedback == FAIL:
-                print(red("🧨 Statement didn't work, try again."))
+                print(red("🧨 Statement didn't work, try again.\n"))
                 continue
 
             elif lean_feedback == NO_GOALS:
@@ -128,9 +129,9 @@ def interactive_mode():
 
 def backtrack(stack: Stack):
     if len(stack) == 1:
-        print(red("Cannot backtrack anymore, try 'exit' if you want to quit.\n"))
+        print(red("🧨 Cannot backtrack anymore, try 'exit' if you want to quit.\n"))
         return
 
-    print(red("Backtracking...\n"))
+    print(cyan("⏪ Backtracking...\n"))
     stack.pop()
     new_state: State = stack.peek()

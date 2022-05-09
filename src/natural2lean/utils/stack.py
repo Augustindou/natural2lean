@@ -6,7 +6,6 @@ class Node:
         self.value = value
         self.next: Node = next
 
-
 class Stack:
     def __init__(self) -> None:
         self.head: Node = None
@@ -26,11 +25,23 @@ class Stack:
 
         return value
 
-    def peek(self):
-        if self.size == 0:
-            return None
+    def peek(self, i=0):
+        """Peek the top of the stack without removing it.
 
-        return self.head.value
+        Args:
+            i (int, optional): The index of the element to peek, if 0 (default), the top of the stack is peeked.
+
+        Returns:
+            _type_: The value of the element at the given index.
+        """
+        if self.size <= i:
+            return None
+        
+        current = self.head
+        for _ in range(i):
+            current = current.next
+
+        return current.value
 
     def __len__(self):
         return self.size
