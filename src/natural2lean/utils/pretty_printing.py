@@ -30,5 +30,6 @@ def nth(n):
         return "3rd"
     return f"{n}th"
 
+
 if __name__ == "__main__":
-    print(get_edits_string("abce", "abcd"))
+    print(string_differences("abce", "abcd"))

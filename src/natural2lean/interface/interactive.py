@@ -2,21 +2,30 @@ from dataclasses import dataclass
 from .conclude_proof import get_conclusion
 from .lean_feedback import BACKTRACK, EXIT, FAIL, NO_GOALS, LeanBlock, get_lean_feedback
 from .user_input import theorem_prompt, statement_prompt
-from ..structure.matching import Translatable
 from ..utils.stack import Stack
 from ..utils.indentation import indent
 from ..utils.pretty_printing import nth, string_differences
 
+red = lambda s: "\u001b[31m" + s + "\u001b[0m"
+green = lambda s: "\u001b[32m" + s + "\u001b[0m"
+cyan = lambda s: "\u001b[36m" + s + "\u001b[0m"
+underline = lambda s: "\u001b[4m" + s + "\u001b[0m"
+
+WELCOME_MESSAGE = (
+    f"Welcome to the Natural2Lean interactive mode ! You can enter line-by-line proofs for theorems and get feedback on what you have already proven (hypotheses) and what you need to prove (goal). If your input could not be translated or did not work, you will be asked to {red('try again')}. In this case, try to simplify your statement !\n"
+    f"\n"
+    f"Keywords :\n"
+    f"    If you made a mistake, you can use the {cyan('backtrack')} (or {cyan('back')}) keyword to go one step back.\n"
+    f"    If you want to exit, you can use the {cyan('exit')} or {cyan('quit')} keywords.\n"
+    f"\n"
+    f"You can visit {underline('https://github.com/Augustindou/natural2lean#use')} to have an overview on what the system will recognize."
+)
 
 LEAN_HEADER = (
     "import LeanUtils\n"
     'def main : IO Unit := IO.println s!"Hello, world!"\n'
     "open Nat"
 )
-
-red = lambda s: "\u001b[31m" + s + "\u001b[0m"
-green = lambda s: "\u001b[32m" + s + "\u001b[0m"
-cyan = lambda s: "\u001b[36m" + s + "\u001b[0m"
 
 
 @dataclass
@@ -41,7 +50,7 @@ def interactive_mode():
     stack.push(State(goals=[], lean_text=LEAN_HEADER))
 
     # print welcome message with info
-    # TODO
+    print(WELCOME_MESSAGE)
 
     # main loop
     while True:
@@ -106,7 +115,11 @@ def interactive_mode():
             lean_feedback = get_lean_feedback(new_lean_text)
 
             if lean_feedback == FAIL:
-                print(red("🧨 Statement didn't work, try again.\n"))
+                print(
+                    red(
+                        "🧨 The system could not understand your statement, try again.\n"
+                    )
+                )
                 continue
 
             elif lean_feedback == NO_GOALS:
@@ -115,12 +128,22 @@ def interactive_mode():
                 continue
 
             # solved at least one goal
-            elif len(current_state.goals) < len(lean_feedback):
+            elif len(current_state.goals) > len(lean_feedback):
                 print(
                     green(
                         f"🚀 Congratulations, you solved a goal ! There are {len(lean_feedback)} goals left."
                     )
                 )
+
+            # created a new goal
+            # TODO : add possibility for new goals if the statement can create some
+            elif len(current_state.goals) < len(lean_feedback):
+                print(
+                    red(
+                        "🧨 The system could not understand your statement, try again.\n"
+                    )
+                )
+                continue
 
             # lean_feedback is a list of goals
             stack.push(State(goals=lean_feedback, lean_text=new_lean_text))
@@ -129,7 +152,7 @@ def interactive_mode():
 
 def backtrack(stack: Stack):
     if len(stack) == 1:
-        print(red("🧨 Cannot backtrack anymore, try 'exit' if you want to quit.\n"))
+        print(red("🧨 Cannot backtrack anymore, try 'exit' if you want to quit."))
         return
 
     print(cyan("⏪ Backtracking...\n"))

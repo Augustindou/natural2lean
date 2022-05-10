@@ -39,7 +39,7 @@ def theorem_prompt() -> Matching:
     )
 
     user_input = inquirer.text(
-        message="Enter a theorem statement. You can also type 'exit' or 'backtrack'.\n ",
+        message="Enter a theorem statement.\n ",
         validate=valid_input,
         invalid_message="Invalid theorem. Try 'theorem [th_name]: if [hyp] then [ccl]' or simply 'if [hyp] then [ccl]'",
     ).execute()
@@ -65,7 +65,7 @@ def statement_prompt() -> Matching:
     )
 
     user_input = inquirer.text(
-        message="Input a statement. You can also type 'exit' or 'backtrack'.\n ",
+        message="Input a statement.\n ",
         validate=valid_input,
         invalid_message="Invalid statement.",
     ).execute()

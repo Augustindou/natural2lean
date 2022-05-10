@@ -8,7 +8,7 @@ from ..utils.indentation import indent
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
     (r"even", r"divisible"): "try exact ⟨_, by assumption⟩",
-    (r"%.*="): "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩",
+    (r"%.*=",): "apply mod_rewrite.mpr; try exact ⟨_, by assumption⟩",
 }
 
 
@@ -40,7 +40,8 @@ def find_conclusion(state) -> str:
             if re.search(indicator, state.goals[0].goal):
                 lean_fb = get_lean_feedback(state.lean_text + ccl)
                 if lean_fb is FAIL:
-                    continue
+                    break
                 if lean_fb is NO_GOALS or len(lean_fb) < len(state.goals):
                     return ccl
+                break
     return None

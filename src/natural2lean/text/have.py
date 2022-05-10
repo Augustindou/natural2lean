@@ -1,16 +1,21 @@
 import re
 
 from .such_that import SuchThat
-from ..math_mode.equation import Equation
 from ..math_mode.math import Math
 from ..propositions.implication import Implication
 from ..propositions.multiple_propositions import MultiplePropositions
-from ..structure.matching import Matching, Unmatchable
+from ..structure.matching import Matching
 from ..utils.indentation import indent
 
-# simple statements (contradiction, ...)
 SIMPLE_STATEMENTS = {
     "contradiction": "contradiction",
+}
+
+PROOFS = {
+    r"contradiction": "by contradiction\n",
+    r"definition": f"by \n{indent('simp at *\nassumption\n')}",
+    r"possibilities.*modulo": "mod_3_poss _\n",
+    r"modulo.*possibilities": "mod_3_poss _\n",
 }
 
 
@@ -80,15 +85,12 @@ class Have(Matching):
         if isinstance(self.statement, Math) and self.statement.is_equation():
             return f"by \n{indent(self.statement.content.translate_to_calc())}"
 
-        if "definition" in self.string.lower():
-            proof = "simp at *\nassumption\n"
-            return f"by \n{indent(proof)}"
-
-        if "possibilities" in self.string.lower() and "modulo" in self.string.lower():
-            return f"mod_3_poss _"
+        for pattern, proof in PROOFS.items():
+            if re.search(pattern, self.string.lower()):
+                return proof
 
         # if no proof is given, just use simp [*]
-        return "simp [*]"
+        return "by simp [*]"
 
     def translate(self, hyp="h", **kwargs) -> str:
 

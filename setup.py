@@ -23,6 +23,7 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=["natural2lean"],
     python_requires=">=3.9",
+    # if you modify install_requires, you must also modify the requirements.txt file
     install_requires=[
         "inquirerpy",
     ],

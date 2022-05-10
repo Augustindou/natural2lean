@@ -6,6 +6,7 @@ class Node:
         self.value = value
         self.next: Node = next
 
+
 class Stack:
     def __init__(self) -> None:
         self.head: Node = None
@@ -36,7 +37,7 @@ class Stack:
         """
         if self.size <= i:
             return None
-        
+
         current = self.head
         for _ in range(i):
             current = current.next

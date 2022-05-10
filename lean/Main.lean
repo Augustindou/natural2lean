@@ -6,3 +6,4 @@ theorem square_of_even_number_is_even (m : Nat) (h0 : even (m)) : even (m^2) := 
   have ⟨n, h1⟩ : ∃ (n : Nat), m = 2*n := by 
     simp at *
     assumption
+  even (m^2)
