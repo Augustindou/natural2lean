@@ -18,7 +18,7 @@ WELCOME_MESSAGE = (
     f"    If you made a mistake, you can use the {cyan('backtrack')} (or {cyan('back')}) keyword to go one step back.\n"
     f"    If you want to exit, you can use the {cyan('exit')} or {cyan('quit')} keywords.\n"
     f"\n"
-    f"You can visit {underline('https://github.com/Augustindou/natural2lean#use')} to have an overview on what the system will recognize."
+    f"You can visit {underline('github.com/Augustindou/natural2lean/blob/main/README.md#how-the-system-works')} to have an overview on what the system will recognize."
 )
 
 LEAN_HEADER = (
@@ -39,7 +39,7 @@ class State:
 
         result = f"Current goal: {indent(str(self.goals[0]))[2:]}"
         for i, goal in enumerate(self.goals[1:]):
-            f"\n{nth(i+1)} goal: {indent(str(goal))}"
+            result += f"\n{nth(i+2)} goal: {indent(str(goal))}"
 
         return result
 
@@ -129,15 +129,16 @@ def interactive_mode():
 
             # solved at least one goal
             elif len(current_state.goals) > len(lean_feedback):
+                plural = len(lean_feedback) > 1
+                n_goals = ("are" if plural else "is") + f" {len(lean_feedback)} goal" + ('s' if plural else '')
                 print(
                     green(
-                        f"🚀 Congratulations, you solved a goal ! There are {len(lean_feedback)} goals left."
+                        f"🚀 Congratulations, you solved a goal ! There {n_goals} left.\n"
                     )
                 )
 
             # created a new goal
-            # TODO : add possibility for new goals if the statement can create some
-            elif len(current_state.goals) < len(lean_feedback):
+            elif len(current_state.goals) < len(lean_feedback) and not statement.can_create_new_goals():
                 print(
                     red(
                         "🧨 The system could not understand your statement, try again.\n"

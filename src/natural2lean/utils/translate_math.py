@@ -64,7 +64,7 @@ LATEX_FUNCTIONS = [
     LatexFunction(r"\\sqrt *{", 1, ["((", ") ^ (1/2))"]),
     LatexFunction(r"\^ *{", 1, ["^(", ")"]),
     LatexFunction(r"_ *{", 1, ["_", ""]),
-    LatexFunction(r"∈ *{", 1, ["∈ __SET__[", "]"]),
+    LatexFunction(r"∈ *{", 1, ["∈ __POSS__[", "]"]),
 ]
 IMPLICIT_OPERATIONS = {
     # 2(x + y) -> 2 * (x + y)

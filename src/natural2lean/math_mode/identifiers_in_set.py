@@ -3,15 +3,12 @@ from .multiple_identifiers import MultipleIdentifiers
 from .set import Set
 from ..structure.matching import Matching
 
-# TODO : case for $ a \in \{1, 2, 3\} $
-
 
 class IdentifiersInSet(Matching):
     """IdentifiersInSet class.
     Variation of the MultipleIdentifiers, allows to match identifiers as part of a set. Identifiers will be available in `self.identifiers`.
 
     Some examples of what IdentifiersInSet will match are :
-        - a ∈ __SET__[1, 2, 3]
         - a, b ∈ ℕ
         - a, b, c, d ∈ ℤ
         - ...
@@ -56,21 +53,8 @@ class IdentifiersInSet(Matching):
         return False
 
     def translate(self, **kwargs) -> str:
-        if self.set.type == Set.SET:
-            lean_identifiers = " ".join(
-                identifier.translate() for identifier in self.identifiers
-            )
-            lean_set = self.set.translate()
-            return f"({lean_identifiers} : {lean_set})"
-
-        if self.set.type == Set.POSSIBILITIES:
-            return (
-                "("
-                + ") ∧ (".join(
-                    [
-                        self.set.translate(identifier=i.translate())
-                        for i in self.identifiers
-                    ]
-                )
-                + ")"
-            )
+        lean_identifiers = " ".join(
+            identifier.translate() for identifier in self.identifiers
+        )
+        lean_set = self.set.translate()
+        return f"({lean_identifiers} : {lean_set})"

@@ -11,6 +11,14 @@ class Translatable:
         """
         raise NotImplementedError
 
+    def can_create_new_goals(self) -> bool:
+        """Returns whether the instance can create new goals.
+
+        Returns:
+            bool: whether the instance can create new goals.
+        """
+        return False
+
 
 class Unmatchable(Translatable):
     """Unmatchable allows to create instances using the `__init__` method. This will call `set_contents` and `detect_errors`."""

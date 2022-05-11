@@ -1,7 +1,6 @@
 from InquirerPy import inquirer
 from ..structure.matching import Matching
 from ..text.theorem import Example, Theorem
-from ..text.case import Case
 from ..text.have import Have
 from ..propositions.multiple_propositions import MultiplePropositions
 from .lean_feedback import BACKTRACK, EXIT
@@ -17,7 +16,6 @@ THEOREM_POSSIBILITIES: list[Matching] = [
 ]
 
 STATEMENT_POSSIBILITIES: list[Matching] = [
-    Case,
     Have,
     MultiplePropositions,
 ]

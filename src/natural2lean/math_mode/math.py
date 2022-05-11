@@ -71,6 +71,8 @@ class Math(Matching):
         return False
 
     # small util functions
+    def can_create_new_goals(self) -> bool:
+        return self.content.can_create_new_goals()
 
     def is_equation(self):
         return isinstance(self.content, Equation)

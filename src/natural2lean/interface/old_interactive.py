@@ -15,7 +15,6 @@ from .old_lean_feedback import (
 from ..propositions.multiple_propositions import MultiplePropositions
 from ..structure.matching import Matching, Translatable
 from ..text.theorem import Example, Theorem
-from ..text.case import Case
 from ..text.have import Have
 from ..utils.indentation import indent
 
@@ -25,7 +24,6 @@ color_red = lambda s: RED_COLOR + s + RESET_COLOR
 
 
 STATEMENT_POSSIBILITIES: list[Matching] = [
-    Case,
     Have,
     MultiplePropositions,
 ]
