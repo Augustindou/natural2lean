@@ -4,7 +4,7 @@ from .lean_feedback import BACKTRACK, EXIT, FAIL, NO_GOALS, LeanBlock, get_lean_
 from .user_input import theorem_prompt, statement_prompt
 from ..utils.stack import Stack
 from ..utils.indentation import indent
-from ..utils.pretty_printing import nth, string_differences
+from ..utils.pretty_printing import nth, string_differences, to_indices
 
 red = lambda s: "\u001b[31m" + s + "\u001b[0m"
 green = lambda s: "\u001b[32m" + s + "\u001b[0m"
@@ -106,7 +106,7 @@ def interactive_mode():
             else:
                 new_lean_text = current_state.lean_text + indent(
                     statement.translate(
-                        hyp=f"h{len(current_state.goals[0].hypotheses)}",
+                        hyp=f"h{to_indices(len(current_state.goals[0].hypotheses))}",
                         hyp_list=current_state.goals[0].hypotheses,
                     )
                 )

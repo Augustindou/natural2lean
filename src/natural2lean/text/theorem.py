@@ -1,7 +1,8 @@
 import re
+
 from ..propositions.implication import Implication
 from ..structure.matching import Matching
-from ..utils.indentation import indent
+from ..utils.pretty_printing import to_indices
 
 
 # TODO : Modify Theorem to match with 'lemma' or 'theorem' keywords (or others ?).
@@ -80,7 +81,7 @@ class Theorem(Matching):
         # translate other hypotheses
         lean_hypotheses = " ".join(
             [
-                f"(h{i} : {hyp.translate()})"
+                f"(h{to_indices(i)} : {hyp.translate()})"
                 for i, hyp in enumerate(hypotheses.get_non_identifiers())
             ]
         )
@@ -124,7 +125,7 @@ class Example(Theorem):
         # translate other hypotheses
         lean_hypotheses = " ".join(
             [
-                f"(h{i} : {hyp.translate()})"
+                f"(h{to_indices(i)} : {hyp.translate()})"
                 for i, hyp in enumerate(hypotheses.get_non_identifiers())
             ]
         )

@@ -1,24 +1,18 @@
-# code from https://stackoverflow.com/questions/32500167/how-to-show-diff-of-two-string-sequences-in-colors
-
-import difflib
-
 red = lambda text: f"\033[38;2;255;0;0m{text}\033[38;2;255;255;255m"
 green = lambda text: f"\033[38;2;0;255;0m{text}\033[38;2;255;255;255m"
 blue = lambda text: f"\033[38;2;0;0;255m{text}\033[38;2;255;255;255m"
 white = lambda text: f"\033[38;2;255;255;255m{text}\033[38;2;255;255;255m"
 
-# TODO : transform to be line-by-line ?
 
-def string_differences(old, new):
+def string_differences(old: str, new: str) -> str:
     result = ""
-    codes = difflib.SequenceMatcher(a=old, b=new).get_opcodes()
-    for code in codes:
-        if code[0] == "equal":
-            result += white(old[code[1] : code[2]])
-        # elif code[0] in ["delete", "replace"]:
-        #     result += red(old[code[1] : code[2]])
-        elif code[0] in ["insert", "replace"]:
-            result += green(new[code[3] : code[4]])
+    
+    for line in new.splitlines():
+        if line in old:
+            result += white(line) + "\n"    
+        else:
+            result += green(line) + "\n"
+            
     return result
 
 
@@ -31,6 +25,16 @@ def nth(n):
         return "3rd"
     return f"{n}th"
 
+
+def to_indices(n: int):
+    indices = {"0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄", "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉"}
+    
+    result = ""
+    for digit in str(n):
+        result += indices[digit]
+    
+    return result
+    
 
 if __name__ == "__main__":
     print(string_differences("abce", "abcd\nhello\nworld\n\n\ntest"))

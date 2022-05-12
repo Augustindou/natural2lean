@@ -1,7 +1,7 @@
 import pyperclip
 from InquirerPy import inquirer
 
-GREEN_COLOR = "\033[1;32m"
+green = lambda s: "\u001b[32m" + s + "\u001b[0m"
 
 EXAMPLES = {
     "squares and evenness": [
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     statements = EXAMPLES[choice]
 
     pyperclip.copy(statements[0])
-    print(f"\n{GREEN_COLOR}copied theorem statement: \n  {statements[0]}\n")
+    print("\n" + green('copied theorem statement: \n  ') + green(statements[0]) + "\n")
 
     i = 1
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         # copy to clipboard
         pyperclip.copy(choice)
-        print(f"\n{GREEN_COLOR}copied statement: \n  {choice}\n")
+        print("\n" + green('copied statement: \n  ') + green(choice) + "\n")
 
         # get next position in list
         i = statements.index(choice) + 1
