@@ -36,7 +36,7 @@ if __name__ == "__main__":
     statements = EXAMPLES[choice]
 
     pyperclip.copy(statements[0])
-    print("\n" + green('copied theorem statement: \n  ') + green(statements[0]) + "\n")
+    print("\n" + green("copied theorem statement: \n  ") + green(statements[0]) + "\n")
 
     i = 1
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
         # copy to clipboard
         pyperclip.copy(choice)
-        print("\n" + green('copied statement: \n  ') + green(choice) + "\n")
+        print("\n" + green("copied statement: \n  ") + green(choice) + "\n")
 
         # get next position in list
         i = statements.index(choice) + 1

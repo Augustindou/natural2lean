@@ -25,7 +25,7 @@ STATEMENT_POSSIBILITIES: list[Matching] = [
 # --------------------------------
 
 
-def theorem_prompt() -> Matching:
+def theorem_prompt(default="") -> Matching:
     """Asks the user for a theorem and returns the matching object.
 
     Returns:
@@ -40,6 +40,7 @@ def theorem_prompt() -> Matching:
         message="Enter a theorem statement.\n ",
         validate=valid_input,
         invalid_message="Invalid theorem. Try 'theorem [th_name]: if [hyp] then [ccl]' or simply 'if [hyp] then [ccl]'",
+        default=default,
     ).execute()
 
     print()
@@ -48,10 +49,10 @@ def theorem_prompt() -> Matching:
         return status_code
 
     match = match_multiple(user_input, THEOREM_POSSIBILITIES)
-    return match
+    return match, user_input
 
 
-def statement_prompt() -> Matching:
+def statement_prompt(default="") -> Matching:
     """Asks the user for a statement and returns the matching object.
 
     Returns:
@@ -66,6 +67,7 @@ def statement_prompt() -> Matching:
         message="Input a statement.\n ",
         validate=valid_input,
         invalid_message="Invalid statement.",
+        default=default,
     ).execute()
 
     print()
@@ -74,7 +76,7 @@ def statement_prompt() -> Matching:
         return status_code
 
     match = match_multiple(user_input, STATEMENT_POSSIBILITIES)
-    return match
+    return match, user_input
 
 
 def match_multiple(input: str, possibilities: list[Matching]) -> Matching:

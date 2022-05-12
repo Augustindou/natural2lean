@@ -48,6 +48,8 @@ def interactive_mode():
     # initialize stack
     stack = Stack()
     stack.push(State(goals=[], lean_text=LEAN_HEADER))
+    # used to precomplete when an error occurs
+    previous_input = ""
 
     # print welcome message with info
     print(WELCOME_MESSAGE)
@@ -58,7 +60,8 @@ def interactive_mode():
         print(string_differences(str(stack.peek(1)), str(current_state)))
         # get theorem if no goals
         if not current_state.goals:
-            theorem = theorem_prompt()
+            theorem, user_input = theorem_prompt(default=previous_input)
+            previous_input = ""
 
             if theorem == EXIT:
                 print(cyan("👋 Bye !\n"))
@@ -74,6 +77,7 @@ def interactive_mode():
 
             if lean_feedback == FAIL:
                 print(red("🧨 Theorem statement didn't work, try again."))
+                previous_input = user_input
                 continue
 
             if lean_feedback == NO_GOALS:
@@ -90,7 +94,8 @@ def interactive_mode():
 
         # get statement if goals
         elif current_state.goals:
-            statement = statement_prompt()
+            statement, user_input = statement_prompt(default=previous_input)
+            previous_input = ""
 
             if statement == EXIT:
                 print(cyan("👋 Bye !\n"))
@@ -120,6 +125,7 @@ def interactive_mode():
                         "🧨 The system could not understand your statement, try again.\n"
                     )
                 )
+                previous_input = user_input
                 continue
 
             elif lean_feedback == NO_GOALS:
@@ -130,7 +136,11 @@ def interactive_mode():
             # solved at least one goal
             elif len(current_state.goals) > len(lean_feedback):
                 plural = len(lean_feedback) > 1
-                n_goals = ("are" if plural else "is") + f" {len(lean_feedback)} goal" + ('s' if plural else '')
+                n_goals = (
+                    ("are" if plural else "is")
+                    + f" {len(lean_feedback)} goal"
+                    + ("s" if plural else "")
+                )
                 print(
                     green(
                         f"🚀 Congratulations, you solved a goal ! There {n_goals} left.\n"
@@ -138,7 +148,10 @@ def interactive_mode():
                 )
 
             # created a new goal
-            elif len(current_state.goals) < len(lean_feedback) and not statement.can_create_new_goals():
+            elif (
+                len(current_state.goals) < len(lean_feedback)
+                and not statement.can_create_new_goals()
+            ):
                 print(
                     red(
                         "🧨 The system could not understand your statement, try again.\n"

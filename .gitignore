@@ -12,6 +12,7 @@
 *dist
 *.egg-info
 *.venv
+*.pytest_cache
 
 # vscode
 *.vscode

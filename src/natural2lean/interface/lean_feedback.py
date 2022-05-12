@@ -5,7 +5,11 @@ from typing import Union
 from ..utils.indentation import indent
 
 # if any of ERRORS is matched, the result will be FAIL, and the system will cancel the last input.
-ERRORS = [r"tactic .+ failed", r"unknown tactic"]
+ERRORS = [
+    r"tactic .+ failed",
+    r"error: unknown tactic",
+    r"error: expected command",
+]
 
 # patterns need a fullmatch on a line to work
 # patterns to recognize a goal, this will be checked first, and will create a new LeanBlock at each match. The only group must contain the goal.

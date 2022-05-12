@@ -13,7 +13,7 @@ SIMPLE_STATEMENTS = {
 
 PROOFS = {
     r"contradiction": "by contradiction",
-    r"definition": "by \n" + indent("simp at *\nassumption"),
+    r"definition": "by \n" + indent("simp_all"),
     r"possibilities.*modulo": "mod_3_poss _",
     r"modulo.*possibilities": "mod_3_poss _",
 }
@@ -56,10 +56,7 @@ class Have(Matching):
         match = re.search(Math.pattern, self.right_side)
         if match is not None:
             math_match: Math = Math.match(self.right_side[match.start() : match.end()])
-            if (
-                math_match.is_equation()
-                or math_match.is_expression_possibilities()
-            ):
+            if math_match.is_equation() or math_match.is_expression_possibilities():
                 return math_match
 
         # multiple propositions

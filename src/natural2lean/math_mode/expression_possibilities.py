@@ -34,10 +34,12 @@ class ExpressionPossibilities(Matching):
 
         # match the expression
         self.expression = Expression(match.group(2))
-        
+
     def detect_errors(self):
         if self.possibilities == None:
-            raise ValueError(f"Problem with identifying the different possibilities (between '{{' and '}}') in {self.string}")
+            raise ValueError(
+                f"Problem with identifying the different possibilities (between '{{' and '}}') in {self.string}"
+            )
         return super().detect_errors()
 
     def translate(self, hyp=None, proof="", **kwargs) -> str:
