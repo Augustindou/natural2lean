@@ -1,3 +1,6 @@
+from typing import Any
+
+
 class Node:
     def __init__(self, value, next=None) -> None:
         self.value = value

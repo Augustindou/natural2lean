@@ -1,6 +1,6 @@
-# Natural2Lean
+# natural2lean
 
-Translation of natural language proofs to lean4 for verification. The objective was to make a proof of concept, integrating a command line interface (CLI) to try out some proofs quickly.
+Translation of natural language proofs to lean4 for verification. The objective was to make a proof of concept of the translation system.
 
 Project developed for a master's thesis.
 Advisor : François Glineur

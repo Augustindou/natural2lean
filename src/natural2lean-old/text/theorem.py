@@ -1,5 +1,7 @@
 import re
 
+from ..utils.exceptions import TranslationError
+
 from ..propositions.implication import Implication
 from ..structure.matching import Matching
 from ..utils.pretty_printing import to_indices
@@ -12,13 +14,6 @@ from ..utils.pretty_printing import to_indices
 class Theorem(Matching):
     """Theorem class.
     Theorem matches needs the "theorem" keyword, followed by a name, followed by the content of the theorem (an implication).
-
-    Some examples of what MultipleIdentifiers will match are :
-        - a
-        - a, b
-        - a  ,b
-        - a, b, c, d
-        - ...
 
     Some more information :
         - TODO
@@ -38,7 +33,7 @@ class Theorem(Matching):
         r"\s*"
         # group 2 possibilities : only theorem or theorem with proof
         r"(?:"
-        # theroem with proof : proof must be separated by a blank line
+        # theorem with proof : proof must be separated by a blank line
         r"\n\s*\n\s*"
         # proof contents
         r"(?:.|\s)*"
@@ -49,7 +44,7 @@ class Theorem(Matching):
     def set_contents(self):
         match = re.fullmatch(self.pattern, self.string)
         if not match:
-            raise ValueError(
+            raise TranslationError(
                 f"Could not match {self.string} in {self.__class__.__name__}, should not use __init__ directly, but create instances using the match() method."
             )
 
@@ -64,11 +59,11 @@ class Theorem(Matching):
         # content
         self.statement: Implication = Implication.match(match.group(3))
         if self.statement is None:
-            raise ValueError(f"Could not match an Implication in {match.group(3)}.")
+            raise TranslationError(f"Could not match an Implication in {match.group(3)}.")
 
     def detect_errors(self):
         if self.statement.theses.contains_identifier():
-            raise ValueError(
+            raise TranslationError(
                 f"The thesis of the theorem {self.latex_name} contains an identifier. Complete statement : {self.string}"
             )
         return super().detect_errors()

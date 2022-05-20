@@ -1,7 +1,6 @@
 import re
 from typing import Callable, Iterable
-
-
+from ..utils.exceptions import TranslationError
 from ..utils.translate_math import translate_latex_math
 from ..structure.matching import Translatable
 from ..math_mode.math import Math
@@ -92,7 +91,7 @@ def split_proposition(string: str):
     # match math mode
     math_match = re.search(Math.pattern, string)
     if math_match == None:
-        raise ValueError("No math content in the proposition")
+        raise TranslationError("No math content in the proposition")
     math: Math = Math.match(math_match.group(0))
 
     # set

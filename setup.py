@@ -3,6 +3,9 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+with open("requirements.txt") as f:
+    requirements = f.readlines()
+
 setuptools.setup(
     name="natural2lean",
     version="0.0.1",
@@ -23,9 +26,10 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=["natural2lean"],
     python_requires=">=3.9",
-    # if you modify install_requires, you must also modify the requirements.txt file
-    install_requires=[
-        "inquirerpy",
-    ],
-    extras_require={"dev": ["pytest>=3.6", "pyperclip"]},
+    install_requires=requirements,
+    extras_require={
+        "dev": [
+            "pytest>=3.6",
+        ],
+    },
 )

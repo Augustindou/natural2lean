@@ -1,5 +1,7 @@
 from __future__ import annotations
 import re
+
+from ..utils.exceptions import TranslationError
 from ..structure.matching import Matching
 from ..utils.translate_math import translate_latex_math
 from .equation import Equation
@@ -38,7 +40,7 @@ class Math(Matching):
         # rematch
         match = re.fullmatch(self.pattern, self.string)
         if match == None:
-            raise ValueError(f"'{self.string}' is not a valid math block.")
+            raise TranslationError(f"'{self.string}' is not a valid math block.")
 
         # different strings
         self.latex_string = match.group(2)
@@ -51,14 +53,14 @@ class Math(Matching):
                 self.content: Matching = content
                 return
 
-        raise ValueError(
+        raise TranslationError(
             f"No match found for {self.lean_string}, tested {', '.join([poss.__name__ for poss in possible_subtypes])}"
         )
 
     def detect_errors(self):
         # different number of $ on each side
         if self.string.count("$") % 2 == 1:
-            raise ValueError(
+            raise TranslationError
                 f"Number of dollar signs on left and right side should be equal, but found different in {self.string}."
             )
 

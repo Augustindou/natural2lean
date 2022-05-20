@@ -1,5 +1,7 @@
 import re
 
+from ..utils.exceptions import TranslationError
+
 from ..math_mode.identifiers_in_set import IdentifiersInSet
 from ..propositions.multiple_propositions import MultiplePropositions
 from ..utils.separate_propositions import get_propositions
@@ -17,7 +19,7 @@ class SuchThat(Matching):
         # rematch
         match = re.fullmatch(self.pattern, self.string)
         if not match:
-            raise ValueError(
+            raise TranslationError(
                 f"Could not match {self.string} in {self.__class__.__name__}, should not use __init__ directly, but create instances using the match() method."
             )
 
@@ -26,7 +28,7 @@ class SuchThat(Matching):
             match.group(2).strip(" ,.;")
         )
         if len(propositions) != 1:
-            raise ValueError(
+            raise TranslationError(
                 f"Found {len(propositions)} propositions before 'such that' in {self.string}, should only be one identifier definition."
             )
         self.identifiers: IdentifiersInSet = propositions[0]
@@ -36,7 +38,7 @@ class SuchThat(Matching):
 
     def detect_errors(self):
         if not isinstance(self.identifiers, IdentifiersInSet):
-            raise ValueError(
+            raise TranslationError(
                 f"The proposition before 'such that' in {self.string} is not an identifier definition."
             )
         return super().detect_errors()

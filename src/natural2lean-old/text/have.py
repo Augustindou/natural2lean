@@ -1,5 +1,7 @@
 import re
 
+from ..utils.exceptions import TranslationError
+
 from .such_that import SuchThat
 from ..math_mode.math import Math
 from ..propositions.implication import Implication
@@ -13,7 +15,7 @@ SIMPLE_STATEMENTS = {
 
 PROOFS = {
     r"contradiction": "by contradiction",
-    r"definition": "by \n" + indent("simp_all"),
+    r"definition": "by simp_all",
     r"possibilities.*modulo": "mod_3_poss _",
     r"modulo.*possibilities": "mod_3_poss _",
 }
@@ -30,7 +32,7 @@ class Have(Matching):
         # rematch
         match = re.fullmatch(self.pattern, self.string)
         if not match:
-            raise ValueError(
+            raise TranslationError(
                 f"Could not match {self.string} in {self.__class__.__name__}, should not use __init__ directly, but create instances using the match() method."
             )
 
@@ -62,7 +64,7 @@ class Have(Matching):
         # multiple propositions
         try:
             return MultiplePropositions(self.right_side)
-        except ValueError:
+        except TranslationError:
             pass
 
         # for the simple cases (we have a contradiction)
@@ -70,7 +72,7 @@ class Have(Matching):
             if statement in self.right_side:
                 return statement
 
-        raise ValueError(
+        raise TranslationError(
             f"Could not find a meaning for the right side of the have statement in '{self.string}'."
         )
 

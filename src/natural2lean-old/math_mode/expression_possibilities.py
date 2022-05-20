@@ -1,6 +1,6 @@
 import re
+from ..utils.exceptions import TranslationError
 from ..utils.unfolding import unfold
-from .set import Set
 from .expression import Expression
 from ..structure.matching import Matching
 
@@ -37,7 +37,7 @@ class ExpressionPossibilities(Matching):
 
     def detect_errors(self):
         if self.possibilities == None:
-            raise ValueError(
+            raise TranslationError(
                 f"Problem with identifying the different possibilities (between '{{' and '}}') in {self.string}"
             )
         return super().detect_errors()
@@ -92,7 +92,7 @@ class Possibilities(Matching):
 
     def detect_errors(self):
         if any([e == None for e in self.poss]):
-            raise ValueError(
+            raise TranslationError(
                 f"The system does not understand the set in '{self.string}'"
             )
 
@@ -102,6 +102,6 @@ class Possibilities(Matching):
         if expr is not None:
             return " ∨ ".join([f"{expr} = {poss.translate()}" for poss in self.poss])
 
-        raise ValueError(
+        raise TranslationError(
             f"Problem translating.\n  identifier: {expr} \n  string: {self.string}"
         )

@@ -2,13 +2,15 @@ import re
 from dataclasses import dataclass
 from subprocess import PIPE, Popen
 from typing import Union
+
+from ..utils.exceptions import LeanError, TranslationError
 from ..utils.indentation import indent
 
 # if any of ERRORS is matched, the result will be FAIL, and the system will cancel the last input.
 ERRORS = [
     r"tactic .+ failed",
     r"error: unknown tactic",
-    r"error: expected command",
+    r"error: expected .*",
 ]
 
 # patterns need a fullmatch on a line to work
@@ -23,7 +25,7 @@ HYP_PATTERNS = [r"(.*) : (.*)"]
 
 # these are constants to understand better what is returned
 NO_GOALS = 1
-FAIL = -1
+
 BACKTRACK = -2
 EXIT = -3
 
@@ -73,7 +75,7 @@ def get_lean_feedback(input: str) -> Union[list[LeanBlock], int]:
     # errors
     match = match_list(ERRORS, feedback, type="search")
     if match is not None:
-        return FAIL
+        raise LeanError(f"Lean error: {match.group(0)}")
 
     # separate blocks
     lean_blocks = separate_elements(feedback)
@@ -150,7 +152,7 @@ def match_list(patterns: list[str], text: str, type: str = "search") -> re.Match
         bool: _description_
     """
     if type not in ["search", "fullmatch", "match"]:
-        raise ValueError(f"type must be one of 'search', 'fullmatch', 'match'")
+        raise TranslationError(f"type must be one of 'search', 'fullmatch', 'match'")
     if type == "search":
         call = re.search
     if type == "fullmatch":

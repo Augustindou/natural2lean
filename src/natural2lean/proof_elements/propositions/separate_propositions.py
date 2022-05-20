@@ -1,0 +1,158 @@
+import re
+from typing import Iterable
+
+
+from .function import Function
+from .proposition_constants import SEPARATORS, NEGATIONS, FUNCTIONS, VALIDITY_CHECKS, apply_replacements
+from ...utils.translatable import Translatable
+from ...utils.exceptions import MatchingError, TranslationError
+from ...algebra.algebra import Algebra, get_algebra
+from ...algebra.equation import Equation
+from ...algebra.expression import Expression
+from ...algebra.identifiers import IdentifiersInSet, MultipleIdentifiers
+from ...algebra.translation_constants import SETS, MathSet
+
+
+# ------------------ MAIN FUNCTIONS ------------------
+
+
+def get_propositions(string: str) -> list[Translatable]:
+    return [prop for prop in separate_propositions(string)]
+
+
+def separate_propositions(string: str) -> Iterable[Translatable]:
+    """Separates multiple propositions (PropA, PropB and PropC).
+
+    Args:
+        string (str): the input string
+    """
+    # also yield the last proposition ;)
+    separator_spans = [(len(string), len(string))]
+
+    # get all the spans for the separators
+    for separator in SEPARATORS:
+        separator_spans += [m.span() for m in re.finditer(separator, string)]
+    separator_spans = sorted(separator_spans)
+
+    # yield different propositions
+    last_stop = 0
+    for start, stop in separator_spans:
+        if is_valid(string[last_stop:start]):
+            for proposition in split_proposition(string[last_stop:start]):
+                yield proposition
+            last_stop = stop
+
+
+def split_proposition(string: str) -> Iterable[Translatable]:
+    """Splits a proposition ($a$ and $b$ are even natural numbers) into multiple propositions ($a \\in \\mathbb{N}$, $b \\in \\mathbb{N}$).
+
+    Args:
+        string (str): input proposition
+    """
+    string = apply_replacements(string)
+
+    # match math mode
+    try:
+        math = get_algebra(string)
+    except MatchingError:
+        # TODO : is it always needed ?
+        raise TranslationError("No math content in proposition : " + string)
+
+    # set
+    if isinstance(math, MultipleIdentifiers):
+        _set = get_set(string)
+        if _set != None:
+            if isinstance(math, IdentifiersInSet):
+                raise TranslationError(
+                    f"Multiple sets in the same proposition; found '{_set}' and '{math.set.latex}' in '{string}'"
+                )
+
+            yield IdentifiersInSet("$" + math.string + " \\in " + _set.latex + "$")
+
+    # multiple identifiers in set directly in the proposition
+    if isinstance(math, IdentifiersInSet):
+        yield math
+
+    # functions on identifiers or expressions
+    if isinstance(math, MultipleIdentifiers) or isinstance(math, Expression):
+        for function in get_functions(string):
+            yield function
+
+    # equation (should not have a function associated to it)
+    if isinstance(math, Equation):
+        yield math
+
+# ------------------ EXTRACT INFORMATION ------------------
+
+def get_set(string: str) -> MathSet:
+    """Extracts the set associated to the proposition.
+
+    Args:
+        string (str): the input string
+    """
+    string = string.lower()
+    matched_set = None
+    for _set in SETS.values():
+        for word in _set.full_words:
+            if word in string:
+                if matched_set != None:
+                    raise TranslationError(
+                        f"Multiple sets in the same proposition; found '{prev_word}' and '{word}' in '{string}'"
+                    )
+                matched_set = _set
+                prev_word = word
+
+    return matched_set
+
+
+def get_functions(string: str) -> Iterable[Function]:
+    """Extracts the functions associated to the proposition.
+
+    Args:
+        string (str): the input string
+    """
+    for name, pattern, order_arguments in FUNCTIONS:
+        # skip if no match
+        if (match := re.search(pattern, string)) is None:
+            continue
+
+        # negate function
+        name = f"¬ {name}" if contains_negation(string) else name
+        # match arguments
+        args: list[Algebra] = [get_algebra(arg) for arg in match.groups()]
+
+        # first group can be multiple identifiers
+        if isinstance(args[0], MultipleIdentifiers):
+            for identifier in args[0].identifiers:
+                yield Function(name, order_arguments(*[identifier, *args[1:]]))
+            continue
+
+        if isinstance(args[0], Expression):
+            yield Function(name, order_arguments(*args))
+            continue
+
+# ---------------- SMALL UTILITY FUNCTIONS ----------------
+
+def is_valid(string: str):
+    """Checks if the string is valid (according to VALIDITY_CHECKS).
+
+    Args:
+        string (str): the input string
+    """
+    for validity_check in VALIDITY_CHECKS:
+        if not validity_check(string):
+            return False
+    return True
+
+
+def contains_negation(string: str) -> bool:
+    """Checks a negation is present in the string
+
+    Args:
+        string (str): the input string
+    """
+    string = string.lower()
+    for neg in NEGATIONS:
+        if neg in string:
+            return True
+    return False
