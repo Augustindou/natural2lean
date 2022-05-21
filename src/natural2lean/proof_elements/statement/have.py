@@ -1,9 +1,9 @@
 import re
 from .statement import Statement
 from .such_that import SuchThat
-from ..propositions.multiple_propositions import MultiplePropositions
-from ..propositions.implication import Implication
 from ...algebra.equation import Equation
+from ...propositions.multiple_propositions import MultiplePropositions
+from ...propositions.implication import Implication
 from ...utils.translatable import Translatable
 from ...utils.exceptions import MatchingError, TranslationError
 

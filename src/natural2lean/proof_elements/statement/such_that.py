@@ -1,9 +1,9 @@
 import re
-from natural2lean.proof_elements.propositions.multiple_propositions import (
+from natural2lean.proof_elements.proposition.multiple_propositions import (
     MultiplePropositions,
 )
 from .statement import Statement
-from ..propositions.separate_propositions import get_propositions
+from ..proposition.separate_propositions import get_propositions
 from ...algebra.identifiers import Identifier, IdentifiersInSet
 from ...utils.exceptions import MatchingError, TranslationError
 

@@ -1,7 +1,7 @@
 from .separate_propositions import get_propositions
-from ...utils.exceptions import MatchingError
-from ...utils.translatable import Translatable
-from ...algebra.identifiers import IdentifiersInSet
+from ..utils.exceptions import MatchingError
+from ..utils.translatable import Translatable
+from ..algebra.identifiers import IdentifiersInSet
 
 
 class MultiplePropositions(Translatable):

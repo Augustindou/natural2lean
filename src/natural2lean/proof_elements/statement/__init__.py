@@ -1,9 +1,10 @@
 from .have import Have
 from .such_that import SuchThat
 from .statement import Statement
+from ...propositions.multiple_propositions import MultiplePropositions
 from ...utils.exceptions import MatchingError, TranslationError
 
-POSSIBILITIES = [Have, SuchThat]
+POSSIBILITIES = [Have, SuchThat, MultiplePropositions]
 
 
 def get_statement(string: str) -> Statement:

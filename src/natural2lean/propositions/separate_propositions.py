@@ -1,15 +1,11 @@
 import re
 from typing import Iterable
-
-from natural2lean.algebra.translate_math import translate_latex_math
-
-
 from .function import Function
 from .proposition_constants import SEPARATORS, NEGATIONS, FUNCTIONS, VALIDITY_CHECKS, apply_replacements
-from ...algebra import get_algebra, Algebra, Equation, Expression, IdentifiersInSet, MultipleIdentifiers
-from ...algebra.translation_constants import SETS, MathSet
-from ...utils.translatable import Translatable
-from ...utils.exceptions import MatchingError, TranslationError
+from ..algebra import get_algebra, Algebra, Equation, Expression, IdentifiersInSet, MultipleIdentifiers
+from ..algebra.translation_constants import SETS, MathSet
+from ..utils.translatable import Translatable
+from ..utils.exceptions import MatchingError, TranslationError
 
 
 # ------------------ MAIN FUNCTIONS ------------------

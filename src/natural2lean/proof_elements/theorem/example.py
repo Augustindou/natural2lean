@@ -1,7 +1,7 @@
 import re
 from natural2lean.utils.printing import subscript
 from .theorem import Theorem
-from ..propositions.implication import Implication
+from ..proposition.implication import Implication
 from ...utils.exceptions import MatchingError
 
 space = r"\s*"
