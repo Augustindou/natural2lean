@@ -1,7 +1,7 @@
 import re
 from .multiple_propositions import MultiplePropositions
-from ...utils.exceptions import MatchingError
-from ...utils.translatable import Translatable
+from ..utils.exceptions import MatchingError
+from ..utils.translatable import Translatable
 
 space = r"\s*"
 punctuation = " .,;:"

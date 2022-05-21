@@ -1,5 +1,4 @@
 import re
-
 from .algebra import Algebra
 from .translation_constants import SETS
 from ..utils.unfolding import unfold

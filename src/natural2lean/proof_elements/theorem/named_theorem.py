@@ -4,7 +4,7 @@ from natural2lean.utils.printing import subscript
 
 
 from .theorem import Theorem
-from ..proposition.implication import Implication
+from ...propositions.implication import Implication
 from ...utils.exceptions import MatchingError
 
 space = r"\s*"

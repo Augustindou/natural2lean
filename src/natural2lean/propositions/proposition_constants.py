@@ -1,8 +1,8 @@
 import re
 from typing import Callable
-from ...utils.exceptions import MatchingError
-from ...algebra.algebra import Algebra
-from ...algebra.identifiers import MultipleIdentifiers
+from ..utils.exceptions import MatchingError
+from ..algebra.algebra import Algebra
+from ..algebra.identifiers import MultipleIdentifiers
 
 # TODO COMMENTS
 REPLACEMENTS: dict[str, str] = {

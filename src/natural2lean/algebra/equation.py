@@ -55,10 +55,11 @@ class Equation(Algebra):
         # 1st line
         block = f"{self.expressions[0].translate()} {self.operators[0]} {self.expressions[1].translate()}"
         # proof of 1st line
-        block += f" := by {LINE_PROOF}\n"
+        block += f" := by {LINE_PROOF}"
         # next lines
         for expression, operator in zip(self.expressions[2:], self.operators[1:]):
-            block += f"_ {operator} {expression.translate()} := by {LINE_PROOF}\n"
+            block += "\n"
+            block += f"_ {operator} {expression.translate()} := by {LINE_PROOF}"
 
         # format complete (standalone) block
         return tactic + indent(block)

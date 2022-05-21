@@ -1,13 +1,10 @@
 from __future__ import annotations
-import re
 from .algebra import Algebra
 from .equation import Equation
 from .expression import Expression
 from .expression_possibilities import ExpressionPossibilities
 from .identifiers import IdentifiersInSet, MultipleIdentifiers
-from .translate_math import translate_latex_math
 from ..utils.exceptions import MatchingError, TranslationError
-from ..utils.translatable import Translatable
 
 POSSIBILITIES = [
     Equation,

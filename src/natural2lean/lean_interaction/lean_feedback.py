@@ -3,8 +3,8 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 from typing import Union
 from dataclasses import dataclass
-from .exceptions import LeanError, TranslationError
-from .printing import indent, nth
+from ..utils.exceptions import LeanError, TranslationError
+from ..utils.printing import indent, nth
 from ..proof_elements.statement.statement import Statement
 from ..proof_elements.theorem.theorem import Theorem
 
@@ -28,6 +28,7 @@ HYP_PATTERNS = [r"(.*) : (.*)"]
 
 MAIN_FILE = "Main.lean"
 BUILD_COMMAND = "lake build"
+
 
 @dataclass(frozen=True)
 class LeanBlock:
@@ -68,7 +69,8 @@ class State:
 
         return result
 
-def lean_feedback(input: str, project_directory:Path) -> list[LeanBlock]:
+
+def lean_feedback(input: str, project_directory: Path) -> list[LeanBlock]:
     """Gets the feedback from lean.
 
     Args:
@@ -91,7 +93,8 @@ def lean_feedback(input: str, project_directory:Path) -> list[LeanBlock]:
 
     return lean_blocks
 
-def raw_feedback(input:str, project_directory: Path) -> str:
+
+def raw_feedback(input: str, project_directory: Path) -> str:
     """Gets the raw feedback from lean.
 
     Args:
@@ -119,10 +122,10 @@ def raw_feedback(input:str, project_directory: Path) -> str:
     return raw
 
 
-
 # -------------------------------------------------------------------------
 # HELPER FUNCTIONS
 # -------------------------------------------------------------------------
+
 
 def match_list(patterns: list[str], text: str, type: str = "search") -> re.Match:
     """Returns the first match of a list of patterns.
@@ -153,6 +156,7 @@ def match_list(patterns: list[str], text: str, type: str = "search") -> re.Match
 
     # no match found
     return None
+
 
 def separate_elements(raw_feedback: str) -> list[LeanBlock]:
     """Separates the different elements, based on GOAL_PATTERNS, VAR_PATTERNS and HYP_PATTERNS.

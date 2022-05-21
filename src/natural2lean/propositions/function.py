@@ -1,4 +1,4 @@
-from ...utils.translatable import Translatable
+from ..utils.translatable import Translatable
 
 
 class Function(Translatable):
