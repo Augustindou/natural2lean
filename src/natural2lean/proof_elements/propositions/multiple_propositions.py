@@ -13,11 +13,12 @@ class MultiplePropositions(Translatable):
                 f"Could not match {string} in {self.__class__.__name__}"
             )
 
-    def translate(self, hyp_name=None, separator: str = " ∧ ", **kwargs) -> str:
+    def translate(self, hyp_name=None, separator: str = " ∧ ", proof=None, **kwargs) -> str:
         hyp_def = f"{hyp_name} : " if hyp_name else ""
         props = separator.join([prop.translate() for prop in self.propositions])
+        proof = f" := {proof}" if proof else ""
 
-        return hyp_def + props
+        return hyp_def + props + proof
 
     def get_identifiers(self) -> list[IdentifiersInSet]:
         return [

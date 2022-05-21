@@ -1,9 +1,9 @@
 import textwrap
 
-# red = lambda text: f"\033[38;2;255;0;0m{text}\033[38;2;255;255;255m"
-green = lambda text: f"\033[38;2;0;255;0m{text}\033[38;2;255;255;255m"
-# blue = lambda text: f"\033[38;2;0;0;255m{text}\033[38;2;255;255;255m"
-# white = lambda text: f"\033[38;2;255;255;255m{text}\033[38;2;255;255;255m"
+red = lambda s: "\u001b[31m" + s + "\u001b[0m"
+green = lambda s: "\u001b[32m" + s + "\u001b[0m"
+cyan = lambda s: "\u001b[36m" + s + "\u001b[0m"
+underline = lambda s: "\u001b[4m" + s + "\u001b[0m"
 
 
 INDENTATION = "  "

@@ -49,7 +49,7 @@ class Equation(Algebra):
         return hyp + proof
 
     def calc_block(self) -> str:
-        LINE_PROOF = f"try simp [*]; try ring"
+        LINE_PROOF = f"try simp_all; try ring"
         # keyword for the beginning
         tactic = f"calc\n"
         # 1st line
