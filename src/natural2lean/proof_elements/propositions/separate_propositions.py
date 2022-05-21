@@ -1,16 +1,15 @@
 import re
 from typing import Iterable
 
+from natural2lean.algebra.translate_math import translate_latex_math
+
 
 from .function import Function
 from .proposition_constants import SEPARATORS, NEGATIONS, FUNCTIONS, VALIDITY_CHECKS, apply_replacements
+from ...algebra import get_algebra, Algebra, Equation, Expression, IdentifiersInSet, MultipleIdentifiers
+from ...algebra.translation_constants import SETS, MathSet
 from ...utils.translatable import Translatable
 from ...utils.exceptions import MatchingError, TranslationError
-from ...algebra.algebra import Algebra, get_algebra
-from ...algebra.equation import Equation
-from ...algebra.expression import Expression
-from ...algebra.identifiers import IdentifiersInSet, MultipleIdentifiers
-from ...algebra.translation_constants import SETS, MathSet
 
 
 # ------------------ MAIN FUNCTIONS ------------------
@@ -53,7 +52,7 @@ def split_proposition(string: str) -> Iterable[Translatable]:
 
     # match math mode
     try:
-        math = get_algebra(string)
+        math = get_algebra(string, match_type="partial")
     except MatchingError:
         # TODO : is it always needed ?
         raise TranslationError("No math content in proposition : " + string)
@@ -61,13 +60,15 @@ def split_proposition(string: str) -> Iterable[Translatable]:
     # set
     if isinstance(math, MultipleIdentifiers):
         _set = get_set(string)
-        if _set != None:
+        if _set:
             if isinstance(math, IdentifiersInSet):
                 raise TranslationError(
                     f"Multiple sets in the same proposition; found '{_set}' and '{math.set.latex}' in '{string}'"
                 )
 
-            yield IdentifiersInSet("$" + math.string + " \\in " + _set.latex + "$")
+            algebra = get_algebra("$" + math.string + " \\in " + _set.latex + "$")
+            assert isinstance(algebra, IdentifiersInSet)
+            yield algebra
 
     # multiple identifiers in set directly in the proposition
     if isinstance(math, IdentifiersInSet):

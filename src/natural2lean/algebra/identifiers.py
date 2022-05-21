@@ -63,4 +63,6 @@ class IdentifiersInSet(MultipleIdentifiers):
         self.set = SETS[match.group(5).strip()]
 
     def translate(self, **kwargs) -> str:
-        return " ".join([i.translate() for i in self.identifiers]) + " : " + self.set.lean
+        lean_identifiers = " ".join([i.translate() for i in self.identifiers])
+        
+        return f"({lean_identifiers} : {self.set.lean})"

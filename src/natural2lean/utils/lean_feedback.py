@@ -13,6 +13,7 @@ ERRORS = [
     r"tactic .+ failed",
     r"error: unknown tactic",
     r"error: expected .*",
+    r"error: unknown namespace",
 ]
 
 # patterns need a fullmatch on a line to work

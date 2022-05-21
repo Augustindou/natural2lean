@@ -92,6 +92,6 @@ class Have(Statement):
 
     def translate(self, hyp_name=None, **kwargs) -> str:
         if self.proof == CALC_PROOF and isinstance(self.statement, Equation):
-            return self.statement.translate(hyp_name=hyp_name, by_calc=True)
+            return f"have {self.statement.translate(hyp_name=hyp_name, by_calc=True)}"
 
         return f"have {self.statement.translate(hyp_name=hyp_name, proof=self.proof)}"

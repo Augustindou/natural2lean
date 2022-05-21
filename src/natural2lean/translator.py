@@ -1,20 +1,19 @@
-from subprocess import PIPE, Popen
-
-from natural2lean.utils.exceptions import LeanError
-
-from .proof_elements.statement.statement import get_statement
-from .proof_elements.theorem.theorem import get_theorem
-from .utils.stack import Stack
-from .utils.lean_feedback import LeanBlock, State, lean_feedback
-import platform
 import os
-from pathlib import Path, PureWindowsPath
 import shutil
+import platform
+from pathlib import Path, PureWindowsPath
+
+from .proof_elements.statement import get_statement
+from .proof_elements.theorem import get_theorem
+from .utils.stack import Stack
+from .utils.printing import indent, subscript
+from .utils.exceptions import LeanError
+from .utils.lean_feedback import State, lean_feedback
 
 DEFAULT_PATHS = {
-    "Darwin": Path("~/.natural2lean"),
-    "Linux": Path("~/.natural2lean"),
-    "Windows": Path("~/AppData/Roaming/.natural2lean"),
+    "Darwin": Path.home() / Path(".natural2lean"),
+    "Linux": Path.home() / Path(".natural2lean"),
+    "Windows": Path.home() / Path("AppData/Roaming/.natural2lean"),
 }
 
 LEAN_PROJECT_GIT_REPO = (
@@ -57,7 +56,7 @@ class Translator:
                 )
             # otherwise, download the project
             else:
-                os.mkdir(self.path_to_lean_project)
+                self.path_to_lean_project.mkdir(parents=True)
                 os.system(
                     f"git clone {LEAN_PROJECT_GIT_REPO} {self.path_to_lean_project}"
                 )
@@ -79,7 +78,24 @@ class Translator:
         Returns:
             State: the state after the theorem has been added
         """
-        return self._new_element(string, "theorem")
+        theorem = get_theorem(string)
+
+        old_state: State = self.stack.peek()
+        assert (
+            len(old_state.goals) == 0
+        ), "Should close goals before proving new theorem"
+
+        lean_text = old_state.lean_text + "\n\n" + theorem.translate()
+
+        # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
+        new_state = State(
+            goals=lean_feedback(lean_text, self.path_to_lean_project),
+            statements=old_state.statements + [theorem],
+            lean_text=lean_text,
+        )
+
+        self.stack.push(new_state)
+        return new_state
 
     def new_statement(self, string: str) -> State:
         """Adds a new state to the stack, with a new statement
@@ -90,27 +106,26 @@ class Translator:
         Returns:
             State: the state after the statement has been added
         """
-        return self._new_element(string, "statement")
-
-    def _new_element(self, string: str, element_type: str) -> State:
-        # the get_ functions should throw an error if theorem or statement was not understood
-        if element_type == "theorem":
-            new = get_theorem(string)
-        elif element_type == "statement":
-            new = get_statement(string)
-        else:
-            raise ValueError(
-                f"{element_type} is not a valid element type, should be either theorem or statement"
-            )
+        statement = get_statement(string)
 
         old_state: State = self.stack.peek()
+        assert (
+            len(old_state.goals) > 0
+        ), "Should start a theorem before adding statements"
 
-        lean_text = old_state.lean_text + new.translate()
+        hyp_count = len(old_state.goals[0].hypotheses)
+        hyp_name = f"h{subscript(hyp_count)}"
+
+        lean_text = (
+            old_state.lean_text
+            + "\n\n"
+            + indent(statement.translate(hyp_name=hyp_name))
+        )
 
         # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
         new_state = State(
             goals=lean_feedback(lean_text, self.path_to_lean_project),
-            statements=old_state.statements + [new],
+            statements=old_state.statements + [statement],
             lean_text=lean_text,
         )
 

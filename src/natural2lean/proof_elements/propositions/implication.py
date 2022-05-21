@@ -27,8 +27,8 @@ class Implication(Translatable):
             )
 
         self.string = string
-        self.theses = MultiplePropositions(match.group(1).strip(punctuation))
-        self.hypotheses = MultiplePropositions(match.group(2).strip(punctuation))
+        self.hypotheses = MultiplePropositions(match.group(1).strip(punctuation))
+        self.theses = MultiplePropositions(match.group(2).strip(punctuation))
 
     def translate(self, hyp_name: str = None, proof: str = None, **kwargs) -> str:
         assert (

@@ -1,3 +1,4 @@
+import re
 from ..utils.exceptions import TranslationError
 from .translation_constants import (
     START_OF_FUNCTION,
@@ -7,7 +8,6 @@ from .translation_constants import (
     IMPLICIT_OPERATIONS,
     LatexFunction,
 )
-import re
 
 
 class Latex2LeanMath:

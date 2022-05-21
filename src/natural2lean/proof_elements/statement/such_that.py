@@ -1,5 +1,4 @@
 import re
-
 from natural2lean.proof_elements.propositions.multiple_propositions import (
     MultiplePropositions,
 )
@@ -48,8 +47,8 @@ class SuchThat(Statement):
         self.hypotheses = MultiplePropositions(match.group(2))
 
     def translate(self, hyp_name=None, proof=None, **kwargs) -> str:
-        assert (
-            proof is None == hyp_name is None
+        assert (proof is None) == (
+            hyp_name is None
         ), "Should always use proof with hyp_name."
 
         identifiers: list[Identifier] = []
@@ -57,7 +56,7 @@ class SuchThat(Statement):
             identifiers += ident_in_set.identifiers
 
         id_names = [i.translate() for i in identifiers]
-        id_defs = [idents.translate() for idents in self.identifiers]
+        id_defs = " ".join([idents.translate() for idents in self.identifiers])
         hyp_def = self.hypotheses.translate()
 
         constructor = f"⟨{', '.join(id_names)}, {hyp_name}⟩"

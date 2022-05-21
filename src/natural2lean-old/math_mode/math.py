@@ -1,6 +1,5 @@
 from __future__ import annotations
 import re
-
 from ..utils.exceptions import TranslationError
 from ..structure.matching import Matching
 from ..utils.translate_math import translate_latex_math
