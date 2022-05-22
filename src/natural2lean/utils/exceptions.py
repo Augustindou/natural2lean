@@ -4,15 +4,15 @@ class LeanError(Exception):
     """
 
 
+class NoConclusion(ValueError):
+    """
+    Exception when a conclusion to a goal could not be found.
+    """
+
+
 class TranslationError(ValueError):
     """
     Exception when translation failed (system could not translate a statement).
-    """
-
-
-class ParsingError(ValueError):
-    """
-    Exception when parsing failed (system could not understand a statement).
     """
 
 

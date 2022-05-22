@@ -1,8 +1,8 @@
 from pathlib import Path
 import re
-from .lean_feedback import State, lean_feedback
+from .lean_feedback import LeanBlock, State, lean_feedback
 from ..utils.printing import indent
-from ..utils.exceptions import LeanError
+from ..utils.exceptions import LeanError, NoConclusion
 from ..utils.translatable import Translatable
 
 
@@ -15,11 +15,11 @@ CONCLUSIONS: dict[tuple[str], str] = {
 
 def get_conclusion(
     state: State, statement: Translatable, project_directory: Path
-) -> str:
+) -> tuple[list[LeanBlock], str]:
     """Returns the conclusion to add to the proof if the statement is a goal, or None if the conclusion does not work / the statement is not a goal."""
     if statement_is_goal(statement, state.goals[0].goal):
         return find_conclusion(state, project_directory)
-    return None
+    raise NoConclusion(f"No conclusion found for {state.goals[0].goal}")
 
 
 def statement_is_goal(statement: Translatable, goal: str) -> bool:
@@ -36,7 +36,9 @@ def statement_is_goal(statement: Translatable, goal: str) -> bool:
     return False
 
 
-def find_conclusion(state: State, project_directory: Path) -> str:
+def find_conclusion(
+    state: State, project_directory: Path
+) -> tuple[list[LeanBlock], str]:
     for indicators, ccl in CONCLUSIONS.items():
         indented_ccl = indent(ccl.strip())
         for indicator in indicators:
@@ -51,7 +53,7 @@ def find_conclusion(state: State, project_directory: Path) -> str:
                     break
 
                 if len(lean_fb) < len(state.goals):
-                    return ccl
+                    return lean_fb, ccl
 
                 break
-    return None
+    raise NoConclusion(f"No conclusion found for {state.goals[0].goal}")
