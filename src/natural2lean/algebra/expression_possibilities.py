@@ -8,7 +8,7 @@ space = r"\s*"
 
 
 class ExpressionPossibilities(Algebra):
-    multiple_expressions_pattern = f"({Expression.pattern})" + r"(?:(,)(.*))?"
+    multiple_expressions_pattern = f"(.*?)" + r"(?:(,)(.*))?"
     pattern: str = space.join(
         [
             "",  # ignore leading space
@@ -40,7 +40,7 @@ class ExpressionPossibilities(Algebra):
 
     def translate(self, hyp_name=None, proof=None, **kwargs) -> str:
         assert (
-            proof is None == hyp_name is None
+            (proof is None) == (hyp_name is None)
         ), "Should always use proof with hyp_name."
 
         disjunction = " ∨ ".join(
@@ -57,8 +57,11 @@ class ExpressionPossibilities(Algebra):
         proof = f" := {proof}"
 
         hyp = hyp_def + disjunction + proof
-        split_goals = f"rcases {hyp} with " + " | ".join(
-            [hyp] * len(self.possibilities)
+        split_goals = f"rcases {hyp_name} with " + " | ".join(
+            [hyp_name] * len(self.possibilities)
         )
 
         return hyp + "\n" + split_goals
+
+    def can_create_new_goals(self) -> bool:
+        return True

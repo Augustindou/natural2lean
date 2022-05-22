@@ -58,7 +58,7 @@ class Latex2LeanMath:
             # add part before function
             self.result_string += self.latex_string[position:next_function_start]
 
-            for i in range(next_function.n_args):
+            for i in range(len(next_function.separators) - 1):
                 # go to next argument
                 next_start_start, next_start_end = self.get_next_start(position)
                 next_end_start, next_end_end = self.get_next_end(position)

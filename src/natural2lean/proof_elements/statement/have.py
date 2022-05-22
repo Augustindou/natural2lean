@@ -19,13 +19,13 @@ The system will look for matches for the keys in the whole sentence. If a match 
 """
 PROOFS: dict[str, str] = {
     r"contradiction": "by contradiction",
-    r"definition": "by simp_all",
+    r"definition": "by simp at *; assumption",
     # mod 3 is a bit specific, should extend this to allow for any modulo
     r"possibilities.*modulo": "mod_3_poss _",
     r"modulo.*possibilities": "mod_3_poss _",
 }
 
-DEFAULT_PROOF = "by simp_all"
+DEFAULT_PROOF = "by simp at *; assumption"
 
 POSSIBILITIES: list[Translatable] = [Implication, SuchThat, MultiplePropositions]
 
@@ -91,10 +91,16 @@ class Have(Statement):
         return DEFAULT_PROOF
 
     def translate(self, hyp_name=None, **kwargs) -> str:
-        if not hyp_name:
-            return self.statement.translate()
+        if isinstance(self.statement, str):
+            return self.statement
         
+        if hyp_name is None:
+            return self.statement.translate()
+
         if self.proof == CALC_PROOF and isinstance(self.statement, Equation):
             return f"have {self.statement.translate(hyp_name=hyp_name, by_calc=True)}"
 
         return f"have {self.statement.translate(hyp_name=hyp_name, proof=self.proof)}"
+
+    def can_create_new_goals(self) -> bool:
+        return self.statement.can_create_new_goals()

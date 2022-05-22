@@ -1,11 +1,26 @@
 import re
 from typing import Iterable
+
 from .function import Function
-from .proposition_constants import SEPARATORS, NEGATIONS, FUNCTIONS, VALIDITY_CHECKS, apply_replacements
-from ..algebra import get_algebra, Algebra, Equation, Expression, IdentifiersInSet, MultipleIdentifiers
-from ..algebra.translation_constants import SETS, MathSet
-from ..utils.translatable import Translatable
+from .proposition_constants import (
+    SEPARATORS,
+    NEGATIONS,
+    FUNCTIONS,
+    VALIDITY_CHECKS,
+    apply_replacements,
+)
+from ..algebra import (
+    get_algebra,
+    Algebra,
+    Equation,
+    Expression,
+    IdentifiersInSet,
+    MultipleIdentifiers,
+)
 from ..utils.exceptions import MatchingError, TranslationError
+from ..utils.translatable import Translatable
+from ..algebra.translation_constants import SETS, MathSet
+from ..algebra.expression_possibilities import ExpressionPossibilities
 
 
 # ------------------ MAIN FUNCTIONS ------------------
@@ -71,15 +86,21 @@ def split_proposition(string: str) -> Iterable[Translatable]:
         yield math
 
     # functions on identifiers or expressions
-    if isinstance(math, MultipleIdentifiers) or isinstance(math, Expression):
+    if (
+        isinstance(math, MultipleIdentifiers)
+        or isinstance(math, Expression)
+        or isinstance(math, ExpressionPossibilities)
+    ):
         for function in get_functions(string):
             yield function
 
     # equation (should not have a function associated to it)
-    if isinstance(math, Equation):
+    if isinstance(math, Equation) or isinstance(math, ExpressionPossibilities):
         yield math
 
+
 # ------------------ EXTRACT INFORMATION ------------------
+
 
 def get_set(string: str) -> MathSet:
     """Extracts the set associated to the proposition.
@@ -128,7 +149,9 @@ def get_functions(string: str) -> Iterable[Function]:
             yield Function(name, order_arguments(*args))
             continue
 
+
 # ---------------- SMALL UTILITY FUNCTIONS ----------------
+
 
 def is_valid(string: str):
     """Checks if the string is valid (according to VALIDITY_CHECKS).

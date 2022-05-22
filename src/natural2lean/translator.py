@@ -39,6 +39,11 @@ class Translator:
     def __init__(self, lean_project_directory: str = None):
         self.stack = Stack()
         self.stack.push(State(goals=[], statements=[], lean_text=LEAN_HEADER))
+        
+        try:
+            default_path = DEFAULT_PATHS[platform.system()]
+        except KeyError:
+            raise Exception(f"Unsupported platform: `{platform.system()}`, please report this bug.")
 
         # path to project
         if lean_project_directory:
@@ -46,14 +51,14 @@ class Translator:
                 lean_project_directory = PureWindowsPath(lean_project_directory)
             self.project_directory = Path(lean_project_directory) / LEAN_PROJECT
         else:
-            self.project_directory = DEFAULT_PATHS[platform.system()] / LEAN_PROJECT
+            self.project_directory = default_path / LEAN_PROJECT
 
         # check if project exists
         if not self.project_directory.exists():
             # if exists at the default location, copy the folder
-            if (DEFAULT_PATHS[platform.system()] / LEAN_PROJECT).exists():
+            if (default_path / LEAN_PROJECT).exists():
                 shutil.copytree(
-                    DEFAULT_PATHS[platform.system()] / LEAN_PROJECT,
+                    default_path / LEAN_PROJECT,
                     self.project_directory,
                 )
             # otherwise, download the project
@@ -148,7 +153,7 @@ class Translator:
                 old_state, statement, self.project_directory
             )
         except NoConclusion:
-            if any([isinstance(statement, poss) for poss in CCL_POSSIBILITIES]):
+            if any(isinstance(statement, poss) for poss in CCL_POSSIBILITIES):
                 raise NoConclusion(
                     f"Could not match a non-conclusive statement, nor conclude a proof with '{string}'."
                 )
@@ -182,11 +187,11 @@ class Translator:
         """
         self.stack.pop()
         return self.stack.peek()
-
-    def lean_translation(self) -> str:
-        """Returns the lean translation of all the statements and theorems in the stack. Note that this translation uses elements defined in the [project template](https://github.com/Augustindou/natural2lean-lean-project-template).
+    
+    def state(self) -> State:
+        """Returns the current state of the Translator.
 
         Returns:
-            str: the lean translation of all the statements and theorems in the stack.
+            State: the current state of the Translator.
         """
-        return self.stack.peek().lean_text
+        return self.stack.peek()

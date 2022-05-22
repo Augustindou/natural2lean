@@ -3,9 +3,6 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("requirements.txt") as f:
-    requirements = f.readlines()
-
 setuptools.setup(
     name="natural2lean",
     version="0.0.2",
@@ -24,9 +21,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=["natural2lean"],
+    packages=setuptools.find_packages(where="src", exclude=["*-old"]),
     python_requires=">=3.9",
-    install_requires=requirements,
+    install_requires=[],
     extras_require={
         "dev": [
             "pytest>=3.6",
