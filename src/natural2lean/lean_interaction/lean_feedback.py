@@ -43,11 +43,11 @@ class LeanBlock:
 
     def __str__(self) -> str:
         # variables
-        variables = "\n".join(f"{_id} : {_set}" for _id, _set in self.variables)
+        variables = "\n".join(f"{id_} : {set_}" for id_, set_ in self.variables)
         var_block = f"Variables :\n{indent(variables)}\n" if self.variables else ""
 
         # hypotheses
-        hypotheses = "\n".join(f"{_name} : {_expr}" for _name, _expr in self.hypotheses)
+        hypotheses = "\n".join(f"{name_} : {expr_}" for name_, expr_ in self.hypotheses)
         hyp_block = f"Hypotheses :\n{indent(hypotheses)}\n" if self.hypotheses else ""
 
         return self.goal + "\n" + var_block + hyp_block
