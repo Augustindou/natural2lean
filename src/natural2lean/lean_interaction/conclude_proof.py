@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 from .lean_feedback import LeanBlock, State, lean_feedback
-from ..utils.printing import indent
+from ..utils.text import indent
 from ..utils.exceptions import LeanError, NoConclusion
 from ..utils.translatable import Translatable
 

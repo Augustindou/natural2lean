@@ -4,7 +4,7 @@ from subprocess import PIPE, Popen
 from typing import Union
 from dataclasses import dataclass
 from ..utils.exceptions import LeanError, TranslationError
-from ..utils.printing import indent, nth
+from ..utils.text import indent, nth
 from ..proof_elements.statement.statement import Statement
 from ..proof_elements.theorem.theorem import Theorem
 

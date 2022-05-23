@@ -3,7 +3,7 @@ import re
 from .expression import Expression
 from .algebra import Algebra
 from ..utils.unfolding import unfold
-from ..utils.printing import indent
+from ..utils.text import indent
 from ..utils.exceptions import MatchingError
 
 

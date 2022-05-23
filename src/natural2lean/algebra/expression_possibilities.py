@@ -39,8 +39,8 @@ class ExpressionPossibilities(Algebra):
         self.possibilities: list[Expression] = [Expression(e) for e in elements]
 
     def translate(self, hyp_name=None, proof=None, **kwargs) -> str:
-        assert (
-            (proof is None) == (hyp_name is None)
+        assert (proof is None) == (
+            hyp_name is None
         ), "Should always use proof with hyp_name."
 
         disjunction = " ∨ ".join(

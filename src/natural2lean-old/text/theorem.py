@@ -59,7 +59,9 @@ class Theorem(Matching):
         # content
         self.statement: Implication = Implication.match(match.group(3))
         if self.statement is None:
-            raise TranslationError(f"Could not match an Implication in {match.group(3)}.")
+            raise TranslationError(
+                f"Could not match an Implication in {match.group(3)}."
+            )
 
     def detect_errors(self):
         if self.statement.theses.contains_identifier():

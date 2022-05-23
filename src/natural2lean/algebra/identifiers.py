@@ -63,5 +63,5 @@ class IdentifiersInSet(MultipleIdentifiers):
 
     def translate(self, **kwargs) -> str:
         lean_identifiers = " ".join([i.translate() for i in self.identifiers])
-        
+
         return f"({lean_identifiers} : {self.set.lean})"

@@ -5,7 +5,7 @@ from pathlib import Path, PureWindowsPath
 from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
 from .proof_elements.theorem import get_theorem
 from .utils.stack import Stack
-from .utils.printing import indent, subscript
+from .utils.text import indent, subscript
 from .utils.exceptions import LeanError, NoConclusion, TranslationError
 from .lean_interaction.conclude_proof import get_conclusion
 from .lean_interaction.lean_feedback import State, lean_feedback
@@ -39,11 +39,13 @@ class Translator:
     def __init__(self, lean_project_directory: str = None):
         self.stack = Stack()
         self.stack.push(State(goals=[], statements=[], lean_text=LEAN_HEADER))
-        
+
         try:
             default_path = DEFAULT_PATHS[platform.system()]
         except KeyError:
-            raise Exception(f"Unsupported platform: `{platform.system()}`, please report this bug.")
+            raise Exception(
+                f"Unsupported platform: `{platform.system()}`, please report this bug."
+            )
 
         # path to project
         if lean_project_directory:
@@ -186,8 +188,8 @@ class Translator:
             State: the state after the last input has been removed.
         """
         self.stack.pop()
-        return self.stack.peek()
-    
+        return self.state()
+
     def state(self) -> State:
         """Returns the current state of the Translator.
 

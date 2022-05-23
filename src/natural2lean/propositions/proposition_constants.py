@@ -27,12 +27,14 @@ FUNCTIONS: list[tuple[str, str, Callable]] = {
 }
 # ------------- VALIDITY CHECKS -------------
 
+
 def matches_algebra(string: str, cls: type) -> bool:
     try:
         cls(get_lean_math(string))
         return True
     except MatchingError:
         return False
+
 
 VALIDITY_CHECKS: list[Callable] = [
     # even number of $ signs (avoid splitting inside a math mode)
@@ -46,6 +48,7 @@ VALIDITY_CHECKS: list[Callable] = [
 def get_lean_math(string: str) -> str:
     al = Algebra(apply_replacements(string))
     return al.lean_string
+
 
 def apply_replacements(string: str) -> str:
     """Groups identifiers ($a$ and $b$) into a single math mode ($a, b$).

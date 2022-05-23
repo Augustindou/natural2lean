@@ -1,5 +1,5 @@
 import re
-from natural2lean.utils.printing import subscript
+from natural2lean.utils.text import subscript
 from .theorem import Theorem
 from ...propositions.implication import Implication
 from ...utils.exceptions import MatchingError

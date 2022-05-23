@@ -93,7 +93,7 @@ class Have(Statement):
     def translate(self, hyp_name=None, **kwargs) -> str:
         if isinstance(self.statement, str):
             return self.statement
-        
+
         if hyp_name is None:
             return self.statement.translate()
 

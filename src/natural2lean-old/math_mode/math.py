@@ -59,7 +59,7 @@ class Math(Matching):
     def detect_errors(self):
         # different number of $ on each side
         if self.string.count("$") % 2 == 1:
-            raise TranslationError
+            raise TranslationError(
                 f"Number of dollar signs on left and right side should be equal, but found different in {self.string}."
             )
 
