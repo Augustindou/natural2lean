@@ -66,7 +66,9 @@ class Translator:
             # otherwise, download the project
             else:
                 self.project_directory.mkdir(parents=True)
+                print("Downloading lean project template...\n")
                 os.system(f"git clone {LEAN_PROJECT_GIT_REPO} {self.project_directory}")
+                print()
 
         # lake build to make sure lean it will work (this will download Mathlib if it is not already)
         try:
@@ -182,11 +184,14 @@ class Translator:
         return new_state
 
     def backtrack(self) -> State:
-        """Removes the last input given to the Translator, hence, the last state of the stack.
+        """Removes the last input given to the Translator, hence, the last state of the stack. If no input had been given earlier, this function will return None.
 
         Returns:
             State: the state after the last input has been removed.
         """
+        if len(self.stack) == 1:
+            return None
+
         self.stack.pop()
         return self.state()
 

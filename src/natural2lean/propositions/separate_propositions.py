@@ -65,8 +65,7 @@ def split_proposition(string: str) -> Iterable[Translatable]:
     try:
         math = get_algebra(string, match_type="partial")
     except MatchingError:
-        # TODO : is it always needed ?
-        raise TranslationError("No math content in proposition : " + string)
+        math = None
 
     # set
     if isinstance(math, MultipleIdentifiers):
