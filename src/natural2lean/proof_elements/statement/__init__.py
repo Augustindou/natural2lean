@@ -17,6 +17,6 @@ def get_statement(string: str) -> Statement:
             pass
 
     raise TranslationError(
-        f"Could not match any statement for {string}, tried "
+        f"Could not match any statement for '{string}', tried "
         + ", ".join([p.__name__ for p in POSSIBILITIES])
     )
