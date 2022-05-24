@@ -12,8 +12,9 @@ from ..proof_elements.theorem.theorem import Theorem
 ERRORS = [
     r"tactic .+ failed",
     r"error: unknown tactic",
-    r"error: expected .*",
     r"error: unknown namespace",
+    r"error: expected .+",
+    r"error: missing .+",
 ]
 
 # patterns need a fullmatch on a line to work
@@ -86,7 +87,7 @@ def lean_feedback(input: str, project_directory: Path) -> list[LeanBlock]:
     # errors
     match = match_list(ERRORS, feedback, type="search")
     if match is not None:
-        raise LeanError(f"Lean error: {match.group(0)}")
+        raise LeanError(f"Lean error: {feedback[match.start():match.end()]}\n")
 
     # separate blocks
     lean_blocks = separate_elements(feedback)
@@ -139,7 +140,7 @@ def match_list(patterns: list[str], text: str, type: str = "search") -> re.Match
         bool: _description_
     """
     if type not in ["search", "fullmatch", "match"]:
-        raise TranslationError(f"type must be one of 'search', 'fullmatch', 'match'")
+        raise Exception(f"type must be one of 'search', 'fullmatch', 'match'")
     if type == "search":
         call = re.search
     if type == "fullmatch":

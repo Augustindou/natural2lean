@@ -73,7 +73,7 @@ def split_proposition(string: str) -> Iterable[Translatable]:
         if set_:
             if isinstance(math, IdentifiersInSet):
                 raise TranslationError(
-                    f"Multiple sets in the same proposition; found '{set_}' and '{math.set.latex}' in '{string}'"
+                    f"Multiple sets in the same proposition; found '{set_}' and '{math.set.latex}' in '{string}'\n"
                 )
 
             algebra = get_algebra("$" + math.string + " \\in " + set_.latex + "$")
@@ -114,7 +114,7 @@ def get_set(string: str) -> MathSet:
             if word in string:
                 if matched_set != None:
                     raise TranslationError(
-                        f"Multiple sets in the same proposition; found '{prev_word}' and '{word}' in '{string}'"
+                        f"Multiple sets in the same proposition; found '{prev_word}' and '{word}' in '{string}'\n"
                     )
                 matched_set = set_
                 prev_word = word

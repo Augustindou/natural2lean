@@ -70,7 +70,7 @@ class Have(Statement):
                 return SIMPLE_STATEMENTS[statement]
 
         raise TranslationError(
-            f"Could not find a suitable substatement for have in '{self.right_side}'."
+            f"Could not find a suitable substatement for have in '{self.right_side}'.\n"
         )
 
     def get_proof(self) -> str:

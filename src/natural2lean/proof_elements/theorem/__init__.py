@@ -15,5 +15,5 @@ def get_theorem(string: str) -> Theorem:
 
     raise TranslationError(
         f"Could not match any theorem for '{string}', tried "
-        + ", ".join([p.__name__ for p in POSSIBILITIES])
+        + ", ".join([p.__name__ for p in POSSIBILITIES]) + ".\n"
     )

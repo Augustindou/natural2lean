@@ -46,6 +46,7 @@ class Latex2LeanMath:
                 f"LaTeX function without end"
                 + f'\n        in "{self.latex_string}"'
                 + f'\n        at "{self.latex_string[next_function_start:]}"'
+                + "\n"
             )
 
         # end found before start
@@ -69,6 +70,7 @@ class Latex2LeanMath:
                         f"LaTeX function with wrong number of arguments"
                         + f'\n        in "{self.latex_string}"'
                         + f'\n        at "{self.latex_string[next_function_start:]}"'
+                        + "\n"
                     )
 
                 # add intermediate elements (between args of function)
@@ -83,6 +85,7 @@ class Latex2LeanMath:
                         f"Missing argument for latex function"
                         + f'\n        in "{self.latex_string}"'
                         + f'\n        at "{self.latex_string[next_function_start:]}"'
+                        + "\n"
                     )
 
             # add last element of function

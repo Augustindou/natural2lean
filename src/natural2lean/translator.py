@@ -159,12 +159,15 @@ class Translator:
         except NoConclusion:
             if any(isinstance(statement, poss) for poss in CCL_POSSIBILITIES):
                 raise NoConclusion(
-                    f"Could not match a non-conclusive statement, nor conclude a proof with '{string}'."
+                    f"Could not match a non-conclusive statement, nor conclude a proof with '{string}'.\n"
                 )
 
             hyp_count = len(old_state.goals[0].hypotheses)
             hyp_name = f"h{subscript(hyp_count)}"
-            translation = statement.translate(hyp_name=hyp_name)
+            translation = statement.translate(
+                hyp_name=hyp_name,
+                last_hyp=old_state.goals[0].hypotheses[-1][0],
+            )
 
             lean_fb = lean_feedback(
                 old_state.lean_text + "\n\n" + indent(translation),
@@ -179,6 +182,14 @@ class Translator:
             statements=old_state.statements + [statement],
             lean_text=lean_text,
         )
+
+        if (
+            len(new_state.goals) > len(old_state.goals)
+            and not statement.can_create_new_goals()
+        ):
+            raise LeanError(
+                "Statement created a new goal, but this type of statement is not allowed to.\n"
+            )
 
         self.stack.push(new_state)
         return new_state

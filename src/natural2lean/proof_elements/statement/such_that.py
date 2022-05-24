@@ -32,12 +32,12 @@ class SuchThat(Statement):
 
         if len(self.identifiers) == 0:
             raise TranslationError(
-                f"Found no identifiers before 'such that' in '{string}'."
+                f"Found no identifiers before 'such that' in '{string}'.\n"
             )
 
         if len(props.get_non_identifiers()) > 0:
             raise TranslationError(
-                f"A proposition before 'such that' in '{string}' is not an identifier definition."
+                f"A proposition before 'such that' in '{string}' is not an identifier definition.\n"
             )
 
         # hypotheses
