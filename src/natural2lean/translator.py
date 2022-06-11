@@ -185,11 +185,14 @@ class Translator:
                     f"Could not match a non-conclusive statement, nor conclude a proof with '{string}'.\n"
                 )
 
-            hyp_count = len(old_state.goals[0].hypotheses)
-            hyp_name = f"h{subscript(hyp_count)}"
+            hyp_name = f"h{subscript(len(old_state.goals[0].hypotheses))}"
+            if old_state.goals[0].hypotheses:
+                last_hyp = old_state.goals[0].hypotheses[-1][0]
+            else:
+                last_hyp = None
             translation = statement.translate(
                 hyp_name=hyp_name,
-                last_hyp=old_state.goals[0].hypotheses[-1][0],
+                last_hyp=last_hyp,
             )
 
             lean_fb = lean_feedback(

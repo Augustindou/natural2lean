@@ -11,10 +11,10 @@ from ..proof_elements.theorem.theorem import Theorem
 # if any of ERRORS is matched, the result will be FAIL, and the system will cancel the last input.
 ERRORS = [
     r"tactic .+ failed",
-    r"error: unknown tactic",
-    r"error: unknown namespace",
+    r"error: unknown .+",
     r"error: expected .+",
     r"error: missing .+",
+    r"error: invalid .+"
 ]
 
 # patterns need a fullmatch on a line to work
