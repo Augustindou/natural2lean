@@ -20,7 +20,7 @@ class SuchThat(Statement):
         ]
     )
 
-    def __init__(self, string) -> None:
+    def __init__(self, string, **kwargs) -> None:
         if not (match := re.fullmatch(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}"

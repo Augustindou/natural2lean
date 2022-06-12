@@ -19,7 +19,7 @@ _contraposition_proof = lambda last_hyp: "\n".join(
 
 # if pattern is matched, the string returned by the callable will be added, the last hypothesis will be given as argument
 PROOF_STRUCTURES: dict[str, Callable] = {
-    # by contraposition, we will prove the contrapositive, ...
+    # by contraposition / we will prove the contrapositive / ...
     r"contrapos\w*": _contraposition_proof,
     # r"contradiction": lambda last_hyp: "todo",
 }
@@ -30,7 +30,7 @@ SUB_STATEMENT_POSSIBILITIES: list = [Have]
 class ProofStructure(Statement):
     pattern: str = f"(?:{'|'.join(PROOF_STRUCTURES.keys())})"
 
-    def __init__(self, string: str) -> None:
+    def __init__(self, string: str, **kwargs) -> None:
         if not (match := re.search(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}."
@@ -50,7 +50,7 @@ class ProofStructure(Statement):
         self.sub_statement = None
         for poss in SUB_STATEMENT_POSSIBILITIES:
             try:
-                self.sub_statement: Statement = poss(self.right_side)
+                self.sub_statement: Statement = poss(self.right_side, **kwargs)
             except MatchingError:
                 pass
 

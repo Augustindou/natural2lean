@@ -3,8 +3,7 @@ import shutil
 import platform
 from pathlib import Path, PureWindowsPath
 from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
-from .proof_elements.theorem import get_theorem
-from .utils.stack import Stack
+from .proof_elements.theorem import get_theorem, NamedTheorem
 from .utils.text import indent, subscript
 from .utils.exceptions import LeanError, NoConclusion, TranslationError
 from .lean_interaction.conclude_proof import get_conclusion
@@ -19,7 +18,6 @@ DEFAULT_PATHS = {
 LEAN_PROJECT_GIT_REPO = (
     "https://github.com/Augustindou/natural2lean-lean-project-template.git"
 )
-LEAN_PROJECT = "lean"
 GIT_LOCATION = ".git"
 
 LEAN_HEADER = "\n".join(
@@ -45,7 +43,10 @@ def update_git():
     if path.exists():
         # run git pull
         print("Updating lean project template...\n")
-        os.system(f'git --work-tree="{path}" --git-dir="{path/LEAN_PROJECT/GIT_LOCATION}" pull')
+        os.system(
+            f'git --work-tree="{path}" --git-dir="{path/GIT_LOCATION}" reset --hard'
+        )
+        os.system(f'git --work-tree="{path}" --git-dir="{path/GIT_LOCATION}" pull')
         print()
 
     else:
@@ -60,8 +61,10 @@ class Translator:
     """An object managing a stack of theorems and statements that form proofs."""
 
     def __init__(self, lean_project_directory: str = None):
-        self.stack = Stack()
-        self.stack.push(State(goals=[], statements=[], lean_text=LEAN_HEADER))
+        self.stack: list[State] = [
+            State(goals=[], statements=[], lean_text=LEAN_HEADER)
+        ]
+        self.theorems: list[tuple[str, str]] = []
 
         try:
             default_path = DEFAULT_PATHS[platform.system()]
@@ -74,16 +77,16 @@ class Translator:
         if lean_project_directory:
             if windows:
                 lean_project_directory = PureWindowsPath(lean_project_directory)
-            self.project_directory = Path(lean_project_directory) / LEAN_PROJECT
+            self.project_directory = Path(lean_project_directory)
         else:
-            self.project_directory = default_path / LEAN_PROJECT
+            self.project_directory = default_path
 
         # check if project exists
         if not self.project_directory.exists():
             # if exists at the default location, copy the folder
-            if (default_path / LEAN_PROJECT).exists():
+            if default_path.exists():
                 shutil.copytree(
-                    default_path / LEAN_PROJECT,
+                    default_path,
                     self.project_directory,
                 )
             # otherwise, download the project
@@ -115,7 +118,7 @@ class Translator:
             TranslationError: if the string could not be parsed into a theorem.
             LeanError: if the translation by the system could not be understood by lean.
         """
-        old_state: State = self.stack.peek()
+        old_state: State = self.state()
         if len(old_state.goals) == 0:
             return self.new_theorem(string)
         else:
@@ -137,7 +140,11 @@ class Translator:
         """
         theorem = get_theorem(string)
 
-        old_state: State = self.stack.peek()
+        # add theorem to list
+        if isinstance(theorem, NamedTheorem):
+            self.theorems.append((theorem.latex_name, theorem.lean_name))
+
+        old_state: State = self.state()
         assert (
             len(old_state.goals) == 0
         ), "Should close goals before proving new theorem"
@@ -151,7 +158,7 @@ class Translator:
             lean_text=lean_text,
         )
 
-        self.stack.push(new_state)
+        self.stack.append(new_state)
         return new_state
 
     def new_statement(self, string: str) -> State:
@@ -168,9 +175,9 @@ class Translator:
             TranslationError: if the string could not be parsed into a theorem.
             LeanError: if the translation by the system could not be understood by lean.
         """
-        statement = get_statement(string)
+        statement = get_statement(string, proven_theorems=self.theorems[:-1])
 
-        old_state: State = self.stack.peek()
+        old_state: State = self.state()
         assert (
             len(old_state.goals) > 0
         ), "Should start a theorem before adding statements"
@@ -217,7 +224,7 @@ class Translator:
                 "Statement created a new goal, but this type of statement is not allowed to.\n"
             )
 
-        self.stack.push(new_state)
+        self.stack.append(new_state)
         return new_state
 
     def backtrack(self) -> State:
@@ -229,7 +236,13 @@ class Translator:
         if len(self.stack) == 1:
             return None
 
-        self.stack.pop()
+        # remove last state
+        old_state = self.stack.pop()
+
+        # remove theorem if it was popped
+        if isinstance(old_state.statements[-1], NamedTheorem):
+            self.theorems.pop()
+
         return self.state()
 
     def state(self) -> State:
@@ -238,4 +251,4 @@ class Translator:
         Returns:
             State: the current state of the Translator.
         """
-        return self.stack.peek()
+        return self.stack[-1]

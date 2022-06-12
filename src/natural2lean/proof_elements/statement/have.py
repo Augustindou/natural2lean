@@ -6,6 +6,7 @@ from ...propositions.multiple_propositions import MultiplePropositions
 from ...propositions.implication import Implication
 from ...utils.translatable import Translatable
 from ...utils.exceptions import MatchingError, TranslationError
+from ...utils.text import indent
 
 """
 Simple statement such as "we have a contradiction". If the key is matched, the value will be returned by translate. You should consider that the value should already be in tactic mode.
@@ -27,6 +28,13 @@ PROOFS: dict[str, str] = {
 
 DEFAULT_PROOF = "by simp at *; assumption"
 
+
+def using_theorems(*theorems) -> str:
+    block = f"try simp_all [{', '.join(theorems)}]\n"
+    block += "try ring"
+    return "by \n" + indent(block)
+
+
 POSSIBILITIES: list[Translatable] = [Implication, SuchThat, MultiplePropositions]
 
 CALC_PROOF = 1
@@ -45,7 +53,7 @@ class Have(Statement):
         ]
     )
 
-    def __init__(self, string: str) -> None:
+    def __init__(self, string: str, proven_theorems: dict[str, str]) -> None:
         if not (match := re.fullmatch(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}."
@@ -56,7 +64,7 @@ class Have(Statement):
         self.right_side = match.group(2).strip(" ,.;")
 
         self.statement = self.get_statement()
-        self.proof = self.get_proof()
+        self.proof = self.get_proof(proven_theorems)
 
     def get_statement(self) -> Translatable:
         for poss in POSSIBILITIES:
@@ -73,7 +81,17 @@ class Have(Statement):
             f"Could not find a suitable substatement for have in '{self.right_side}'.\n"
         )
 
-    def get_proof(self) -> str:
+    def get_proof(self, proven_theorems: list[tuple[str, str]]) -> str:
+
+        # checking for previously proved theorems
+        used_theorems = []
+        for latex_th, lean_th in proven_theorems:
+            if latex_th.lower() in self.string.lower():
+                used_theorems.append(lean_th)
+
+        if used_theorems:
+            return using_theorems(*used_theorems)
+
         # should be proved by calc
         if (
             isinstance(self.statement, MultiplePropositions)

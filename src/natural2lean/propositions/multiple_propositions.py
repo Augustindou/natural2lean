@@ -5,7 +5,7 @@ from ..algebra.identifiers import IdentifiersInSet
 
 
 class MultiplePropositions(Translatable):
-    def __init__(self, string: str) -> None:
+    def __init__(self, string: str, **kwargs) -> None:
         self.propositions = get_propositions(string)
 
         if not self.propositions:
@@ -20,6 +20,11 @@ class MultiplePropositions(Translatable):
         proof: str = None,
         **kwargs,
     ) -> str:
+        if len(self.propositions) == 1:
+            return self.propositions[0].translate(
+                hyp_name=hyp_name, proof=proof, **kwargs
+            )
+
         hyp_def = f"{hyp_name} : " if hyp_name else ""
         props = separator.join([prop.translate() for prop in self.propositions])
         proof = f" := {proof}" if proof else ""

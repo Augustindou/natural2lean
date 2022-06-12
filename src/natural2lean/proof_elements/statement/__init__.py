@@ -10,10 +10,10 @@ POSSIBILITIES = [Have, ProofStructure]
 CCL_POSSIBILITIES = [MultiplePropositions, SuchThat]
 
 
-def get_statement(string: str) -> Statement:
+def get_statement(string: str, **kwargs) -> Statement:
     for poss in POSSIBILITIES + CCL_POSSIBILITIES:
         try:
-            return poss(string)
+            return poss(string, **kwargs)
         except MatchingError:
             pass
 

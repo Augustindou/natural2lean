@@ -8,7 +8,7 @@ from ..utils.translatable import Translatable
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
-    (r"not\s*divisible",): "simp_all [divisible]",
+    (r"¬divisible",): "simp_all [divisible]",
     (r"even", r"odd", r"divisible"): "exact ⟨_, by assumption⟩",
     (r"%.*=",): "apply mod_rewrite.mpr; exact ⟨_, by assumption⟩",
     (r"",): "assumption",
@@ -45,7 +45,6 @@ def find_conclusion(
         indented_ccl = indent(ccl.strip())
         for indicator in indicators:
             if re.search(indicator, state.goals[0].goal):
-
                 try:
                     lean_fb = lean_feedback(
                         state.lean_text + "\n\n" + indented_ccl,
