@@ -3,7 +3,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 from typing import Union
 from dataclasses import dataclass
-from ..utils.exceptions import LeanError, TranslationError
+from ..utils.exceptions import LeanError
 from ..utils.text import indent, nth
 from ..proof_elements.statement.statement import Statement
 from ..proof_elements.theorem.theorem import Theorem
@@ -15,7 +15,8 @@ ERRORS = [
     r"error: unknown .+",
     r"error: expected .+",
     r"error: missing .+",
-    r"error: invalid .+"
+    r"error: invalid .+",
+    r"error: .+ is missing",
 ]
 
 # patterns need a fullmatch on a line to work
