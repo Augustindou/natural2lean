@@ -110,19 +110,15 @@ def raw_feedback(input: str, project_directory: Path) -> str:
     with open(project_directory / MAIN_FILE, "w") as f:
         f.write(input)
 
-    raw = (
-        Popen(
+    res = Popen(
             BUILD_COMMAND,
             shell=True,
             cwd=project_directory,
             stdout=PIPE,
             stderr=PIPE,
         )
-        .stdout.read()
-        .decode("utf-8")
-    )
 
-    return raw
+    return res.stdout.read().decode("utf-8") + res.stderr.read().decode("utf-8")
 
 
 # -------------------------------------------------------------------------
