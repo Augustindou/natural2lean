@@ -1,13 +1,10 @@
 import re
-
-from natural2lean.utils.text import subscript
-
-
-from .theorem import Theorem
-from ...propositions.implication import Implication
+from .theorem import Theorem, STATEMENT_POSSIBILITIES
 from ...utils.exceptions import MatchingError
+from ...utils.text import subscript
 
 space = r"\s*"
+
 
 
 class NamedTheorem(Theorem):
@@ -35,21 +32,32 @@ class NamedTheorem(Theorem):
             self.lean_name = "_" + self.lean_name
 
         # content
-        self.statement = Implication(match.group(2))
+        for poss in STATEMENT_POSSIBILITIES:
+            try:
+                self.statement = poss(match.group(2))
+                self.set_hypotheses_and_theses()
+                return
+            except MatchingError:
+                pass
+
+        raise MatchingError(f"Could not match any statement to prove for {string}, tried {', '.join([p.__name__ for p in STATEMENT_POSSIBILITIES])}.")
+        
 
     def translate(self, **kwargs) -> str:
-        hypotheses = self.statement.hypotheses
-        theses = self.statement.theses
-
-        lean_identifiers = hypotheses.translate_identifiers()
-        lean_hypotheses = " ".join(
-            [
-                f"(h{subscript(i)} : {h.translate()})"
-                for i, h in enumerate(hypotheses.get_non_identifiers())
-            ]
-        )
-        lean_theses = theses.translate()
-
-        arguments = f"{lean_identifiers} {lean_hypotheses}"
-
-        return f"theorem {self.lean_name} {arguments} : {lean_theses} := by"
+        if self.hypotheses:
+            lean_identifiers = self.hypotheses.translate_identifiers()
+            lean_hypotheses = " ".join(
+                [
+                    f"(h{subscript(i)} : {h.translate()})"
+                    for i, h in enumerate(self.hypotheses.get_non_identifiers())
+                ]
+            )
+            lean_theses = self.theses.translate()
+            
+            return f"theorem {self.lean_name} {lean_identifiers} {lean_hypotheses} : {lean_theses} := by"
+        
+        else:
+            lean_identifiers = self.theses.translate_identifiers()
+            lean_theses = self.theses.translate_non_identifiers()
+            
+            return f"theorem {self.lean_name} {lean_identifiers} : {lean_theses} := by"
