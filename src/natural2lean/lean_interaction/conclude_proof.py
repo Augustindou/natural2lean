@@ -8,8 +8,8 @@ from ..utils.translatable import Translatable
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
-    (r"¬divisible",): "simp_all [divisible]",
-    (r"even", r"odd", r"divisible"): "exact ⟨_, by assumption⟩",
+    (r"¬divisible",): "simp_all",
+    (r"∃ .+, .+", r"even", r"odd"): "exact ⟨_, by assumption⟩",
     (r"%.*=",): "apply mod_rewrite.mpr; exact ⟨_, by assumption⟩",
     (r"",): "assumption",
 }

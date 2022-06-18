@@ -11,7 +11,7 @@ _contraposition_proof = lambda last_hyp: "\n".join(
     [
         f"revert {last_hyp}",
         f"rw [not_imp_not.symm]",
-        f"simp [not_not]",
+        f"repeat rw [not_not]",
         f"intro {last_hyp}",
     ]
 )
