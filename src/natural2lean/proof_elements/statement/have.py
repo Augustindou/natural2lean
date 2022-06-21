@@ -26,13 +26,12 @@ PROOFS: dict[str, str] = {
     r"modulo.*possibilities": "mod_3_poss _",
 }
 
-DEFAULT_PROOF = "by simp at *; assumption"
+DEFAULT_PROOF = "by repeat (first | ring | simp_all)"
 
 
 def using_theorems(*theorems) -> str:
-    block = f"try simp_all [{', '.join(theorems)}]\n"
-    block += "try ring"
-    return "by \n" + indent(block)
+    proof = f"repeat (first | ring | simp_all [{', '.join(theorems)}])"
+    return "by \n" + indent(proof)
 
 
 POSSIBILITIES: list[Translatable] = [Implication, SuchThat, MultiplePropositions]
@@ -47,13 +46,13 @@ class Have(Statement):
         [
             "",  # ignore leading space
             r"(.*)",  # left side
-            r"[Hh]ave",  # have keyword
+            r"(?:have|derive)",  # have keyword
             r"(.*)",  # right side
             "",  # ignore trailing space
         ]
     )
 
-    def __init__(self, string: str, proven_theorems: dict[str, str]) -> None:
+    def __init__(self, string: str, proven_theorems: dict[str, str, str]) -> None:
         if not (match := re.fullmatch(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}."
@@ -81,11 +80,11 @@ class Have(Statement):
             f"Could not find a suitable substatement for have in '{self.right_side}'.\n"
         )
 
-    def get_proof(self, proven_theorems: list[tuple[str, str]]) -> str:
+    def get_proof(self, proven_theorems: list[tuple[str, str, str]]) -> str:
 
         # checking for previously proved theorems
         used_theorems = []
-        for latex_th, lean_th in proven_theorems:
+        for latex_th, lean_th, _ in proven_theorems:
             if latex_th.lower() in self.string.lower():
                 used_theorems.append(lean_th)
 
@@ -114,11 +113,15 @@ class Have(Statement):
 
         if hyp_name is None:
             return self.statement.translate()
+        
 
         if self.proof == CALC_PROOF and isinstance(self.statement, Equation):
-            return f"have {self.statement.translate(hyp_name=hyp_name, by_calc=True)}"
-
+            have = f"have {self.statement.translate(hyp_name=hyp_name, by_calc=True)}"
+            rw = f"try rw [{hyp_name}]"
+            return have + "\n" + rw
+            
         return f"have {self.statement.translate(hyp_name=hyp_name, proof=self.proof)}"
+
 
     def can_create_new_goals(self) -> bool:
         return self.statement.can_create_new_goals()

@@ -8,6 +8,8 @@ STATEMENT_POSSIBILITIES = [Implication, MultiplePropositions]
 class Theorem(Translatable):
     def __init__(self):
         self.statement: Translatable = None
+        self.latex_name: str = None
+        self.lean_name: str = None
         raise NotImplementedError
 
     def set_hypotheses_and_theses(self):

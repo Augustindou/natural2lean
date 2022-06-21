@@ -4,18 +4,11 @@ from pathlib import Path
 
 translator = Translator()
 
-print(raw_feedback("""import LeanUtils
-def main : IO Unit := IO.println s!"Hello, world!"
-open Nat
 
-theorem square_of_q_divisible_by_3_means_q_is_divisible_by_3 (q : Nat) (h₀ : divisible (3) (q^2)) : divisible (3) (q) := by""", Path.home() / Path(".natural2lean")))
-
-
-translator.new(r"Theorem square of q divisible by 3 means q is divisible by 3: If $q \in \mathbb{N}$ and $q^2$ is divisible by $3$, then $q$ is also divisible by $3$.")
-
-
-
-
+translator.new(r"Theorem Square of even number is even: if $m \in \mathbb{N}$ is even, then $m^2$ is even.")
+translator.new(r"By definition, if $m$ is even, we have a natural number $n$ such that $m = 2n$.")
+translator.new(r"Therefore we have $m^2 = (2n)^2 = 4n^2 = 2(2n^2)$")
+translator.new(r"Hence, $m^2$ is even.")
 
 
 

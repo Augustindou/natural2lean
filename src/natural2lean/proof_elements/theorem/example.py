@@ -20,6 +20,9 @@ class Example(Theorem):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}"
             )
+            
+        self.latex_name = None
+        self.lean_name = None
 
         # content
         for poss in STATEMENT_POSSIBILITIES:

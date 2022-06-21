@@ -2,10 +2,12 @@ import os
 import shutil
 import platform
 from pathlib import Path, PureWindowsPath
+
+from natural2lean.proof_elements.theorem.theorem import Theorem
 from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
-from .proof_elements.theorem import get_theorem, NamedTheorem
+from .proof_elements.theorem import get_theorem
 from .utils.text import indent, subscript
-from .utils.exceptions import LeanError, NoConclusion, TranslationError
+from .utils.exceptions import LeanError, NoConclusion
 from .lean_interaction.conclude_proof import get_conclusion
 from .lean_interaction.lean_feedback import State, lean_feedback
 
@@ -39,7 +41,8 @@ class Translator:
         self.stack: list[State] = [
             State(goals=[], statements=[], lean_text=LEAN_HEADER)
         ]
-        self.theorems: list[tuple[str, str]] = []
+        # containing latex name, lean name and original goal
+        self.theorems: list[tuple[str, str, str]] = []
 
         try:
             default_path = DEFAULT_PATHS[platform.system()]
@@ -115,10 +118,6 @@ class Translator:
         """
         theorem = get_theorem(string)
 
-        # add theorem to list
-        if isinstance(theorem, NamedTheorem):
-            self.theorems.append((theorem.latex_name, theorem.lean_name))
-
         old_state: State = self.state()
         assert (
             len(old_state.goals) == 0
@@ -132,6 +131,12 @@ class Translator:
             statements=old_state.statements + [theorem],
             lean_text=lean_text,
         )
+
+        # add theorem to list
+        if isinstance(theorem, Theorem):
+            self.theorems.append(
+                (theorem.latex_name, theorem.lean_name, new_state.goals[0].goal)
+            )
 
         self.stack.append(new_state)
         return new_state
@@ -159,7 +164,10 @@ class Translator:
 
         try:
             lean_fb, translation = get_conclusion(
-                old_state, statement, self.project_directory
+                state=old_state,
+                original_goal=self.theorems[-1][2],
+                statement=statement,
+                project_directory=self.project_directory,
             )
         except NoConclusion:
             if any(isinstance(statement, poss) for poss in CCL_POSSIBILITIES):
@@ -215,7 +223,7 @@ class Translator:
         old_state = self.stack.pop()
 
         # remove theorem if it was popped
-        if isinstance(old_state.statements[-1], NamedTheorem):
+        if isinstance(old_state.statements[-1], Theorem):
             self.theorems.pop()
 
         return self.state()

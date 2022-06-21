@@ -9,42 +9,46 @@ from ..utils.translatable import Translatable
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
     (r"¬divisible",): "simp_all",
-    (r"∃ .+, .+", r"even", r"odd"): "exact ⟨_, by assumption⟩",
-    (r"%.*=",): "apply mod_rewrite.mpr; exact ⟨_, by assumption⟩",
+    (r"∃ .+, .+", r"even", r"odd"): "exact ⟨_, by repeat (first | rfl | assumption | ring | simp_all)⟩",
+    (r"%.*=", r"divisible"): "apply mod_rewrite.mpr; exact ⟨_, by repeat (first | rfl | assumption | ring | simp_all)⟩",
     (r"",): "assumption",
 }
 
 
 def get_conclusion(
-    state: State, statement: Translatable, project_directory: Path
+    state: State,
+    original_goal: str,
+    statement: Translatable,
+    project_directory: Path,
 ) -> tuple[list[LeanBlock], str]:
     """Returns the conclusion to add to the proof if the statement is a goal, or None if the conclusion does not work / the statement is not a goal."""
-    if statement_is_goal(statement, state.goals[0].goal):
-        return find_conclusion(state, project_directory)
+    if statement_is_goal(statement, state.goals[0].goal, original_goal):
+        return find_conclusion(state, original_goal, project_directory)
     raise NoConclusion(f"No conclusion found for {state.goals[0].goal}")
 
 
-def statement_is_goal(statement: Translatable, goal: str) -> bool:
+def statement_is_goal(statement: Translatable, goal: str, original_goal: str) -> bool:
     # TODO : improve the method for this
     # get first line
     tr = statement.translate().splitlines()[0]
     # remove parenthesis and spaces
     tr = tr.replace("(", "").replace(")", "").replace(" ", "")
     goal = goal.replace("(", "").replace(")", "").replace(" ", "")
+    original_goal = original_goal.replace("(", "").replace(")", "").replace(" ", "")
 
     # compare
-    if goal in tr:
+    if goal in tr or original_goal in tr:
         return True
     return False
 
 
 def find_conclusion(
-    state: State, project_directory: Path
+    state: State, original_goal:str, project_directory: Path
 ) -> tuple[list[LeanBlock], str]:
     for indicators, ccl in CONCLUSIONS.items():
         indented_ccl = indent(ccl.strip())
         for indicator in indicators:
-            if re.search(indicator, state.goals[0].goal):
+            if re.search(indicator, state.goals[0].goal) or re.search(indicator, original_goal):
                 try:
                     lean_fb = lean_feedback(
                         state.lean_text + "\n\n" + indented_ccl,
