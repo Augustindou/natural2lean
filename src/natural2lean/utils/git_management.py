@@ -3,6 +3,7 @@ import os
 import shutil
 from ..translator import DEFAULT_PATHS, GIT_LOCATION, LEAN_PROJECT_GIT_REPO
 
+
 def update_git():
     try:
         path = DEFAULT_PATHS[platform.system()]
@@ -26,7 +27,8 @@ def update_git():
         print("Downloading lean project template...\n")
         os.system(f"git clone {LEAN_PROJECT_GIT_REPO} {path}")
         print()
-        
+
+
 def reset_git():
     try:
         path = DEFAULT_PATHS[platform.system()]

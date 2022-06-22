@@ -1,36 +1,13 @@
 import re
 from pathlib import Path
 from subprocess import PIPE, Popen
-from typing import Union
+from typing import Callable, Union
 from dataclasses import dataclass
 from ..utils.exceptions import LeanError
 from ..utils.text import indent, nth
 from ..proof_elements.statement.statement import Statement
+from ..proof_elements.statement.induction import Induction
 from ..proof_elements.theorem.theorem import Theorem
-
-# if any of ERRORS is matched, the result will be FAIL, and the system will cancel the last input.
-ERRORS = [
-    r"error: tactic .+ failed",
-    r"error: ring failed",
-    r"error: unknown .+",
-    r"error: expected .+",
-    r"error: missing .+",
-    r"error: invalid .+",
-    r"error: .+ is missing",
-]
-
-# patterns need a fullmatch on a line to work
-# patterns to recognize a goal, this will be checked first, and will create a new LeanBlock at each match. The only group must contain the goal.
-GOAL_PATTERNS = [r"⊢ (.*)"]
-# patterns to recognize variables, these will be checked second. The first group must contain the identifier(s) and the second must contain the corresponding set.
-VAR_PATTERNS = [
-    r"(.*) : ([ℕℤℚℝ].*)",
-]
-# patterns to recognize hypotheses, these will be checked last. the first group contains hypothesis name and the second contains the set.
-HYP_PATTERNS = [r"(.*) : (.*)"]
-
-MAIN_FILE = "Main.lean"
-BUILD_COMMAND = "lake build"
 
 
 @dataclass(frozen=True)
@@ -45,6 +22,10 @@ class LeanBlock:
     goal: str
 
     def __str__(self) -> str:
+        # for missing cases
+        if not self.variables and not self.hypotheses:
+            return f"{self.goal} (missing case)"
+
         # variables
         variables = "\n".join(f"{id_} : {set_}" for id_, set_ in self.variables)
         var_block = f"Variables :\n{indent(variables)}\n" if self.variables else ""
@@ -73,7 +54,56 @@ class State:
         return result
 
 
-def lean_feedback(input: str, project_directory: Path) -> list[LeanBlock]:
+@dataclass
+class SpecificError:
+    pattern: str
+    statement_check: Callable
+    added_blocks: Callable
+
+
+# if any of ERRORS is matched, the result will be FAIL, and the system will cancel the last input.
+ERRORS = [
+    r"error: tactic .+ failed",
+    r"error: ring failed",
+    r"error: unknown .+",
+    r"error: expected .+",
+    r"error: invalid .+",
+    r"error: .+ is missing",
+]
+
+SPECIFIC_ERRORS = [
+    SpecificError(
+        pattern=r"error: unexpected end of input;",
+        statement_check=lambda st: isinstance(st, Induction),
+        added_blocks=lambda st: [
+            LeanBlock(
+                variables=[], hypotheses=[], goal=f"values of {st.variable.translate()}"
+            )
+        ],
+    )
+]
+
+# patterns need a fullmatch on a line to work
+# patterns to recognize a goal, this will be checked first, and will create a new LeanBlock at each match. The only group must contain the goal.
+GOAL_PATTERNS = [r"⊢ (.*)"]
+# patterns to recognize variables, these will be checked second. The first group must contain the identifier(s) and the second must contain the corresponding set.
+VAR_PATTERNS = [
+    r"(.*) : ([ℕℤℚℝ].*)",
+]
+# patterns to recognize hypotheses, these will be checked last. the first group contains hypothesis name and the second contains the set.
+HYP_PATTERNS = [r"(.*) : (.*)"]
+
+# missing cases are all lines between "missing cases" and "././" or "error" (other error)
+MISSING_CASES_START = r"missing cases:\n"
+MISSING_CASES_STOP = r"(?:\./\./|error:)"
+
+MAIN_FILE = "Main.lean"
+BUILD_COMMAND = "lake build"
+
+
+def lean_feedback(
+    input: str, statement: Statement, project_directory: Path
+) -> list[LeanBlock]:
     """Gets the feedback from lean.
 
     Args:
@@ -94,7 +124,13 @@ def lean_feedback(input: str, project_directory: Path) -> list[LeanBlock]:
     # separate blocks
     lean_blocks = separate_elements(feedback)
 
-    return lean_blocks
+    # check missing cases
+    missing_cases = get_missing_cases(feedback)
+
+    # check specific errors
+    specific_errors = check_specific_errors(statement, feedback)
+
+    return specific_errors + lean_blocks + missing_cases
 
 
 def raw_feedback(input: str, project_directory: Path) -> str:
@@ -111,12 +147,12 @@ def raw_feedback(input: str, project_directory: Path) -> str:
         f.write(input)
 
     res = Popen(
-            BUILD_COMMAND,
-            shell=True,
-            cwd=project_directory,
-            stdout=PIPE,
-            stderr=PIPE,
-        )
+        BUILD_COMMAND,
+        shell=True,
+        cwd=project_directory,
+        stdout=PIPE,
+        stderr=PIPE,
+    )
 
     return res.stdout.read().decode("utf-8") + res.stderr.read().decode("utf-8")
 
@@ -158,7 +194,7 @@ def match_list(patterns: list[str], text: str, type: str = "search") -> re.Match
 
 
 def separate_elements(raw_feedback: str) -> list[LeanBlock]:
-    """Separates the different elements, based on GOAL_PATTERNS, VAR_PATTERNS and HYP_PATTERNS.
+    """Separates the different elements, based on `GOAL_PATTERNS`, `SECONDARY_GOAL_PATTERNS`, `VAR_PATTERNS` and `HYP_PATTERNS`.
 
     Args:
         raw_feedback (str): the feedback from lean.
@@ -209,3 +245,31 @@ def separate_elements(raw_feedback: str) -> list[LeanBlock]:
             continue
 
     return blocks
+
+
+def get_missing_cases(raw_feedback: str) -> list[LeanBlock]:
+    missing_cases = []
+
+    match = re.search(MISSING_CASES_START, raw_feedback)
+    if not match:
+        return []
+
+    for line in raw_feedback[match.end() :].splitlines():
+        if re.match(MISSING_CASES_STOP, line):
+            break
+
+        missing_cases.append(LeanBlock([], [], line))
+
+    return missing_cases
+
+
+def check_specific_errors(statement: Statement, raw_feedback: str) -> list[LeanBlock]:
+    if not statement:
+        return []
+
+    specific_blocks = []
+    for error in SPECIFIC_ERRORS:
+        if re.search(error.pattern, raw_feedback) and error.statement_check(statement):
+            specific_blocks += error.added_blocks(statement)
+
+    return specific_blocks

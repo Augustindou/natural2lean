@@ -15,14 +15,14 @@ class Example(Theorem):
         ]
     )
 
-    def __init__(self, string: str) -> None:
+    def __init__(self, string: str, i: int) -> None:
         if not (match := re.fullmatch(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}"
             )
-            
-        self.latex_name = None
-        self.lean_name = None
+
+        self.latex_name = f"th{i}"
+        self.lean_name = f"th{i}"
 
         # content
         for poss in STATEMENT_POSSIBILITIES:
@@ -35,23 +35,6 @@ class Example(Theorem):
 
         raise MatchingError(
             f"Could not match any statement to prove for {string}, tried {', '.join([p.__name__ for p in STATEMENT_POSSIBILITIES])}."
-            )
+        )
 
-    def translate(self, **kwargs) -> str:
-        if self.hypotheses:
-            lean_identifiers = self.hypotheses.translate_identifiers()
-            lean_hypotheses = " ".join(
-                [
-                    f"(h{subscript(i)} : {h.translate()})"
-                    for i, h in enumerate(self.hypotheses.get_non_identifiers())
-                ]
-            )
-            lean_theses = self.theses.translate()
-            
-            return f"example {lean_identifiers} {lean_hypotheses} : {lean_theses} := by"
-        
-        else:
-            lean_identifiers = self.theses.translate_identifiers()
-            lean_theses = self.theses.translate_non_identifiers()
-            
-            return f"example {lean_identifiers} : {lean_theses} := by"
+    # translate method is inherited

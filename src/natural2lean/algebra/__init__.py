@@ -26,5 +26,6 @@ def get_algebra(latex_string: str, match_type: str = "full") -> Algebra:
 
     raise TranslationError(
         f"Could not match any algebra for '{latex_string}', tried "
-        + ", ".join([p.__name__ for p in POSSIBILITIES]) + ".\n"
+        + ", ".join([p.__name__ for p in POSSIBILITIES])
+        + ".\n"
     )

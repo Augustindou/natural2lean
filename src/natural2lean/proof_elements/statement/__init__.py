@@ -1,13 +1,15 @@
-from natural2lean.proof_elements.statement.such_that import SuchThat
+from .induction import Induction, InductionCase
+from .simple_statements import SimpleStatement
+from .such_that import SuchThat
 from .have import Have
 from .proof_structure import ProofStructure
 from .statement import Statement
 from ...propositions.multiple_propositions import MultiplePropositions
 from ...utils.exceptions import MatchingError, TranslationError
 
-POSSIBILITIES = [Have, ProofStructure]
+POSSIBILITIES = [InductionCase, Induction, Have, ProofStructure]
 # conclusions, statements that would only be accepted if they are conclusions of a goal
-CCL_POSSIBILITIES = [MultiplePropositions, SuchThat]
+CCL_POSSIBILITIES = [MultiplePropositions, SuchThat, SimpleStatement]
 
 
 def get_statement(string: str, **kwargs) -> Statement:

@@ -2,10 +2,10 @@ import os
 import shutil
 import platform
 from pathlib import Path, PureWindowsPath
-
-from natural2lean.proof_elements.theorem.theorem import Theorem
-from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
 from .proof_elements.theorem import get_theorem
+from .proof_elements.theorem.theorem import Theorem
+from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
+from .proof_elements.statement.statement import Statement
 from .utils.text import indent, subscript
 from .utils.exceptions import LeanError, NoConclusion
 from .lean_interaction.conclude_proof import get_conclusion
@@ -41,8 +41,10 @@ class Translator:
         self.stack: list[State] = [
             State(goals=[], statements=[], lean_text=LEAN_HEADER)
         ]
-        # containing latex name, lean name and original goal
-        self.theorems: list[tuple[str, str, str]] = []
+        # containing latex name, lean name
+        self.theorems: list[tuple[str, str]] = []
+        # position in proof (for now, only inductions)
+        self.proof_status: list[Statement] = []
 
         try:
             default_path = DEFAULT_PATHS[platform.system()]
@@ -76,7 +78,7 @@ class Translator:
 
         # lake build to make sure lean it will work (this will download Mathlib if it is not already)
         try:
-            lean_feedback(LEAN_HEADER, self.project_directory)
+            lean_feedback(LEAN_HEADER, None, self.project_directory)
         except LeanError:
             raise Exception(
                 "The lean header alone should not cause an error, please report this bug."
@@ -116,7 +118,9 @@ class Translator:
             TranslationError: if the string could not be parsed into a theorem.
             LeanError: if the translation by the system could not be understood by lean.
         """
-        theorem = get_theorem(string)
+        theorem = get_theorem(string, i=len(self.theorems))
+
+        self.proof_status = []
 
         old_state: State = self.state()
         assert (
@@ -127,16 +131,14 @@ class Translator:
 
         # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
         new_state = State(
-            goals=lean_feedback(lean_text, self.project_directory),
+            goals=lean_feedback(lean_text, theorem, self.project_directory),
             statements=old_state.statements + [theorem],
             lean_text=lean_text,
         )
 
         # add theorem to list
         if isinstance(theorem, Theorem):
-            self.theorems.append(
-                (theorem.latex_name, theorem.lean_name, new_state.goals[0].goal)
-            )
+            self.theorems.append((theorem.latex_name, theorem.lean_name))
 
         self.stack.append(new_state)
         return new_state
@@ -155,7 +157,12 @@ class Translator:
             TranslationError: if the string could not be parsed into a theorem.
             LeanError: if the translation by the system could not be understood by lean.
         """
-        statement = get_statement(string, proven_theorems=self.theorems[:-1])
+        statement = get_statement(
+            string, proven_theorems=self.theorems, proof_status=self.proof_status
+        )
+
+        if statement.change_status():
+            self.proof_status.append(statement)
 
         old_state: State = self.state()
         assert (
@@ -165,7 +172,7 @@ class Translator:
         try:
             lean_fb, translation = get_conclusion(
                 state=old_state,
-                original_goal=self.theorems[-1][2],
+                goals=self.all_current_goals(),  # TODO
                 statement=statement,
                 project_directory=self.project_directory,
             )
@@ -186,8 +193,9 @@ class Translator:
             )
 
             lean_fb = lean_feedback(
-                old_state.lean_text + "\n\n" + indent(translation),
-                self.project_directory,
+                input=old_state.lean_text + "\n\n" + indent(translation),
+                statement=statement,
+                project_directory=self.project_directory,
             )
 
         lean_text = old_state.lean_text + "\n\n" + indent(translation)
@@ -227,6 +235,17 @@ class Translator:
             self.theorems.pop()
 
         return self.state()
+
+    def all_current_goals(self) -> set[str]:
+        current_goals = set()
+        for state in self.stack[::-1]:
+            # stop when exiting the current proof
+            if not state.goals:
+                break
+            # add each goal
+            current_goals.add(state.goals[0].goal)
+
+        return current_goals
 
     def state(self) -> State:
         """Returns the current state of the Translator.

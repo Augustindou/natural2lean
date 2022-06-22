@@ -6,3 +6,6 @@ class Translatable:
     def can_create_new_goals(self) -> bool:
         """Returns whether the object should be allowed to create new goals."""
         return False
+
+    def change_status(self) -> bool:
+        return False
