@@ -18,11 +18,11 @@ class Induction(Statement):
     pattern: str = space.join(
         [
             r"",  # ignore leading space
-            r".+",  # anything
+            r".*",  # anything
             r"induction",  # induction keyword
-            r".+?",  # anything
+            r".*?",  # anything
             r"(\$.+\$)",  # the variable
-            r".+",  # anything
+            r".*",  # anything
             r"",  # ignore trailing space
         ]
     )

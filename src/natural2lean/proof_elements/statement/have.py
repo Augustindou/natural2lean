@@ -59,7 +59,7 @@ class Have(Statement):
         [
             "",  # ignore leading space
             r"(.*)",  # left side
-            r"(?:have|derive|give)",  # have keyword
+            r"(?:[Hh]ave|[Dd]eriv|[Gg]ive|[Ss]how|[Pp]rove)",  # have keyword
             r"(.*)",  # right side
             "",  # ignore trailing space
         ]
@@ -90,7 +90,7 @@ class Have(Statement):
             except MatchingError:
                 continue
 
-        raise TranslationError(
+        raise MatchingError(
             f"Could not find a suitable substatement for have in '{self.right_side}'.\n"
         )
 

@@ -10,12 +10,14 @@ from ..utils.translatable import Translatable
 
 # if any element of the key is in the goal, the system will add the value to the proof if it solves a goal
 CONCLUSIONS: dict[tuple[str], str] = {
-    (r"¬divisible",): "simp_all",
+    (r"¬divisible", r"even", r"odd", r"divisible"): "simp_all",
+    (r"∃ .+, .+",): "exact ⟨_, by repeat (first | trivial | ring | simp_all)⟩",
     (
-        r"∃ .+, .+",
         r"even",
+    ): "apply even_rewrite.mpr; exact ⟨_, by repeat (first | trivial | ring | simp_all)⟩",
+    (
         r"odd",
-    ): "exact ⟨_, by repeat (first | trivial | ring | simp_all)⟩",
+    ): "apply odd_rewrite.mpr; exact ⟨_, by repeat (first | trivial | ring | simp_all)⟩",
     (
         r"%.*=",
         r"divisible",
