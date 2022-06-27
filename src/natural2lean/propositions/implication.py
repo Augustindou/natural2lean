@@ -11,9 +11,9 @@ class Implication(Translatable):
     pattern: str = space.join(
         [
             "",  # ignore leading space
-            r"[Ii]f",  # if keyword
+            r"([Ii]f)",  # if keyword
             r"(.*)",  # hypotheses
-            r"[Tt]hen",  # then keyword
+            r"([Tt]hen)",  # then keyword
             r"(.*)",  # theses
             "",  # ignore trailing space
         ]
@@ -26,9 +26,12 @@ class Implication(Translatable):
                 f"Could not match {string} in {self.__class__.__name__}"
             )
 
+        # for feedback
+        self.match = match
+
         self.string = string
-        self.hypotheses = MultiplePropositions(match.group(1).strip(punctuation))
-        self.theses = MultiplePropositions(match.group(2).strip(punctuation))
+        self.hypotheses = MultiplePropositions(match.group(2).strip(punctuation))
+        self.theses = MultiplePropositions(match.group(4).strip(punctuation))
 
     def translate(self, hyp_name: str = None, proof: str = None, **kwargs) -> str:
         assert (
@@ -44,3 +47,11 @@ class Implication(Translatable):
         implication = f"{hypotheses_tr} → {theses_tr}"
 
         return hyp_def + implication + proof
+
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        return [
+            ("keyword", self.match.group(1)),
+            *self.hypotheses.interpretation_feedback(),
+            ("keyword", self.match.group(3)),
+            *self.theses.interpretation_feedback(),
+        ]

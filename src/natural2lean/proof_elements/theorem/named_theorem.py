@@ -9,9 +9,9 @@ class NamedTheorem(Theorem):
     pattern: str = space.join(
         [
             "",  # ignore leading space
-            r"[Tt]heorem",  # Theorem keyword
+            r"([Tt]heorem)",  # Theorem keyword
             r"(.*)",  # Theorem name
-            r":",  # separation between name and statement
+            r"(:)",  # separation between name and statement
             r"(.*)",  # Theorem statement
             "",  # ignore trailing space
         ]
@@ -23,8 +23,11 @@ class NamedTheorem(Theorem):
                 f"Could not match {string} in {self.__class__.__name__}"
             )
 
+        # keep it for processing in interpretation_feedback()
+        self.match = match
+
         # name
-        self.latex_name = match.group(1)
+        self.latex_name = match.group(2)
         self.lean_name = self.latex_name.lower().replace(" ", "_")
         if self.lean_name[0].isdigit():
             self.lean_name = "_" + self.lean_name
@@ -32,7 +35,7 @@ class NamedTheorem(Theorem):
         # content
         for poss in STATEMENT_POSSIBILITIES:
             try:
-                self.statement = poss(match.group(2))
+                self.statement = poss(match.group(4))
                 self.set_hypotheses_and_theses()
                 return
             except MatchingError:
@@ -41,5 +44,14 @@ class NamedTheorem(Theorem):
         raise MatchingError(
             f"Could not match any statement to prove for {string}, tried {', '.join([p.__name__ for p in STATEMENT_POSSIBILITIES])}."
         )
+
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        feedback = [
+            ("keyword", self.match.group(1)),
+            ("parameter", self.match.group(2)),
+            ("keyword", self.match.group(3)),
+        ]
+
+        return feedback + self.statement.interpretation_feedback()
 
     # translate method is inherited

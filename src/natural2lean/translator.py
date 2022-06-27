@@ -39,7 +39,7 @@ class Translator:
 
     def __init__(self, lean_project_directory: str = None):
         self.stack: list[State] = [
-            State(goals=[], statements=[], lean_text=LEAN_HEADER)
+            State(goals=[], last_statement=None, lean_text=LEAN_HEADER)
         ]
         # containing latex name, lean name
         self.theorems: list[tuple[str, str]] = []
@@ -132,7 +132,7 @@ class Translator:
         # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
         new_state = State(
             goals=lean_feedback(lean_text, theorem, self.project_directory),
-            statements=old_state.statements + [theorem],
+            last_statement=theorem,
             lean_text=lean_text,
         )
 
@@ -203,7 +203,7 @@ class Translator:
         # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
         new_state = State(
             goals=lean_fb,
-            statements=old_state.statements + [statement],
+            last_statement=statement,
             lean_text=lean_text,
         )
 
@@ -218,20 +218,25 @@ class Translator:
         self.stack.append(new_state)
         return new_state
 
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        if self.is_bottom_state():
+            return None
+        return self.stack[-1].last_statement.interpretation_feedback()
+
     def backtrack(self) -> State:
         """Removes the last input given to the Translator, hence, the last state of the stack. If no input had been given earlier, this function will return None.
 
         Returns:
             State: the state after the last input has been removed.
         """
-        if len(self.stack) == 1:
+        if self.is_bottom_state():
             return None
 
         # remove last state
         old_state = self.stack.pop()
 
         # remove theorem if it was popped
-        if isinstance(old_state.statements[-1], Theorem):
+        if isinstance(old_state.last_statement, Theorem):
             self.theorems.pop()
 
         return self.state()
@@ -254,3 +259,6 @@ class Translator:
             State: the current state of the Translator.
         """
         return self.stack[-1]
+
+    def is_bottom_state(self) -> bool:
+        return len(self.stack) == 1

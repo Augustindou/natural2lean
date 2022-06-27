@@ -16,11 +16,11 @@ from ...utils.text import indent
 The system will look for matches for the keys in the whole sentence. If a match is found, the value will be passed as proof to sub-statement.
 """
 SIMPLE_PROOFS: dict[str, str] = {
-    r"contradiction": "by contradiction",
-    r"definition": "by simp at *; assumption",
+    r"(.*)(contradiction)(.*)": "by contradiction",
+    r"(.*)(definition)(.*)": "by simp at *; assumption",
     # mod 3 is a bit specific, should extend this to allow for any modulo, but will be easier with mathlib 4
-    r"possibilities.*modulo": "mod_3_poss _",
-    r"modulo.*possibilities": "mod_3_poss _",
+    r"(.*)(possibilities)(.*)(modulo)(.*)": "mod_3_poss _",
+    r"(.*)(modulo)(.*)(possibilities)(.*)": "mod_3_poss _",
 }
 
 
@@ -32,14 +32,15 @@ def using_theorems(theorems: list[str]) -> str:
 def induction_hypothesis(
     theorems: list[tuple[str, str, str]], n_args: int = 1, **kwargs
 ) -> str:
+    # TODO improvement : use the n_args argument
     return theorems[-1][1] + " _" * n_args
 
 
 PARAMETRIC_PROOFS: dict[str, str] = {
-    r"induction\s*hypothesis": induction_hypothesis,
+    r"(.*)(induction\s*hypothesis)(.*)": induction_hypothesis,
 }
 
-DEFAULT_PROOF = "by repeat (first | ring | simp_all)"
+DEFAULT_PROOF = "by repeat (first | trivial | ring | simp_all)"
 
 
 POSSIBILITIES: list[Translatable] = [
@@ -59,7 +60,7 @@ class Have(Statement):
         [
             "",  # ignore leading space
             r"(.*)",  # left side
-            r"(?:[Hh]ave|[Dd]eriv|[Gg]ive|[Ss]how|[Pp]rove)",  # have keyword
+            r"([Hh]ave|[Dd]eriv|[Gg]ive|[Ss]how|[Pp]rove)",  # have keyword
             r"(.*)",  # right side
             "",  # ignore trailing space
         ]
@@ -76,9 +77,12 @@ class Have(Statement):
                 f"Could not match {string} in {self.__class__.__name__}."
             )
 
+        # for feedback
+        self.match = match
+
         self.string = string
         self.left_side = match.group(1).strip(" ,.;")
-        self.right_side = match.group(2).strip(" ,.;")
+        self.right_side = match.group(3).strip(" ,.;")
 
         self.statement = self.get_statement()
         self.proof = self.get_proof(proven_theorems)
@@ -95,7 +99,6 @@ class Have(Statement):
         )
 
     def get_proof(self, proven_theorems: list[tuple[str, str, str]]) -> str:
-
         # checking for previously proved theorems
         used_theorems = []
         for latex_th, lean_th in proven_theorems:
@@ -103,26 +106,32 @@ class Have(Statement):
                 used_theorems.append(lean_th)
 
         if used_theorems:
+            # return proof
+            self.proof_pattern = r"(.*)(" + "|".join(used_theorems) + r")(.*)"
             return using_theorems(used_theorems)
 
-        for pat, param_proof in PARAMETRIC_PROOFS.items():
-            if re.search(pat, self.string):
+        for pattern, param_proof in PARAMETRIC_PROOFS.items():
+            if re.fullmatch(pattern, self.string):
+                self.proof_pattern = pattern
                 return param_proof(theorems=proven_theorems)
 
         # should be proved by calc
         if (
             isinstance(self.statement, MultiplePropositions)
-            and len(props := self.statement.propositions) == 1
-            and isinstance(props[0], Equation)
+            and len(self.statement.propositions) == 1
+            and isinstance(self.statement.propositions[0], Equation)
         ):
-            self.statement = props[0]
+            self.proof_pattern = r"(.*)"
             return CALC_PROOF
 
+        # for simple proofs
         for pattern, proof in SIMPLE_PROOFS.items():
-            if re.search(pattern, self.string.lower()):
+            if re.fullmatch(pattern, self.string):
+                self.proof_pattern = pattern
                 return proof
 
         # if no proof is given
+        self.proof_pattern = r"(.*)"
         return DEFAULT_PROOF
 
     def translate(self, hyp_name=None, **kwargs) -> str:
@@ -132,8 +141,13 @@ class Have(Statement):
         if isinstance(self.statement, SimpleStatement):
             return self.statement.translate()
 
-        if self.proof == CALC_PROOF and isinstance(self.statement, Equation):
-            have = f"have {self.statement.translate(hyp_name=hyp_name, by_calc=True)}"
+        if (
+            self.proof == CALC_PROOF
+            and isinstance(self.statement, MultiplePropositions)
+            and len(self.statement.propositions) == 1
+            and isinstance(self.statement.propositions[0], Equation)
+        ):
+            have = f"have {self.statement.propositions[0].translate(hyp_name=hyp_name, by_calc=True)}"
             rw = f"try rw [{hyp_name}]"
             return have + "\n" + rw
 
@@ -141,3 +155,32 @@ class Have(Statement):
 
     def can_create_new_goals(self) -> bool:
         return self.statement.can_create_new_goals()
+
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        feedback = []
+        # left side (no statement, can only contain a proof)
+        if match := re.fullmatch(self.proof_pattern, self.left_side):
+            for i, group in enumerate(match.groups()):
+                group_type = "ignored" if i % 2 == 0 else "parameter"
+                feedback.append((group_type, group))
+
+        # have keyword
+        feedback.append(("keyword", self.match.group(2)))
+
+        # right side (statement)
+        statement_feedback = self.statement.interpretation_feedback()
+
+        # check each section in the statement
+        for section_type, section in statement_feedback:
+            # if it is ignored and we have a match for our proof pattern, we add the different parts
+            if section_type == "ignored" and (
+                match := re.fullmatch(self.proof_pattern, section)
+            ):
+                for i, group in enumerate(match.groups()):
+                    group_type = "ignored" if i % 2 == 0 else "parameter"
+                    feedback.append((group_type, group))
+            # otherwise, we add the whole section
+            else:
+                feedback.append((section_type, section))
+
+        return feedback

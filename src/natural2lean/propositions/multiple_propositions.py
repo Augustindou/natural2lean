@@ -6,6 +6,8 @@ from ..algebra.identifiers import IdentifiersInSet
 
 class MultiplePropositions(Translatable):
     def __init__(self, string: str, **kwargs) -> None:
+        self.string = string
+
         self.propositions = get_propositions(string)
 
         if not self.propositions:
@@ -49,3 +51,6 @@ class MultiplePropositions(Translatable):
 
     def can_create_new_goals(self) -> bool:
         return any(prop.can_create_new_goals() for prop in self.propositions)
+
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        return [("ignored", self.string)]

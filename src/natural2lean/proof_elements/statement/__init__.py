@@ -1,4 +1,5 @@
-from .induction import Induction, InductionCase
+from .induction import Induction
+from .induction_case import InductionCase
 from .simple_statements import SimpleStatement
 from .such_that import SuchThat
 from .have import Have

@@ -40,7 +40,7 @@ class LeanBlock:
 @dataclass
 class State:
     goals: list[LeanBlock]
-    statements: list[Union[Statement, Theorem]]
+    last_statement: Union[Theorem, Statement]
     lean_text: str
 
     def __str__(self):

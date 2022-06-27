@@ -37,4 +37,8 @@ class Example(Theorem):
             f"Could not match any statement to prove for {string}, tried {', '.join([p.__name__ for p in STATEMENT_POSSIBILITIES])}."
         )
 
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+
+        return self.statement.interpretation_feedback()
+
     # translate method is inherited

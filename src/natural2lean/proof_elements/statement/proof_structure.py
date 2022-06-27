@@ -1,10 +1,10 @@
 import re
 from typing import Callable
-
-from attr import s
-from ...utils.exceptions import MatchingError, TranslationError
-from .statement import Statement
 from .have import Have
+from .statement import Statement
+from .induction import Induction
+from .simple_statements import SimpleStatement
+from ...utils.exceptions import MatchingError
 
 
 space = r"\s*"
@@ -42,33 +42,48 @@ PROOF_STRUCTURES: dict[str, tuple[str, Callable]] = {
     r"(?:contradiction|absurd)": _contradiction_proof,
 }
 
-SUB_STATEMENT_POSSIBILITIES: list = [Have]
+SUB_STATEMENT_POSSIBILITIES: list = [Have, Induction, SimpleStatement]
+
+space = r"\s*"
 
 
 class ProofStructure(Statement):
-    pattern: str = f"(?:{'|'.join(PROOF_STRUCTURES.keys())})"
+    pattern: str = space.join(
+        [
+            r"",  # ignore leading space
+            r"(.*)",  # anything
+            f"({'|'.join(PROOF_STRUCTURES.keys())})",  # proof_structure
+            r"(.*)",  # possible sub statement
+            r"",  # ignore trailing space
+        ]
+    )
 
     def __init__(self, string: str, **kwargs) -> None:
-        if not (match := re.search(self.pattern, string)):
+        if not (match := re.fullmatch(self.pattern, string)):
             raise MatchingError(
                 f"Could not match {string} in {self.__class__.__name__}."
             )
 
+        # for feedback
+        self.match = match
+
         self.string = string
-        self.right_side = string[match.end() :]
+        self.right_side = match.group(3)
 
         # retrieve which proof_structure it is
         for key, translation in PROOF_STRUCTURES.items():
-            if re.search(key, string):
+            if re.fullmatch(key, match.group(2)):
                 self.proof_structure = key
                 self.translation = translation
                 break
 
         # possible sub-statement (e.g. when proving the contrapositive, we have ...)
-        self.sub_statement = None
+        self.sub_statement = self.get_sub_statement(**kwargs)
+
+    def get_sub_statement(self, **kwargs) -> Statement:
         for poss in SUB_STATEMENT_POSSIBILITIES:
             try:
-                self.sub_statement: Statement = poss(self.right_side, **kwargs)
+                return poss(self.right_side, **kwargs)
             except MatchingError:
                 pass
 
@@ -80,7 +95,18 @@ class ProofStructure(Statement):
             return self.translation(**kwargs)
 
         return (
-            self.translation(**kwargs)
-            + "\n\n"
-            + self.sub_statement.translate(**kwargs)
+            self.translation(**kwargs) + "\n\n" + self.sub_statement.translate(**kwargs)
         )
+
+    def interpretation_feedback(self) -> list[tuple[str, str]]:
+        if self.sub_statement is None:
+            sub_statement_feedback = [("ignored", self.right_side)]
+        else:
+            sub_statement_feedback = self.sub_statement.interpretation_feedback()
+
+        feedback = [
+            ("ignored", self.match.group(1)),
+            ("keyword", self.match.group(2)),
+        ]
+
+        return feedback + sub_statement_feedback

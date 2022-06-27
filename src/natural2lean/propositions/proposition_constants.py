@@ -18,11 +18,11 @@ NEGATIONS: list[str] = ["not", "n't"]
 keep_order = lambda *args: args
 invert_order = lambda *args: args[::-1]
 FUNCTIONS: list[tuple[str, str, Callable]] = [
-    ("even", r"(\$.*?\$).*?even", keep_order),
-    ("odd", r"(\$.*?\$).*?odd", keep_order),
+    ("even", r"(\$.+?\$).*?even", keep_order),
+    ("odd", r"(\$.+?\$).*?odd", keep_order),
     (
         "divisible",
-        r"(\$.*?\$).*?divisible\s*by.*?(\$.*?\$)",
+        r"(\$.+?\$).*?divisible\s*by.*?(\$.+?\$)",
         invert_order,
     ),
 ]
