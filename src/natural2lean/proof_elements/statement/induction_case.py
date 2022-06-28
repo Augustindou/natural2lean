@@ -24,8 +24,8 @@ class InductionCase(Statement):
     pattern: str = space.join(
         [
             r"",  # ignore leading space
-            r"(.*)",  # anything ("for", ...)
-            r"(\$.+\$)",  # the variable ("$n = 0$", ...)
+            r"(.*?)",  # anything ("for", ...)
+            r"(\$.+?\$)",  # the variable ("$n = 0$", ...)
             r"(.*)",  # potential sub-statement
             r"",  # ignore trailing space
         ]
