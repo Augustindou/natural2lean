@@ -17,12 +17,13 @@ NEGATIONS: list[str] = ["not", "n't"]
 # pattern must contain one group for each argument
 keep_order = lambda *args: args
 invert_order = lambda *args: args[::-1]
+# even groups are arguments, all groups will be highlighted by interpretation_feedback, use empty groups if needed ;)
 FUNCTIONS: list[tuple[str, str, Callable]] = [
-    ("even", r"(\$.+?\$).*?even", keep_order),
-    ("odd", r"(\$.+?\$).*?odd", keep_order),
+    ("even", r"(\$.+?\$).*?(even)", keep_order),
+    ("odd", r"(\$.+?\$).*?(odd)", keep_order),
     (
         "divisible",
-        r"(\$.+?\$).*?divisible\s*by.*?(\$.+?\$)",
+        r"(\$.+?\$).*?(divisible\s*by).*?(\$.+?\$)",
         invert_order,
     ),
 ]

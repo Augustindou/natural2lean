@@ -8,7 +8,7 @@ class MultiplePropositions(Translatable):
     def __init__(self, string: str, **kwargs) -> None:
         self.string = string
 
-        self.propositions = get_propositions(string)
+        self.propositions, self.used_keywords = get_propositions(string)
 
         if not self.propositions:
             raise MatchingError(
@@ -53,4 +53,30 @@ class MultiplePropositions(Translatable):
         return any(prop.can_create_new_goals() for prop in self.propositions)
 
     def interpretation_feedback(self) -> list[tuple[str, str]]:
-        return [("ignored", self.string)]
+        if not self.used_keywords:
+            return [("ignored", self.string)]
+        
+        # check for all keywords
+        keyword_positions = []
+        for kw in self.used_keywords:
+            if (pos := self.string.find(kw)) != -1:
+                keyword_positions.append((pos, kw))
+        
+        # sort by position
+        keyword_positions = sorted(keyword_positions)
+        
+        # separate into ignored and parameters
+        result = []
+        current_position = 0
+        
+        for pos, kw in keyword_positions:
+            if pos > current_position:
+                result.append(("ignored", self.string[current_position:pos]))
+            result.append(("parameter", kw))
+            current_position = pos + len(kw)
+        
+        result.append(("ignored", self.string[current_position:]))
+        
+        return result
+        
+        
