@@ -9,7 +9,7 @@ class NamedTheorem(Theorem):
     pattern: str = space.join(
         [
             "",  # ignore leading space
-            r"([Tt]heorem)",  # Theorem keyword
+            r"([Tt]heorem|[Ll]emma)",  # Theorem keyword
             r"(.*)",  # Theorem name
             r"(:)",  # separation between name and statement
             r"(.*)",  # Theorem statement

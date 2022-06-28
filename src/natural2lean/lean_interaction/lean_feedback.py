@@ -27,12 +27,22 @@ class LeanBlock:
             return f"{self.goal} (missing case)"
 
         # variables
-        variables = "\n".join(f"{id_} : {set_}" for id_, set_ in self.variables)
-        var_block = f"Variables :\n{indent(variables)}\n" if self.variables else ""
+        if self.variables:
+            variables = "\n".join(f"{id_} : {set_}" for id_, set_ in self.variables)
+            var_block = f"Variables we can use :\n{indent(variables)}\n"
+        else:
+            var_block = ""
 
         # hypotheses
-        hypotheses = "\n".join(f"{name_} : {expr_}" for name_, expr_ in self.hypotheses)
-        hyp_block = f"Hypotheses :\n{indent(hypotheses)}\n" if self.hypotheses else ""
+        if self.hypotheses:
+            hypotheses = "\n".join(
+                f"{name_} : {expr_}" for name_, expr_ in self.hypotheses
+            )
+            hyp_block = (
+                f"What we have shown so far (for this goal) :\n{indent(hypotheses)}\n"
+            )
+        else:
+            hyp_block = ""
 
         return self.goal + "\n" + var_block + hyp_block
 
@@ -47,7 +57,7 @@ class State:
         if len(self.goals) == 0:
             return ""
 
-        result = f"Current goal: {indent(str(self.goals[0]))[2:]}"
+        result = f"What we want to show (goal): {indent(str(self.goals[0]))[2:]}"
         for i, goal in enumerate(self.goals[1:]):
             result += f"\n{nth(i+2)} goal: {indent(str(goal))}"
 
