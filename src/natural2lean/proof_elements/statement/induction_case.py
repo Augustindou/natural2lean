@@ -72,7 +72,7 @@ class InductionCase(Statement):
     def get_sub_statement(self, **kwargs) -> Statement:
         for poss in SUB_STATEMENT_POSSIBILITIES:
             try:
-                return poss(self.string, **kwargs)
+                return poss(self.right_side, **kwargs)
             except MatchingError:
                 pass
 
