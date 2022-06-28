@@ -60,7 +60,7 @@ class Have(Statement):
         [
             "",  # ignore leading space
             r"(.*)",  # left side
-            r"([Hh]ave|[Dd]eriv|[Gg]ive|[Ss]how|[Pp]rove)",  # have keyword
+            r"([Hh]ave|[Dd]erive|[Gg]ives|[Ss]how|[Pp]rove)",  # have keyword
             r"(.*)",  # right side
             "",  # ignore trailing space
         ]
