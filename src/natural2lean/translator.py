@@ -219,6 +219,13 @@ class Translator:
         return new_state
 
     def interpretation_feedback(self) -> list[tuple[str, str]]:
+        """Returns a list of tuples (`type`, `section`) describing the way the last input was processed.
+
+        The type can be one of the following:
+        - `"keyword"`: the `section` of the string is a keyword used to interpret the string (e.g. "theorem", "have")
+        - `"parameter"`: the `section` of the string is a parameter used in the translation (e.g. a theorem name, a math expression)
+        - `"ignored"`: the `section` of the string was ignored (most filling words like "we", "therefore", ...)
+        """
         if self.is_bottom_state():
             return None
         return self.stack[-1].last_statement.interpretation_feedback()
