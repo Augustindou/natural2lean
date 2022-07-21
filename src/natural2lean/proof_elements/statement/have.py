@@ -30,10 +30,10 @@ def using_theorems(theorems: list[str]) -> str:
 
 
 def induction_hypothesis(
-    theorems: list[tuple[str, str, str]], n_args: int = 1, **kwargs
+    theorems: list[tuple[str, str, int]], **kwargs
 ) -> str:
     # TODO improvement : use the n_args argument
-    return theorems[-1][1] + " _" * n_args
+    return theorems[-1][1] + " (by trivial)" * theorems[-1][2]
 
 
 PARAMETRIC_PROOFS: dict[str, str] = {
@@ -101,7 +101,7 @@ class Have(Statement):
     def get_proof(self, proven_theorems: list[tuple[str, str, str]]) -> str:
         # checking for previously proved theorems
         used_theorems = []
-        for latex_th, lean_th in proven_theorems:
+        for latex_th, lean_th, _ in proven_theorems:
             if latex_th.lower() in self.string.lower():
                 used_theorems.append(lean_th)
 
@@ -148,8 +148,8 @@ class Have(Statement):
             and isinstance(self.statement.propositions[0], Equation)
         ):
             have = f"have {self.statement.propositions[0].translate(hyp_name=hyp_name, by_calc=True)}"
-            rw = f"try rw [{hyp_name}]"
-            return have + "\n" + rw
+            # rw = f"try rw [{hyp_name}]"
+            return have # + "\n" + rw
 
         return f"have {self.statement.translate(hyp_name=hyp_name, proof=self.proof)}"
 
@@ -163,6 +163,8 @@ class Have(Statement):
             for i, group in enumerate(match.groups()):
                 group_type = "ignored" if i % 2 == 0 else "parameter"
                 feedback.append((group_type, group))
+        else:
+            feedback.append(("ignored", self.left_side))
 
         # have keyword
         feedback.append(("keyword", self.match.group(2)))

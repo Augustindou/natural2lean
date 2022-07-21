@@ -37,9 +37,9 @@ def _contradiction_proof(hyp_name, **kwargs) -> str:
 # if pattern is matched, the string returned by the callable will be added, the last hypothesis will be given as argument
 PROOF_STRUCTURES: dict[str, tuple[str, Callable]] = {
     # by contraposition / we will prove the contrapositive / ...
-    r"contrapos\w*": _contraposition_proof,
+    r"[Cc]ontrapos\w*": _contraposition_proof,
     # we will prove this by contradiction / absurd
-    r"(?:contradiction|absurd)": _contradiction_proof,
+    r"(?:[Cc]ontradiction|[Aa]bsurd)": _contradiction_proof,
 }
 
 SUB_STATEMENT_POSSIBILITIES: list = [Have, Induction, SimpleStatement]

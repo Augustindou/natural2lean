@@ -2,6 +2,8 @@ import os
 import shutil
 import platform
 from pathlib import Path, PureWindowsPath
+
+from natural2lean.utils.translatable import Translatable
 from .proof_elements.theorem import get_theorem
 from .proof_elements.theorem.theorem import Theorem
 from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
@@ -41,10 +43,12 @@ class Translator:
         self.stack: list[State] = [
             State(goals=[], last_statement=None, lean_text=LEAN_HEADER)
         ]
-        # containing latex name, lean name
-        self.theorems: list[tuple[str, str]] = []
+        # containing latex name, lean name, number of arguments
+        self.theorems: list[tuple[str, str, int]] = []
         # position in proof (for now, only inductions)
         self.proof_status: list[Statement] = []
+        # last statement that failed to be translated
+        self.last_failed_statement: Translatable = None
 
         try:
             default_path = DEFAULT_PATHS[platform.system()]
@@ -130,15 +134,19 @@ class Translator:
         lean_text = old_state.lean_text + "\n\n" + theorem.translate()
 
         # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
-        new_state = State(
-            goals=lean_feedback(lean_text, theorem, self.project_directory),
-            last_statement=theorem,
-            lean_text=lean_text,
-        )
+        try:
+            new_state = State(
+                goals=lean_feedback(lean_text, theorem, self.project_directory),
+                last_statement=theorem,
+                lean_text=lean_text,
+            )
+        except LeanError as e:
+            self.last_failed_statement = theorem
+            raise e
 
         # add theorem to list
         if isinstance(theorem, Theorem):
-            self.theorems.append((theorem.latex_name, theorem.lean_name))
+            self.theorems.append((theorem.latex_name, theorem.lean_name, theorem.n_args))
 
         self.stack.append(new_state)
         return new_state
@@ -178,6 +186,7 @@ class Translator:
             )
         except NoConclusion:
             if any(isinstance(statement, poss) for poss in CCL_POSSIBILITIES):
+                self.last_failed_statement = statement
                 raise NoConclusion(
                     f"Could not match a non-conclusive statement, nor conclude a proof with '{string}'.\n"
                 )
@@ -192,15 +201,19 @@ class Translator:
                 last_hyp=last_hyp,
             )
 
-            lean_fb = lean_feedback(
-                input=old_state.lean_text + "\n\n" + indent(translation),
-                statement=statement,
-                project_directory=self.project_directory,
-            )
+            try:
+                lean_fb = lean_feedback(
+                    input=old_state.lean_text + "\n\n" + indent(translation),
+                    statement=statement,
+                    project_directory=self.project_directory,
+                )
+            except LeanError as e:
+                self.last_failed_statement = statement
+                raise e
 
         lean_text = old_state.lean_text + "\n\n" + indent(translation)
 
-        # lean_feedback(lean_text) should throw an error if lean could not understand the translated theorem
+        # lean_feedback(lean_text) should have thrown an error if lean could not understand the translated theorem
         new_state = State(
             goals=lean_fb,
             last_statement=statement,
@@ -211,8 +224,9 @@ class Translator:
             len(new_state.goals) > len(old_state.goals)
             and not statement.can_create_new_goals()
         ):
+            self.last_failed_statement = statement
             raise LeanError(
-                "Statement created a new goal, but this type of statement is not allowed to.\n"
+                "Lean detected an error in your statement.\n"
             )
 
         self.stack.append(new_state)
@@ -222,6 +236,11 @@ class Translator:
         if self.is_bottom_state():
             return None
         return self.stack[-1].last_statement.interpretation_feedback()
+    
+    def failed_statement_interpretation(self) -> list[tuple[str, str]]:
+        if self.last_failed_statement is None:
+            return None
+        return self.last_failed_statement.interpretation_feedback()
 
     def backtrack(self) -> State:
         """Removes the last input given to the Translator, hence, the last state of the stack. If no input had been given earlier, this function will return None.

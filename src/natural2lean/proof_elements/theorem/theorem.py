@@ -11,15 +11,18 @@ class Theorem(Translatable):
         self.statement: Translatable = None
         self.latex_name: str = None
         self.lean_name: str = None
+        self.n_args: int = None
         raise NotImplementedError
 
     def set_hypotheses_and_theses(self):
         if isinstance(self.statement, Implication):
             self.hypotheses = self.statement.hypotheses
             self.theses = self.statement.theses
+            self.n_args = len(self.hypotheses.propositions)
         elif isinstance(self.statement, MultiplePropositions):
             self.hypotheses = None
             self.theses = self.statement
+            self.n_args = len(self.theses.get_identifiers())
 
     def translate(self, **kwargs) -> str:
         if self.hypotheses:

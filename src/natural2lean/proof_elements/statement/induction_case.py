@@ -82,7 +82,7 @@ class InductionCase(Statement):
         else:
             sub_tr = ""
 
-        return f"| {self.expression.translate()} =>\n{sub_tr}"
+        return f"| {self.expression.translate()} =>\nskip\n{sub_tr}"
 
     def interpretation_feedback(self) -> list[tuple[str, str]]:
         if self.sub_statement is None:

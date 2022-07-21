@@ -79,6 +79,7 @@ ERRORS = [
     r"error: expected .+",
     r"error: invalid .+",
     r"error: .+ is missing",
+    r"error: type mismatch",
 ]
 
 SPECIFIC_ERRORS = [
