@@ -1,5 +1,35 @@
 # natural2lean
 
+## Proof of concept of a natural language interactive theorem prover
+
+This project was developed for my Master's Thesis at UCLouvain (under the supervision of Pr. François Glineur and T.A. Sébastien Mattenet). The problem this project attempts to solve is the feedback on exercice proofs written by students, as this feedback comes either in the form of one correct version of the proof (although a theorem can be proved in many different ways), or taking up valuable T.A. time to correct simple proofs. The aim is therefore to bring machine verification to natural language proofs. This is done by translating natural language to `lean4` and returning the feedback to the user.
+
+<!-- TODO - Visual helper -->
+
+## How this project works
+
+The project consists of a python package, `natural2lean`, giving access to a `Translator` class. This class contains the following methods:
+- `__init__(lean_project_directory: str = None)`; creates the object and makes sure that it has access to the needed [lean-project-template](https://github.com/Augustindou/natural2lean-lean-project-template). The optional `lean_project_directory` indicates to the program where to store the project.
+- `new_theorem(string: str)`; parses the string into a new theorem and returns the state of the proof after the theorem was added.
+- `new_statement(string: str)`; parses the string into a new statement and returns the state of the proof after the statement was added.
+- `new(string: str)`; delegates to `new_theorem` or `new_statement` depending on the context (whether or not there is a goal to be solved).
+- `interpretation_feedback()`; gives a feedback what parts of the `string` were used and what parts were ignored.
+- `backtrack()`; removes the last theorem / statement added.
+
+<!-- TODO - different statements -->
+
+## How to install
+
+You will need to first install `lean4` ([install guide](https://leanprover.github.io/lean4/doc/setup.html)).
+
+For an end user, the easiest way to use it is to use the [natural2lean-cli](https://github.com/Augustindou/natural2lean-cli) package, gives access to an executable (`natural2lean`) containing an interactive program and a file reader.
+
+## How to tweak this project for your own uses
+
+This project is a proof of concept, feel free to fork and tweak it for your own uses.
+
+<!-- # natural2lean
+
 Translation of natural language proofs to lean4 for verification. The objective was to make a proof of concept of the translation system. This project is developed for a master's thesis under the supervision of François Glineur and Sébastien Mattenet.
 
 The project consists of a python package, `natural2lean`, giving access to a `Translator` class. This class contains the following methods:
@@ -44,4 +74,4 @@ Note that if you use `zsh`, you need to run the following instead :
 ```zsh
 pip install -e .'[dev]'
 ```
-
+ -->
