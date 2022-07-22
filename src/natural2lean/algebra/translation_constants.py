@@ -31,9 +31,9 @@ For each set,
 SETS: dict[str, MathSet] = {
     "ℕ": MathSet(r"\mathbb{N}", "ℕ", "Nat", ("natural",)),
     # "ℤ": MathSet(r"\mathbb{Z}", "ℤ", "Int", ("integer",)), # not compatible with the current work, because header considers that we are working with Naturals
+    # "ℚ": MathSet(r"\mathbb{Q}", "ℚ", "???", , ("rational,")), # Rationals not implemented in lean yet ?
     # "ℝ": MathSet(r"\mathbb{R}", "ℝ", "???", ("real,")), # Reals not implemented in lean yet ?
     # "ℂ": MathSet(r"\mathbb{C}", "ℂ", "???", ("complex,")), # Complexes not implemented in lean yet ?
-    # "ℚ": MathSet(r"\mathbb{Q}", "ℚ", "???", , ("rational,")), # Rationals not implemented in lean yet ?
 }
 
 """

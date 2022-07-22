@@ -85,7 +85,7 @@ class Translator:
             lean_feedback(LEAN_HEADER, None, self.project_directory)
         except LeanError:
             raise Exception(
-                "The lean header alone should not cause an error, please report this bug."
+                "The lean header alone should not cause an error, please check that lean4 is installed on your system, and report this bug if it is."
             )
 
     def new(self, string: str) -> State:
@@ -146,7 +146,9 @@ class Translator:
 
         # add theorem to list
         if isinstance(theorem, Theorem):
-            self.theorems.append((theorem.latex_name, theorem.lean_name, theorem.n_args))
+            self.theorems.append(
+                (theorem.latex_name, theorem.lean_name, theorem.n_args)
+            )
 
         self.stack.append(new_state)
         return new_state
@@ -180,7 +182,7 @@ class Translator:
         try:
             lean_fb, translation = get_conclusion(
                 state=old_state,
-                goals=self.all_current_goals(),  # TODO
+                goals=self._all_current_goals(),
                 statement=statement,
                 project_directory=self.project_directory,
             )
@@ -225,9 +227,7 @@ class Translator:
             and not statement.can_create_new_goals()
         ):
             self.last_failed_statement = statement
-            raise LeanError(
-                "Lean detected an error in your statement.\n"
-            )
+            raise LeanError("Lean detected an error in your statement.\n")
 
         self.stack.append(new_state)
         return new_state
@@ -240,10 +240,10 @@ class Translator:
         - `"parameter"`: the `section` of the string is a parameter used in the translation (e.g. a theorem name, a math expression)
         - `"ignored"`: the `section` of the string was ignored (most filling words like "we", "therefore", ...)
         """
-        if self.is_bottom_state():
+        if self._is_bottom_state():
             return None
         return self.stack[-1].last_statement.interpretation_feedback()
-    
+
     def failed_statement_interpretation(self) -> list[tuple[str, str]]:
         if self.last_failed_statement is None:
             return None
@@ -255,7 +255,7 @@ class Translator:
         Returns:
             State: the state after the last input has been removed.
         """
-        if self.is_bottom_state():
+        if self._is_bottom_state():
             return None
 
         # remove last state
@@ -267,7 +267,15 @@ class Translator:
 
         return self.state()
 
-    def all_current_goals(self) -> set[str]:
+    def state(self) -> State:
+        """Returns the current state of the Translator.
+
+        Returns:
+            State: the current state of the Translator.
+        """
+        return self.stack[-1]
+
+    def _all_current_goals(self) -> set[str]:
         current_goals = set()
         for state in self.stack[::-1]:
             # stop when exiting the current proof
@@ -278,13 +286,5 @@ class Translator:
 
         return current_goals
 
-    def state(self) -> State:
-        """Returns the current state of the Translator.
-
-        Returns:
-            State: the current state of the Translator.
-        """
-        return self.stack[-1]
-
-    def is_bottom_state(self) -> bool:
+    def _is_bottom_state(self) -> bool:
         return len(self.stack) == 1

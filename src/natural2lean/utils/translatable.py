@@ -18,4 +18,5 @@ class Translatable:
         return False
 
     def change_status(self) -> bool:
+        """Returns whether the object should change the status (e.g. if doing an induction on a variable)."""
         return False

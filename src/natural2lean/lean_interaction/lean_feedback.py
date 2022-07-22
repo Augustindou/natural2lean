@@ -14,7 +14,7 @@ from ..proof_elements.theorem.theorem import Theorem
 class LeanBlock:
     """A block of results from lean, each one containing variables, hypotheses and a goal."""
 
-    # (identifiers, set), variables can contain multiple identifiers
+    # (name, set), variables can contain multiple identifiers
     variables: list[tuple[str, str]]
     # (hypothesis name, expression), each hypothesis can only contain one identifier
     hypotheses: list[tuple[str, str]]

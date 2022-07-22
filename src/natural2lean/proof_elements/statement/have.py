@@ -32,7 +32,6 @@ def using_theorems(theorems: list[str]) -> str:
 def induction_hypothesis(
     theorems: list[tuple[str, str, int]], **kwargs
 ) -> str:
-    # TODO improvement : use the n_args argument
     return theorems[-1][1] + " (by trivial)" * theorems[-1][2]
 
 

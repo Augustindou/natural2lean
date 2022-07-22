@@ -1,4 +1,6 @@
 from natural2lean import Translator
+# end-to-end tests can be found in the natural2lean-cli repo at https://github.com/Augustindou/natural2lean-cli
+
 from natural2lean.utils.exceptions import LeanError
 
 
