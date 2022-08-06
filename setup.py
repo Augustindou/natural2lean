@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="natural2lean",
-    version="0.0.3",
+    version="0.0.4",
     author="Augustin d'Oultremont",
     author_email="augustin.doultremont@outlook.com",
     description="Translation of proofs from Natural Language to Lean",

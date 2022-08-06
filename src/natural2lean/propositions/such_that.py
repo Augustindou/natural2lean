@@ -1,14 +1,14 @@
 import re
-from .statement import Statement
-from ...propositions.multiple_propositions import MultiplePropositions
-from ...algebra.identifiers import Identifier
-from ...utils.exceptions import MatchingError, TranslationError
+from .proposition import Proposition
+from .multiple_propositions import MultiplePropositions
+from ..algebra.identifiers import Identifier
+from ..utils.exceptions import MatchingError, TranslationError
 
 
 space = r"\s*"
 
 
-class SuchThat(Statement):
+class SuchThat(Proposition):
     pattern: str = space.join(
         [
             "",  # ignore leading space

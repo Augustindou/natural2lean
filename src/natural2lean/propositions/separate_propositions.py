@@ -1,5 +1,6 @@
 import re
 from typing import Iterable
+from .proposition import Proposition
 from .function import Function
 from .proposition_constants import (
     SEPARATORS,
@@ -17,7 +18,6 @@ from ..algebra import (
     MultipleIdentifiers,
 )
 from ..utils.exceptions import MatchingError, TranslationError
-from ..utils.translatable import Translatable
 from ..algebra.translation_constants import SETS, MathSet
 from ..algebra.expression_possibilities import ExpressionPossibilities
 
@@ -25,7 +25,7 @@ from ..algebra.expression_possibilities import ExpressionPossibilities
 # ------------------ MAIN FUNCTIONS ------------------
 
 
-def get_propositions(string: str) -> tuple[list[Translatable], set[str]]:
+def get_propositions(string: str) -> tuple[list[Proposition], set[str]]:
     props = []
     keywords = set()
     for prop, kwds in separate_propositions(string):
@@ -34,7 +34,7 @@ def get_propositions(string: str) -> tuple[list[Translatable], set[str]]:
     return props, keywords
 
 
-def separate_propositions(string: str) -> Iterable[tuple[Translatable, list[str]]]:
+def separate_propositions(string: str) -> Iterable[tuple[Proposition, list[str]]]:
     """Separates multiple propositions (PropA, PropB and PropC).
 
     Args:
@@ -57,7 +57,7 @@ def separate_propositions(string: str) -> Iterable[tuple[Translatable, list[str]
             last_stop = stop
 
 
-def split_proposition(string: str) -> Iterable[tuple[Translatable, list[str]]]:
+def split_proposition(string: str) -> Iterable[tuple[Proposition, list[str]]]:
     """Splits a proposition ($a$ and $b$ are even natural numbers) into multiple propositions ($a \\in \\mathbb{N}$, $b \\in \\mathbb{N}$). Also returns a list of keywords that have been used.
 
     Args:

@@ -2,9 +2,9 @@ import re
 
 from natural2lean.proof_elements.theorem.theorem import Theorem
 from .statement import Statement
-from .such_that import SuchThat
 from .simple_statements import SimpleStatement
 from ...algebra.equation import Equation
+from ...propositions.such_that import SuchThat
 from ...propositions.multiple_propositions import MultiplePropositions
 from ...propositions.implication import Implication
 from ...utils.translatable import Translatable
