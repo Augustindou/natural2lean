@@ -2,8 +2,7 @@ import os
 import shutil
 import platform
 from pathlib import Path, PureWindowsPath
-
-from natural2lean.utils.translatable import Translatable
+from .utils.translatable import Translatable
 from .proof_elements.theorem import get_theorem
 from .proof_elements.theorem.theorem import Theorem
 from .proof_elements.statement import CCL_POSSIBILITIES, get_statement
