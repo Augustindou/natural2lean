@@ -15,7 +15,7 @@ from .lean_interaction.lean_feedback import State, lean_feedback
 DEFAULT_PATHS = {
     "Darwin": Path.home() / Path(".natural2lean"),
     "Linux": Path.home() / Path(".natural2lean"),
-    "Windows": Path.home() / Path("AppData/Roaming/.natural2lean"),
+    "Windows": Path.home() / Path("AppData/Roaming/natural2lean"),
 }
 
 LEAN_PROJECT_GIT_REPO = (
