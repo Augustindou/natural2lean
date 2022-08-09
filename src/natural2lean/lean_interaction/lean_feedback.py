@@ -157,8 +157,8 @@ def raw_feedback(input: str, project_directory: Path) -> str:
         str: the raw (terminal) feedback
     """
 
-    with open(project_directory / MAIN_FILE, "w") as f:
-        f.write(input)
+    with open(project_directory / MAIN_FILE, "wb") as f:
+        f.write(input.encode("utf-8"))
 
     res = Popen(
         BUILD_COMMAND,

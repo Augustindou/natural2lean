@@ -31,11 +31,8 @@ subscripts = {
 }
 
 def subscript(n: int):
-    # skipping subscripts to solve bug on windows :/
-    return str(n)
+    result = ""
+    for digit in str(n):
+        result += subscripts[digit]
 
-    # result = ""
-    # for digit in str(n):
-    #     result += subscripts[digit]
-
-    # return result
+    return result
