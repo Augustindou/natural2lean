@@ -1,10 +1,11 @@
+from .proposition import Proposition
 from .separate_propositions import get_propositions
 from ..utils.exceptions import MatchingError
 from ..utils.translatable import Translatable
 from ..algebra.identifiers import IdentifiersInSet
 
 
-class MultiplePropositions(Translatable):
+class MultiplePropositions(Proposition):
     def __init__(self, string: str, **kwargs) -> None:
         self.string = string
 
@@ -55,28 +56,26 @@ class MultiplePropositions(Translatable):
     def interpretation_feedback(self) -> list[tuple[str, str]]:
         if not self.used_keywords:
             return [("ignored", self.string)]
-        
+
         # check for all keywords
         keyword_positions = []
         for kw in self.used_keywords:
             if (pos := self.string.find(kw)) != -1:
                 keyword_positions.append((pos, kw))
-        
+
         # sort by position
         keyword_positions = sorted(keyword_positions)
-        
+
         # separate into ignored and parameters
         result = []
         current_position = 0
-        
+
         for pos, kw in keyword_positions:
             if pos > current_position:
                 result.append(("ignored", self.string[current_position:pos]))
             result.append(("parameter", kw))
             current_position = pos + len(kw)
-        
+
         result.append(("ignored", self.string[current_position:]))
-        
+
         return result
-        
-        

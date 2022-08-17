@@ -1,8 +1,7 @@
 from pathlib import Path
 import re
-
-from natural2lean.proof_elements.statement.statement import Statement
 from .lean_feedback import LeanBlock, State, lean_feedback
+from ..proof_elements.statement.statement import Statement
 from ..utils.text import indent
 from ..utils.exceptions import LeanError, NoConclusion
 from ..utils.translatable import Translatable

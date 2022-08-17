@@ -1,13 +1,13 @@
 import re
+from .proposition import Proposition
 from .multiple_propositions import MultiplePropositions
 from ..utils.exceptions import MatchingError
-from ..utils.translatable import Translatable
 
 space = r"\s*"
 punctuation = " .,;:"
 
 
-class Implication(Translatable):
+class Implication(Proposition):
     pattern: str = space.join(
         [
             "",  # ignore leading space

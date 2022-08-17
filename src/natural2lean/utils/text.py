@@ -17,20 +17,20 @@ def nth(n):
     return f"{n}th"
 
 
-def subscript(n: int):
-    subscripts = {
-        "0": "₀",
-        "1": "₁",
-        "2": "₂",
-        "3": "₃",
-        "4": "₄",
-        "5": "₅",
-        "6": "₆",
-        "7": "₇",
-        "8": "₈",
-        "9": "₉",
-    }
+subscripts = {
+    "0": "₀",
+    "1": "₁",
+    "2": "₂",
+    "3": "₃",
+    "4": "₄",
+    "5": "₅",
+    "6": "₆",
+    "7": "₇",
+    "8": "₈",
+    "9": "₉",
+}
 
+def subscript(n: int):
     result = ""
     for digit in str(n):
         result += subscripts[digit]

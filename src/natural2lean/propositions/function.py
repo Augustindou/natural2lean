@@ -1,7 +1,8 @@
+from .proposition import Proposition
 from ..utils.translatable import Translatable
 
 
-class Function(Translatable):
+class Function(Proposition):
     def __init__(self, name: str, args: list[Translatable]):
         self.name: str = name
         self.args: list[Translatable] = args

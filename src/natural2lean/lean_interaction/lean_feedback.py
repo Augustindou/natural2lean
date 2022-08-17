@@ -57,9 +57,12 @@ class State:
         if len(self.goals) == 0:
             return ""
 
-        result = f"What we want to show (goal): {indent(str(self.goals[0]))[2:]}"
-        for i, goal in enumerate(self.goals[1:]):
-            result += f"\n{nth(i+2)} goal: {indent(str(goal))}"
+        if len(self.goals) == 1:
+            return f"To finish this proof, we need to prove this: {indent(str(self.goals[0]))}"
+        
+        result = f"To finish this proof, we need to solve these {len(self.goals)} cases (goals):"
+        for i, goal in enumerate(self.goals):
+            result += f"\n{nth(i+1)} case: solve {indent(str(goal))}"
 
         return result
 
@@ -154,8 +157,8 @@ def raw_feedback(input: str, project_directory: Path) -> str:
         str: the raw (terminal) feedback
     """
 
-    with open(project_directory / MAIN_FILE, "w") as f:
-        f.write(input)
+    with open(project_directory / MAIN_FILE, "wb") as f:
+        f.write(input.encode("utf-8"))
 
     res = Popen(
         BUILD_COMMAND,

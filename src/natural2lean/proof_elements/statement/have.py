@@ -1,12 +1,11 @@
 import re
-
-from natural2lean.proof_elements.theorem.theorem import Theorem
 from .statement import Statement
-from .such_that import SuchThat
 from .simple_statements import SimpleStatement
 from ...algebra.equation import Equation
+from ...propositions.such_that import SuchThat
 from ...propositions.multiple_propositions import MultiplePropositions
 from ...propositions.implication import Implication
+from ...proof_elements.theorem.theorem import Theorem
 from ...utils.translatable import Translatable
 from ...utils.exceptions import MatchingError, TranslationError
 from ...utils.text import indent
@@ -19,8 +18,8 @@ SIMPLE_PROOFS: dict[str, str] = {
     r"(.*)(contradiction)(.*)": "by contradiction",
     r"(.*)(definition)(.*)": "by simp at *; assumption",
     # mod 3 is a bit specific, should extend this to allow for any modulo, but will be easier with mathlib 4
-    r"(.*)(possibilities)(.*)(modulo)(.*)": "mod_3_poss _",
-    r"(.*)(modulo)(.*)(possibilities)(.*)": "mod_3_poss _",
+    r"(.*)(possibilities)(.*)(modulo)(.*)": "by (first | exact mod_2_poss _ | exact mod_3_poss _ | exact mod_4_poss _ | exact mod_5_poss _)",
+    r"(.*)(modulo)(.*)(possibilities)(.*)": "by (first | exact mod_2_poss _ | exact mod_3_poss _ | exact mod_4_poss _ | exact mod_5_poss _)",
 }
 
 
